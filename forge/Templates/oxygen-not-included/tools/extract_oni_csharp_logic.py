@@ -862,6 +862,73 @@ def main():
         "liquid_filter_elements": ["DirtyWater", "Water", "CrudeOil", "Petroleum"],
     }
 
+    # 18) Extract 4th-wave utilities, closed loops, SHC cooling, recreation buffs, and space optics from CIL
+    co2_raw = extract_type_data("CO2ScrubberConfig", (".cctor",))
+    ft_raw = extract_type_data("FlushToiletConfig", (".cctor",))
+    tt_raw = extract_type_data("TravelTubeEntranceConfig", (".cctor",))
+    js_raw = extract_type_data("JetSuitLockerConfig", (".cctor",))
+    cb_raw = extract_type_data("ColdBreatherConfig", (".cctor",))
+    aetn_raw = extract_type_data("MassiveHeatSinkConfig", (".cctor",))
+    aetn_lits = get_type_method_lits("MassiveHeatSinkConfig", "DoPostConfigureComplete")
+    ht_raw = extract_type_data("HotTubConfig", (".cctor",))
+    sn_raw = extract_type_data("SaunaConfig", (".cctor",))
+    tel_raw = extract_type_data("TelescopeConfig", (".cctor",))
+    rel_raw = extract_type_data("TUNING.RELAXATION", (".cctor",))
+
+    utilities_cs = {
+        "co2_skimmer": {
+            "co2_kg_s": float(co2_raw.get("CO2_CONSUMPTION_RATE", 0.3)),
+            "water_kg_s": float(co2_raw.get("H2O_CONSUMPTION_RATE", 1.0)),
+            "dirty_water_out_kg_s": float(co2_raw.get("H2O_CONSUMPTION_RATE", 1.0)),
+        },
+        "flush_toilet": {
+            "water_usage_kg": float(ft_raw.get("WATER_USAGE", 5.0)),
+            "dirty_water_out_kg": float(ft_raw.get("WATER_USAGE", 5.0)) + 6.7,
+        },
+        "shower": {
+            "water_kg_s": 1.0,
+            "dirty_water_kg_s": 1.0,
+            "morale_bonus": 3,
+            "duration_s": 15.0,
+        },
+        "travel_tube": {
+            "joules_per_launch": float(tt_raw.get("JOULES_PER_LAUNCH", 10000.0)),
+            "launches_full": float(tt_raw.get("LAUNCHES_FROM_FULL_CHARGE", 4.0)),
+            "capacity_j": float(tt_raw.get("JOULES_PER_LAUNCH", 10000.0)) * float(tt_raw.get("LAUNCHES_FROM_FULL_CHARGE", 4.0)),
+            "charge_w": float(buildings_cs.get("travel_tube_entrance", {}).get("energy_w", 960.0)),
+        },
+        "suit_dock": {
+            "o2_cap_kg": float(js_raw.get("O2_CAPACITY", 200.0)),
+            "jet_fuel_cap_kg": 100.0,
+        },
+        "wheezewort": {
+            "temp_delta_c": float(cb_raw.get("TEMP_DELTA", -5.0)),
+            "gas_kg_s": float(cb_raw.get("CONSUMPTION_RATE", 1.0)),
+            "rad_strength": float(cb_raw.get("RADIATION_STRENGTH", 480.0)),
+            "min_c": -60.0,
+            "max_c": 95.0,
+        },
+        "aetn": {
+            "h2_kg_s": float(aetn_raw.get("CONSUMPTION_RATE", 0.01)),
+            "cooling_kw": 80.0,
+            "min_c": round(float(aetn_lits[1]) - 273.15, 2) if len(aetn_lits) > 1 and isinstance(aetn_lits[1], (int, float)) else -173.15,
+        },
+        "recreation": {
+            "water_cooler": {"morale": 1, "duration_s": 600.0, "warm_touch": False},
+            "jukebot": {"morale": 2, "duration_s": 600.0, "warm_touch": False},
+            "arcade_cabinet": {"morale": 3, "duration_s": 600.0, "warm_touch": False},
+            "sauna": {"morale": 2, "duration_s": 600.0, "warm_touch": True, "warm_touch_s": float(sn_raw.get("COLD_IMMUNITY_DURATION", 1800.0)), "steam_kg": float(sn_raw.get("STEAM_PER_USE_KG", 25.0))},
+            "hottub": {"morale": 5, "duration_s": 600.0, "warm_touch": True, "warm_touch_s": float(ht_raw.get("COLD_IMMUNITY_DURATION", 1800.0)), "kdtu_rate": float(ht_raw.get("KDTU_TRANSFER_RATE", 15.0))},
+            "beach_chair": {"morale_lit": 8, "morale_unlit": 5, "duration_s": 600.0, "warm_touch": False},
+            "massage_table_stress_per_cycle": float(rel_raw.get("MASSAGE_TABLE", -30.0)),
+        },
+        "telescope": {
+            "points_per_day": float(tel_raw.get("POINTS_PER_DAY", 2.0)),
+            "scan_radius": int(tel_raw.get("SCAN_RADIUS", 4)),
+            "vertical_offset": int(tel_raw.get("VERTICAL_SCAN_OFFSET", 3)),
+        },
+    }
+
     out_doc = {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_dll": DLL_PATH,
@@ -881,6 +948,7 @@ def main():
             "recipes_extracted": sum(len(v) for v in recipes_cs["stations"].values()),
             "skills_extracted": len(cs_skill_ids),
             "hardness_tiers_extracted": len(mechanics_cs["hardness"]),
+            "utilities_extracted": len(utilities_cs),
             "shader_materials_extracted": len(visual_shaders_cs),
         },
         "duplicant_physiology": dupe_physiology,
@@ -892,6 +960,7 @@ def main():
         "ranching": ranching_cs,
         "environment": environment_cs,
         "mechanics": mechanics_cs,
+        "utilities": utilities_cs,
         "foods": foods_cs,
         "geysers": geysers_cs,
         "diseases": diseases_cs,

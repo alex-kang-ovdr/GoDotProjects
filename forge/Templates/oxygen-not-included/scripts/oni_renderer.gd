@@ -1214,6 +1214,10 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			var egg_p := clampf(float(world.egg_incubations[0].get("progress", 0.0)), 0.0, 1.0)
 			c.draw_rect(Rect2(p.x + 4, p.y + ts - 6, ts - 8, 4), Color(0.08, 0.12, 0.16, 0.90), true)
 			c.draw_rect(Rect2(p.x + 4, p.y + ts - 6, (ts - 8) * egg_p, 4), Color(1.0, 0.86, 0.38, 1.0), true)
+		elif b == "travel_tube_entrance":
+			var tr := clampf(world.tube_charge_j[i] / 40000.0, 0.0, 1.0)
+			c.draw_rect(Rect2(p.x + 4, p.y + ts - 6, ts - 8, 4), Color(0.08, 0.12, 0.16, 0.90), true)
+			c.draw_rect(Rect2(p.x + 4, p.y + ts - 6, (ts - 8) * tr, 4), Color(0.32, 0.94, 1.0, 1.0), true)
 		elif b == "wheezewort" and not dim:
 			var cp := 0.5 + 0.5 * sin(_anim_time * 3.0 + float(x))
 			c.draw_circle(p + Vector2(float(ts) * 0.5, float(ts) * 0.35), 22.0, Color(0.38, 0.90, 1.0, 0.12 * cp))

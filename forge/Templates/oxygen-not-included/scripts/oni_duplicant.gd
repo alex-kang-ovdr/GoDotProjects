@@ -27,6 +27,11 @@ var needs_wash := false
 var morale := 2
 var avg_decor := 20.0
 var decor_morale := 0
+var shower_morale := 0
+var shower_buff_timer := 0.0
+var rec_morale := 0
+var rec_buff_timer := 0.0
+var warm_touch_timer := 0.0
 var eardrums_popped := false
 var wet_status := "" # "", "SOGGY", "SOPPING"
 var stress := 0.0
@@ -122,13 +127,23 @@ func step(world: OniWorld, dt: float) -> void:
 			wearing_suit = true
 			if world.on_suit_equipped.is_valid():
 				world.on_suit_equipped.call(cell)
-		suit_o2 = 100.0
+		if b_here == "jetsuit_dock" and world.dock_o2_kg[ci] > 0.5:
+			var draw := minf(world.dock_o2_kg[ci], maxf(0.0, (100.0 - suit_o2) * 0.2))
+			world.dock_o2_kg[ci] -= draw
+			suit_o2 = minf(100.0, suit_o2 + draw * 5.0)
+		else:
+			suit_o2 = 100.0
 	elif b_here in ["suit_dock", "suit_checkpoint", "oxygen_dock"]:
 		if not wearing_suit:
 			wearing_suit = true
 			if world.on_suit_equipped.is_valid():
 				world.on_suit_equipped.call(cell)
-		suit_o2 = 100.0
+		if b_here == "suit_dock" and world.dock_o2_kg[ci] > 0.5:
+			var draw := minf(world.dock_o2_kg[ci], maxf(0.0, (100.0 - suit_o2) * 0.2))
+			world.dock_o2_kg[ci] -= draw
+			suit_o2 = minf(100.0, suit_o2 + draw * 5.0)
+		else:
+			suit_o2 = 100.0
 	if wearing_suit:
 		if world.gas_el[ci] == "Oxygen" and world.gas_mass[ci] > 0.6:
 			suit_o2 = minf(100.0, suit_o2 + 12.0 * dt)
@@ -157,11 +172,21 @@ func step(world: OniWorld, dt: float) -> void:
 		if disease_timer <= 0.0 and (disease != "RadiationSickness" or rad_dose < 100.0):
 			disease = ""
 
-	# 기대 사기(TUNING.ROLES) · 장식 사기(DecorMonitor) · 환경 디버프(고막 파열/젖은 발/질식/기아)
+	# 기대 사기(TUNING.ROLES) · 장식 사기(DecorMonitor) · 샤워/휴게/WarmTouch 버프 · 환경 디버프
+	if shower_buff_timer > 0.0:
+		shower_buff_timer = maxf(0.0, shower_buff_timer - dt)
+		if shower_buff_timer <= 0.0:
+			shower_morale = 0
+	if rec_buff_timer > 0.0:
+		rec_buff_timer = maxf(0.0, rec_buff_timer - dt)
+		if rec_buff_timer <= 0.0:
+			rec_morale = 0
+	if warm_touch_timer > 0.0:
+		warm_touch_timer = maxf(0.0, warm_touch_timer - dt)
 	var env_s := OniElements.get_env_spec()
 	avg_decor = lerpf(avg_decor, clampf(world.decor_val[ci], -60.0, 140.0), clampf(dt * 0.25, 0.0, 1.0))
 	decor_morale = OniElements.get_decor_morale_bonus(avg_decor)
-	morale = 1 + world.colony_morale_bonus + decor_morale
+	morale = 1 + world.colony_morale_bonus + decor_morale + shower_morale + rec_morale
 	var exp_morale := get_morale_expectation()
 	overjoyed = morale >= exp_morale + OniElements.get_overjoyed_surplus() and stress < 30.0
 	var morale_diff := morale - exp_morale
@@ -197,7 +222,7 @@ func step(world: OniWorld, dt: float) -> void:
 		thermal_status = "SCALDING"
 		hp = maxf(1.0, hp - 3.5 * dt)
 		stress_delta += 9.5
-	elif not wearing_suit and t_here < OniElements.get_hypothermia_c():
+	elif not wearing_suit and warm_touch_timer <= 0.0 and t_here < OniElements.get_hypothermia_c():
 		thermal_status = "CHILLY"
 		stress_delta += 1.5
 	else:
@@ -355,11 +380,21 @@ func _step_move(world: OniWorld, dt: float) -> void:
 	var dist := diff.length()
 	var wet_m := 0.75 if wet_status == "SOPPING" else (0.85 if wet_status == "SOGGY" else 1.0)
 	var spd := move_speed * (1.45 if wearing_jetsuit else 1.0) * (0.78 if thermal_status == "CHILLY" else 1.0) * wet_m
-	# 수송 튜브(travel_tube) 이동 시 5배 초고속 공압 이동!
-	if world.in_bounds(cell.x, cell.y) and world.building[world.idx(cell.x, cell.y)] in ["travel_tube", "travel_tube_entrance"]:
-		spd = move_speed * 5.0
-	elif world.in_bounds(cell.x, cell.y + 1) and world.building[world.idx(cell.x, cell.y + 1)] == "metal_tile":
-		spd = move_speed * 1.4
+	# 수송 튜브(travel_tube) 이동: 입구 충전(10kJ/발사) 소비 시 5배 초고속 공압 이동!
+	if world.in_bounds(cell.x, cell.y):
+		var cur_i := world.idx(cell.x, cell.y)
+		var cur_b := world.building[cur_i]
+		if cur_b == "travel_tube_entrance":
+			var j_launch := float(OniElements.get_utility_spec("travel_tube").get("joules_per_launch", 10000.0))
+			if world.tube_charge_j[cur_i] >= j_launch:
+				world.tube_charge_j[cur_i] -= j_launch
+				spd = move_speed * 5.0
+			else:
+				spd = move_speed * 1.5
+		elif cur_b == "travel_tube":
+			spd = move_speed * 5.0
+		elif world.in_bounds(cell.x, cell.y + 1) and world.building[world.idx(cell.x, cell.y + 1)] == "metal_tile":
+			spd = move_speed * 1.4
 	if diff.y > 0.1 and world.in_bounds(cell.x, cell.y) and world.building[world.idx(cell.x, cell.y)] == "fire_pole":
 		spd = move_speed * 3.0
 	var step_d := spd * dt
@@ -540,10 +575,34 @@ func _step_toilet(world: OniWorld, dt: float) -> void:
 			disease = ""
 			disease_timer = 0.0
 		if b == "flush_toilet" and world.has_liquid_pipe[ti] == 1:
-			if world.lpipe_mass[ti] < 0.05 or world.lpipe_el[ti].is_empty() or world.lpipe_el[ti] == "DirtyWater":
-				world.lpipe_el[ti] = "DirtyWater"
-				world.lpipe_mass[ti] = minf(OniElements.LIQUID_PIPE_MAX_KG, world.lpipe_mass[ti] + 6.7)
-				world.lpipe_temp[ti] = 37.0
+			# Assembly-CSharp.dll FlushToiletConfig: 청수 5.0kg 소비 -> 오염수 11.7kg (+6.7kg 수분 증식!)
+			var ft_sp := OniElements.get_utility_spec("flush_toilet")
+			var w_use := float(ft_sp.get("water_usage_kg", 5.0))
+			var dw_out := float(ft_sp.get("dirty_water_out_kg", 11.7))
+			var out_kg := 6.7
+			if world.lpipe_el[ti] == "Water" and world.lpipe_mass[ti] >= w_use:
+				world.lpipe_mass[ti] = maxf(0.0, world.lpipe_mass[ti] - w_use)
+				if world.lpipe_mass[ti] < 0.05:
+					world.lpipe_mass[ti] = 0.0
+					world.lpipe_el[ti] = ""
+				out_kg = dw_out
+			var rem := out_kg
+			var out_targets: Array[int] = [ti]
+			for d_p: Vector2i in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+				var npx: int = target_cell.x + d_p.x
+				var npy: int = target_cell.y + d_p.y
+				if world.in_bounds(npx, npy) and world.has_liquid_pipe[world.idx(npx, npy)] == 1:
+					out_targets.append(world.idx(npx, npy))
+			for oti: int in out_targets:
+				if rem <= 0.05:
+					break
+				if world.lpipe_mass[oti] < 0.05 or world.lpipe_el[oti].is_empty() or world.lpipe_el[oti] == "DirtyWater":
+					var add_dw := minf(rem, OniElements.LIQUID_PIPE_MAX_KG - world.lpipe_mass[oti])
+					if add_dw > 0.05:
+						world.lpipe_el[oti] = "DirtyWater"
+						world.lpipe_mass[oti] += add_dw
+						world.lpipe_temp[oti] = 37.0
+						rem -= add_dw
 		else:
 			world.germ_type[ti] = "FoodPoisoning"
 			world.germ_count[ti] = minf(120000.0, world.germ_count[ti] + 15000.0)
@@ -558,12 +617,19 @@ func _step_wash(world: OniWorld, dt: float) -> void:
 	if not (b in ["wash_sink", "wash_basin", "shower"]):
 		_clear_job()
 		return
-	state_ko = "손 씻기"
+	state_ko = "샤워" if b == "shower" else "손 씻기"
 	_work_timer += dt
 	world.germ_count[ti] = maxf(0.0, world.germ_count[ti] - 25000.0 * dt)
 	if _work_timer >= 1.4:
 		needs_wash = false
-		stress = maxf(0.0, stress - 3.0)
+		stress = maxf(0.0, stress - (6.0 if b == "shower" else 3.0))
+		if b == "shower":
+			# Assembly-CSharp.dll ShowerConfig: 젖은 발/흠뻑 젖음 제거 + 샤워 사기 +3 버프
+			wet_status = ""
+			shower_morale = int(OniElements.get_utility_spec("shower").get("morale_bonus", 3))
+			shower_buff_timer = 600.0
+			if world.has_liquid_pipe[ti] == 1 and world.lpipe_el[ti] == "Water" and world.lpipe_mass[ti] >= 1.0:
+				world.lpipe_el[ti] = "DirtyWater"
 		_clear_job()
 
 func _step_relax(world: OniWorld, dt: float) -> void:
@@ -571,8 +637,21 @@ func _step_relax(world: OniWorld, dt: float) -> void:
 	_work_timer += dt
 	stress = maxf(0.0, stress - 6.0 * dt)
 	stamina = minf(100.0, stamina + 6.0 * dt)
-	if _work_timer >= 4.0 and (world.get_schedule_phase() != "DOWNTIME" or stress <= 2.0):
-		_clear_job()
+	if _work_timer >= 4.0:
+		if world.in_bounds(target_cell.x, target_cell.y):
+			var b := world.building[world.idx(target_cell.x, target_cell.y)]
+			var rspec := OniElements.get_recreation_spec(b)
+			if not rspec.is_empty():
+				var gain_m := int(rspec.get("morale", 2))
+				if b == "beach_chair":
+					var lit := world.get_cell_light_lux(target_cell.x, target_cell.y) >= 200.0
+					gain_m = int(rspec.get("morale_lit", 8)) if lit else int(rspec.get("morale_unlit", 5))
+				rec_morale = maxi(rec_morale, gain_m)
+				rec_buff_timer = float(rspec.get("duration_s", 600.0))
+				if bool(rspec.get("warm_touch", false)):
+					warm_touch_timer = float(rspec.get("warm_touch_s", 1800.0))
+		if world.get_schedule_phase() != "DOWNTIME" or stress <= 2.0:
+			_clear_job()
 
 func _step_operate(world: OniWorld, dt: float) -> void:
 	if not world.in_bounds(target_cell.x, target_cell.y):

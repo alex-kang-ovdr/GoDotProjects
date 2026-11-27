@@ -502,6 +502,8 @@ static func get_codex_tab_lines(tab_id: String) -> Array[String]:
 			float(st_m.get("max_wattage_w", 850.0)), float(st_m.get("out_water_c", 95.0)), float(st_m.get("max_body_c", 100.0))
 		])
 		lines.append("• 경도/전선/센서: 채굴경도(화강암50/심연석150/흑요석200/중성자255) · 전선등급(1kW/2kW/20kW) · 원소필터(우측분리/하단우회) · 가변센서")
+		lines.append("• 폐회로/냉각/휴게: 탄소스키머(물1kg+CO2→오염수) · 변기(5→11.7kg) · 씨근풀(-5°C·SHC비례·480rad) · AETN(H2→-80kW/-173°C)")
+		lines.append("• 수송/우주광학: 튜브충전(10kJ/발사·40kJ) · 슈트독(O2 200kg/석유100kg) · 휴게버프(비치체어+8/온수욕조WarmTouch) · 망원경/하늘가시성")
 		lines.append("• 열생리학/스트레스: 화상 %.0f°C · 저체온 %.0f°C · 침수 %.0fkg · 붕괴 %.0f%%(복귀%.0f%%) · 초생산성+%d · 연구실+%.0f%%" % [
 			OniElements.get_scalding_c(), OniElements.get_hypothermia_c(), OniElements.get_flood_threshold_kg(),
 			float(OniElements.csharp_traits.get("stress_breakdown_threshold", 100.0)),

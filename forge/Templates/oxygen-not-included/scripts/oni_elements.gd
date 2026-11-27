@@ -77,6 +77,7 @@ static var csharp_rocketry: Dictionary = {}
 static var csharp_ranching: Dictionary = {}
 static var csharp_env: Dictionary = {}
 static var csharp_mechanics: Dictionary = {}
+static var csharp_utilities: Dictionary = {}
 static var csharp_foods: Dictionary = {}
 static var csharp_geysers: Dictionary = {}
 static var csharp_diseases: Dictionary = {}
@@ -309,6 +310,8 @@ static func ensure_loaded() -> void:
 			csharp_env = raw_cs["environment"]
 		if raw_cs.get("mechanics", {}) is Dictionary:
 			csharp_mechanics = raw_cs["mechanics"]
+		if raw_cs.get("utilities", {}) is Dictionary:
+			csharp_utilities = raw_cs["utilities"]
 		if raw_cs.get("foods", {}) is Dictionary:
 			csharp_foods = raw_cs["foods"]
 		if raw_cs.get("geysers", {}) is Dictionary:
@@ -518,6 +521,17 @@ static func get_wire_max_w(tier: int) -> float:
 	if tier == 2 and ratings.size() > 2:
 		return float(ratings[2]) # 2000W Conductive
 	return float(ratings[1]) if ratings.size() > 1 else 1000.0
+
+static func get_utility_spec(key: String) -> Dictionary:
+	ensure_loaded()
+	var v: Variant = csharp_utilities.get(key, {})
+	return v if v is Dictionary else {}
+
+static func get_recreation_spec(b_id: String) -> Dictionary:
+	ensure_loaded()
+	var recs: Dictionary = csharp_utilities.get("recreation", {}) as Dictionary
+	var v: Variant = recs.get(b_id, {})
+	return v if v is Dictionary else {}
 
 static func get_counts_summary() -> String:
 	ensure_loaded()

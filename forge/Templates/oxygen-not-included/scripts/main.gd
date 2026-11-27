@@ -349,14 +349,14 @@ func _build_hud() -> void:
 
 	# 주기 보고서·저장/불러오기·로직 자가검증 팝업 (O)
 	_report_panel = PanelContainer.new()
-	_report_panel.position = Vector2(196, 46)
-	_report_panel.custom_minimum_size = Vector2(732, 646)
+	_report_panel.position = Vector2(226, 48)
+	_report_panel.custom_minimum_size = Vector2(716, 636)
 	_report_panel.visible = false
 	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
 	_ui_root.add_child(_report_panel)
 
 	var rep_scroll := ScrollContainer.new()
-	rep_scroll.custom_minimum_size = Vector2(712, 634)
+	rep_scroll.custom_minimum_size = Vector2(696, 624)
 	_report_panel.add_child(rep_scroll)
 
 	_report_vbox = VBoxContainer.new()
@@ -888,7 +888,7 @@ func _refresh_report_panel() -> void:
 	_report_vbox.add_child(body)
 	if not _last_self_test.is_empty():
 		var st_lbl := Label.new()
-		st_lbl.add_theme_font_size_override("font_size", 9)
+		st_lbl.add_theme_font_size_override("font_size", 8)
 		st_lbl.add_theme_constant_override("line_spacing", -1)
 		var ok_all := int(_last_self_test.get("failed", 0)) == 0
 		st_lbl.add_theme_color_override("font_color", Color(0.55, 0.98, 0.68) if ok_all else Color(1.0, 0.52, 0.48))
@@ -1485,6 +1485,12 @@ func _refresh_hud() -> void:
 				extra = " (분리: %s → 우측)" % OniElements.get_element_name(String(info.get("filter_target", "")))
 			elif b_id == "atmo_sensor" or b_id == "thermo_sensor":
 				extra = " (%s)" % String(info.get("sensor_desc", ""))
+			elif b_id == "travel_tube_entrance":
+				extra = " (충전 %.1f/40kJ)" % (float(info.get("tube_charge_j", 0.0)) / 1000.0)
+			elif b_id == "suit_dock" or b_id == "jetsuit_dock":
+				extra = " (O2 %.0fkg%s)" % [float(info.get("dock_o2_kg", 0.0)), (" · 석유 %.0fkg" % float(info.get("dock_fuel_kg", 0.0))) if b_id == "jetsuit_dock" else ""]
+			elif b_id == "space_scanner" or b_id == "telescope":
+				extra = " (가시성 %.0f%%)" % (float(info.get("sky_vis", 1.0)) * 100.0)
 			elif b_id == "ration_box":
 				extra = " (신선도 %.0f%% · %s)" % [float(info.get("food_freshness", 100.0)), String(info.get("food_preservation_ko", ""))]
 			elif b_id in ["geyser_steam", "geyser_water", "geyser_hydrogen"]:
