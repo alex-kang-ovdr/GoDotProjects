@@ -34,6 +34,9 @@ var fertilizers: Dictionary = {}
 var krampus: Dictionary = {}
 var battlesongs: Dictionary = {}
 var books: Dictionary = {}
+var slingshot_ammos: Dictionary = {}
+var trinkets_gold: Dictionary = {}
+var bird_spawner: Dictionary = {}
 
 
 func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> bool:
@@ -55,6 +58,9 @@ func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> boo
 	krampus = raw.get("krampus", {})
 	battlesongs = raw.get("battlesongs", {})
 	books = raw.get("books", {})
+	slingshot_ammos = raw.get("slingshot_ammos", {})
+	trinkets_gold = raw.get("trinkets_gold", {})
+	bird_spawner = raw.get("bird_spawner", {})
 	stategraphs = raw.get("stategraphs", {})
 	brains = raw.get("brains", {})
 	hounded = raw.get("hounded", {})
@@ -1178,4 +1184,115 @@ static func resolve_boat_hull_collision(
 		"leak_dps": leak_dps,
 		"leaks": next_leaks,
 		"sunk": next_hp <= 0.0,
+	}
+
+
+## prefabs/slingshotammo.lua — 월터 17종 새총 탄약 물리/평면/특수효과 타격 계산
+func resolve_slingshot_shot(ammo_id: String, target_is_planar: bool = false) -> Dictionary:
+	if not slingshot_ammos.has(ammo_id):
+		return {"ok": false}
+	var a: Dictionary = slingshot_ammos[ammo_id]
+	var phys: float = float(a.get("damage", 0.0))
+	var planar: float = float(a.get("planar_damage", 0.0))
+	if target_is_planar and phys > 0.0:
+		phys = (sqrt(phys * 4.0 + 64.0) - 8.0) * 4.0
+	return {
+		"ok": true,
+		"ammo_id": ammo_id,
+		"phys_damage": phys,
+		"planar_damage": planar,
+		"total_damage": phys + planar,
+		"effect": str(a.get("effect", "none")),
+	}
+
+
+## tuning.lua GOLD_VALUES.TRINKETS — 37종 장신구 돼지왕 금화 교환 계산
+func get_pigking_gold_payout(item_id: String) -> int:
+	if trinkets_gold.has(item_id):
+		return int(trinkets_gold[item_id].get("gold", 0))
+	if item_id == "meat" or item_id == "smallmeat":
+		return 1
+	return 0
+
+
+## components/birdspawner.lua — 타일·계절·달섬·허수아비 기반 조류 선택기
+func pick_seasonal_bird(tile_name: String, season: String, near_scarecrow: bool = false, is_moon_island: bool = false, rng: RandomNumberGenerator = null) -> String:
+	if is_moon_island:
+		return "bird_mutant"
+	var list: Array = bird_spawner.get(tile_name, [])
+	if list.is_empty():
+		return ""
+	var idx: int = rng.randi_range(0, list.size() - 1) if rng != null else 0
+	var b: String = str(list[idx])
+	if b == "robin" and season == "winter":
+		b = "robin_winter"
+	if near_scarecrow and (b == "crow" or b == "robin" or b == "robin_winter"):
+		b = "canary"
+	return b
+
+
+## components/wildfires.lua — 여름 낮 >80°C 비젖음 자연발화 판정기
+static func check_wildfire_ignition(season: String, phase: String, world_temp: float, is_wet: bool, rng_roll: float) -> bool:
+	if season != "summer" or phase != "day" or is_wet or world_temp <= 80.0:
+		return false
+	return rng_roll <= 0.2
+
+
+## components/riftspawner.lua — 달/그림자 균열 스폰 게이트 & 최대 균열 수(1) 판정
+static func step_rift_spawner(st: Dictionary, lunar_unlocked: bool, shadow_unlocked: bool, dt: float) -> Dictionary:
+	var active: int = int(st.get("rifts_count", 0))
+	var timer: float = float(st.get("spawn_timer", 2400.0))
+	var spawned_kind: String = ""
+	if (lunar_unlocked or shadow_unlocked) and active < 1:
+		timer -= dt
+		if timer <= 0.0:
+			active += 1
+			spawned_kind = "lunarrift" if lunar_unlocked else "shadowrift"
+			timer = 2400.0
+	return {
+		"rifts_count": active,
+		"spawn_timer": timer,
+		"spawned_kind": spawned_kind,
+		"can_spawn_more": active < 1,
+	}
+
+
+## components/fueled.lua — 캠프파이어 연료 소모 및 비 가속(1 + 2.5 * precip_rate) 공식
+static func step_fueled_burn(fuel_sec: float, dt: float, is_raining: bool = false, precip_rate: float = 0.0, add_fuel_tier: String = "") -> Dictionary:
+	var add_map: Dictionary = {"tiny": 7.5, "small": 15.0, "med": 45.0, "med_large": 90.0, "large": 180.0, "huge": 270.0}
+	var cur: float = fuel_sec + float(add_map.get(add_fuel_tier, 0.0))
+	var rate: float = 1.0 + (2.5 * clamp(precip_rate, 0.0, 1.0) if is_raining else 0.0)
+	var next_f: float = max(0.0, cur - dt * rate)
+	return {"fuel_sec": next_f, "burn_rate": rate, "extinguished": next_f <= 0.0}
+
+
+## components/grogginess.lua — 그로기 누적·기절(knockout)·이동속도 0.4x 감속 머신
+static func step_grogginess(st: Dictionary, add_grog: float, dt: float) -> Dictionary:
+	var grog: float = float(st.get("grog_amount", 0.0))
+	var resist: float = max(1.0, float(st.get("resistance", 3.0)))
+	var ko: bool = bool(st.get("knocked_out", false))
+	var ko_t: float = float(st.get("ko_timer", 0.0))
+
+	if add_grog > 0.0:
+		grog += add_grog
+		if grog >= resist and not ko:
+			ko = true
+			ko_t = 10.0 # TUNING.MIN_KNOCKOUT_TIME
+
+	if ko and dt > 0.0:
+		ko_t -= dt
+		if ko_t <= 0.0:
+			ko = false
+			ko_t = 0.0
+			grog = resist * 0.5
+	elif grog > 0.0 and dt > 0.0:
+		grog = max(0.0, grog - dt * 0.5)
+
+	var speed_mult: float = 0.0 if ko else (0.4 if grog > 0.0 else 1.0)
+	return {
+		"grog_amount": grog,
+		"resistance": resist,
+		"knocked_out": ko,
+		"ko_timer": ko_t,
+		"speed_mult": speed_mult,
 	}

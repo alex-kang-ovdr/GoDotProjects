@@ -93,6 +93,9 @@ test('DST reverse-engineered Lua logic JSON compiles all 79 Crock Pot ASTs with 
   assert.equal(logic.meta.counts.krampus_naughty_creatures, 22);
   assert.equal(logic.meta.counts.battlesongs, 10);
   assert.equal(logic.meta.counts.wickerbottom_books, 18);
+  assert.equal(logic.meta.counts.slingshot_ammos, 17);
+  assert.equal(logic.meta.counts.trinkets_gold, 37);
+  assert.ok(logic.meta.counts.bird_spawner_tiles >= 12);
   assert.equal(logic.meta.counts.spiced_foods_combinations, 316);
   assert.equal(logic.physics.propagator.verified_in_lua, true);
   assert.equal(logic.physics.temperature_insulation.verified_in_lua, true);
@@ -109,6 +112,10 @@ test('DST reverse-engineered Lua logic JSON compiles all 79 Crock Pot ASTs with 
   assert.equal(logic.physics.wanda_oldager.verified_in_lua, true);
   assert.equal(logic.physics.shadow_spawner.verified_in_lua, true);
   assert.equal(logic.physics.boat_hullhealth.verified_in_lua, true);
+  assert.equal(logic.physics.wildfires.verified_in_lua, true);
+  assert.equal(logic.physics.riftspawner.verified_in_lua, true);
+  assert.equal(logic.physics.fueled_burn.verified_in_lua, true);
+  assert.equal(logic.physics.grogginess.verified_in_lua, true);
   assert.equal(logic.krampus.verified_in_lua, true);
   assert.equal(logic.stategraphs.deerclops.attack_hit_frame, 31);
   assert.equal(logic.stategraphs.wilson.attack_hit_frame, 6);
@@ -162,5 +169,5 @@ test('DST Godot 4.7.2 restoration passes QA-01~QA-10 formulas, 3-day simulation,
   assert.ok(m, `Missing DST_TEST_RESULT:\n${out}`);
   const summary = JSON.parse(m[1]);
   assert.equal(summary.failed, 0, out);
-  assert.ok(summary.passed >= 148, `expected >= 148 checks, got ${summary.passed}\n${out}`);
+  assert.ok(summary.passed >= 158, `expected >= 158 checks, got ${summary.passed}\n${out}`);
 });

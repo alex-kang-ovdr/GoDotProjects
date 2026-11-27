@@ -926,6 +926,36 @@ def extract_physics_rules(scripts_dir: Path, tuning: dict) -> dict:
             "max_hull_damage": 70.0,
             "verified_in_lua": ("THROAWAY_ALIGNMENT_VALUE = 0.258" in read_lua(scripts_dir, "components/hullhealth.lua")),
         },
+        "wildfires": {
+            "source_file": "components/wildfires.lua",
+            "temp_threshold": tuning.get("WILDFIRE_THRESHOLD", 80.0),
+            "chance": tuning.get("WILDFIRE_CHANCE", 0.2),
+            "retry_time_sec": tuning.get("WILDFIRE_RETRY_TIME", 45.0),
+            "verified_in_lua": ("_issummer and _isday and _ishot and not _iswet" in read_lua(scripts_dir, "components/wildfires.lua")),
+        },
+        "riftspawner": {
+            "source_file": "components/riftspawner.lua",
+            "max_rifts": int(tuning.get("MAXIMUM_RIFTS_COUNT", 1)),
+            "verified_in_lua": ("self.lunar_rifts_enabled" in read_lua(scripts_dir, "components/riftspawner.lua") and "self.shadow_rifts_enabled" in read_lua(scripts_dir, "components/riftspawner.lua")),
+        },
+        "fueled_burn": {
+            "source_file": "components/fueled.lua",
+            "tiny": tuning.get("TINY_FUEL", 7.5),
+            "small": tuning.get("SMALL_FUEL", 15.0),
+            "med": tuning.get("MED_FUEL", 45.0),
+            "med_large": tuning.get("MED_LARGE_FUEL", 90.0),
+            "large": tuning.get("LARGE_FUEL", 180.0),
+            "huge": tuning.get("HUGE_FUEL", 270.0),
+            "campfire_rain_rate": tuning.get("CAMPFIRE_RAIN_RATE", 2.5),
+            "verified_in_lua": ("self.rate_modifiers" in read_lua(scripts_dir, "components/fueled.lua")),
+        },
+        "grogginess": {
+            "source_file": "components/grogginess.lua",
+            "min_knockout_time": tuning.get("MIN_KNOCKOUT_TIME", 10.0),
+            "decay_rate": tuning.get("GROGGINESS_DECAY_RATE", 0.01),
+            "speed_mult": 0.4,
+            "verified_in_lua": ("self.knockoutduration = math.max(self.knockoutduration" in read_lua(scripts_dir, "components/grogginess.lua")),
+        },
     }
 
 
@@ -1188,6 +1218,83 @@ def extract_battlesongs_and_books(scripts_dir: Path, tuning: dict) -> tuple:
     )
 
 
+# ---------------------------------------------------------------------------
+# 19. Extract ALL 17 Walter Slingshot Ammo Defs (prefabs/slingshotammo.lua)
+# ---------------------------------------------------------------------------
+
+def extract_slingshot_ammo(scripts_dir: Path, tuning: dict) -> dict:
+    src = read_lua(scripts_dir, "prefabs/slingshotammo.lua")
+    ammos = {}
+    planar_map = {
+        "slingshotammo_dreadstone": tuning.get("SLINGSHOT_AMMO_PLANAR_DREADSTONE", 10.0),
+        "slingshotammo_horrorfuel": tuning.get("SLINGSHOT_AMMO_PLANAR_HORRORFUEL", 20.0),
+        "slingshotammo_lunarplanthusk": tuning.get("SLINGSHOT_AMMO_PLANAR_LUNARPLANTHUSK", 30.0),
+        "slingshotammo_purebrilliance": tuning.get("SLINGSHOT_AMMO_PLANAR_PUREBLILLIANCE", 20.0),
+    }
+    starts = list(re.finditer(r'name\s*=\s*"(slingshotammo_[a-z0-9_]+)"', src))
+    for i, m in enumerate(starts):
+        aid = m.group(1)
+        s0 = m.end()
+        s1 = starts[i + 1].start() if i + 1 < len(starts) else len(src)
+        chunk = src[s0:s1]
+        dm = re.search(r"damage\s*=\s*([^,\n]+)", chunk)
+        dmg = eval_tuning_expr(dm.group(1), tuning, 0.0) if dm else 0.0
+        effect = "none"
+        if "freeze" in aid:
+            effect = "freeze"
+        elif "slow" in aid or "honey" in aid or "gelblob" in aid:
+            effect = "slow"
+        elif "poop" in aid:
+            effect = "drop_aggro"
+        elif "gunpowder" in aid:
+            effect = "explosive_aoe"
+        elif "scrapfeather" in aid:
+            effect = "electric_shock"
+        ammos[aid] = {
+            "id": aid,
+            "damage": dmg,
+            "planar_damage": planar_map.get(aid, 0.0),
+            "effect": effect,
+        }
+    return {"source_file": "prefabs/slingshotammo.lua", "ammo_count": len(ammos), "ammos": ammos}
+
+
+# ---------------------------------------------------------------------------
+# 20. Extract ALL 37 Trinkets -> Pig King Gold Values (tuning.lua)
+# ---------------------------------------------------------------------------
+
+def extract_trinket_gold_values(tuning_src: str) -> dict:
+    tr_m = re.search(r"TRINKETS\s*=\s*\{(.*?)\}", tuning_src, re.S)
+    trinkets = {}
+    if tr_m:
+        idx = 1
+        for m in re.finditer(r"^\s*([0-9]+)\s*,(?:\s*--\[[0-9]+\]\s*([^\n]+))?", tr_m.group(1), re.M):
+            trinkets[f"trinket_{idx}"] = {
+                "gold": int(m.group(1)),
+                "label": (m.group(2) or f"Trinket {idx}").strip(),
+            }
+            idx += 1
+    return {"source_file": "tuning.lua", "trinket_count": len(trinkets), "trinkets": trinkets}
+
+
+# ---------------------------------------------------------------------------
+# 21. Extract Seasonal Bird Spawner Tile Table (components/birdspawner.lua)
+# ---------------------------------------------------------------------------
+
+def extract_bird_spawner(scripts_dir: Path) -> dict:
+    src = read_lua(scripts_dir, "components/birdspawner.lua")
+    i0 = src.find("local BIRD_TYPES")
+    block = src[i0:i0 + 1000] if i0 >= 0 else ""
+    i_end = block.find("\n}")
+    if i_end > 0:
+        block = block[:i_end + 2]
+    tiles = {}
+    for m in re.finditer(r"^\s*\[WORLD_TILES\.([A-Z0-9_]+)\]\s*=\s*\{([^}]*)\}", block, re.M):
+        birds = re.findall(r'"([^"]+)"', m.group(2))
+        tiles[m.group(1)] = birds
+    return {"source_file": "components/birdspawner.lua", "tile_count": len(tiles), "tile_birds": tiles}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scripts-dir", default=str(SCRIPTS_DIR_DEFAULT))
@@ -1334,9 +1441,21 @@ def main():
     krampus = extract_krampus_naughtiness(sdir, tuning)
     print(f"  -> krampus_creatures={krampus['creature_count']}, verified={krampus['verified_in_lua']}")
 
-    print("[16/16] Extracting ALL 10 Wigfrid Battle Songs & ALL 18 Wickerbottom Books...")
+    print("[16/19] Extracting ALL 10 Wigfrid Battle Songs & ALL 18 Wickerbottom Books...")
     battlesongs, books = extract_battlesongs_and_books(sdir, tuning)
     print(f"  -> battlesongs={battlesongs['song_count']}, books={books['book_count']}")
+
+    print("[17/19] Extracting ALL 17 Walter Slingshot Ammo defs...")
+    slingshot = extract_slingshot_ammo(sdir, tuning)
+    print(f"  -> slingshot_ammo={slingshot['ammo_count']}")
+
+    print("[18/19] Extracting ALL 37 Trinkets Pig King gold values...")
+    trinkets = extract_trinket_gold_values(tuning_src)
+    print(f"  -> trinkets={trinkets['trinket_count']}")
+
+    print("[19/19] Extracting Seasonal Bird Spawner tile table...")
+    birds = extract_bird_spawner(sdir)
+    print(f"  -> bird_tiles={birds['tile_count']}")
 
     bundle = {
         "meta": {
@@ -1368,6 +1487,9 @@ def main():
                 "krampus_naughty_creatures": krampus["creature_count"],
                 "battlesongs": battlesongs["song_count"],
                 "wickerbottom_books": books["book_count"],
+                "slingshot_ammos": slingshot["ammo_count"],
+                "trinkets_gold": trinkets["trinket_count"],
+                "bird_spawner_tiles": birds["tile_count"],
             },
         },
         "tuning": key_tuning,
@@ -1380,6 +1502,9 @@ def main():
         "krampus": krampus,
         "battlesongs": battlesongs["songs"],
         "books": books["books"],
+        "slingshot_ammos": slingshot["ammos"],
+        "trinkets_gold": trinkets["trinkets"],
+        "bird_spawner": birds["tile_birds"],
         "stategraphs": sgs,
         "brains": brains,
         "hounded": hounded,

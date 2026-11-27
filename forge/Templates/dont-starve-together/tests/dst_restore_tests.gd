@@ -531,6 +531,24 @@ func _run() -> void:
 	var bh_slam: Dictionary = DSTLogicEngine.resolve_boat_hull_collision(200.0, 4.0, 1.0, [], 10.0) # adj=4 -> med_leak(1.0/s * 10 = 10) + floor(70*0.8=56) = 66 dmg -> 134 HP
 	_check(bool(bh_graze["grazed"]) and _approx(float(bh_graze["hull_hp"]), 200.0) and _approx(float(bh_slam["hull_hp"]), 134.0, 0.5) and bh_slam["leaks"].has("med_leak"), "LOGIC_BOAT_HULL_GRAZE_AND_LEAK", str(bh_slam))
 
+	# 역공학 로직 검증 20: 17종 월터 새총 탄약(평면 탄약 포함) & 37종 장신구 돼지왕 금화 교환
+	_check(db.logic.slingshot_ammos.size() == 17 and db.logic.trinkets_gold.size() == 37, "LOGIC_17_SLINGSHOT_37_TRINKETS", "ammo=%d tr=%d" % [db.logic.slingshot_ammos.size(), db.logic.trinkets_gold.size()])
+	var sl_lunar: Dictionary = db.logic.resolve_slingshot_shot("slingshotammo_lunarplanthusk", false) # 38 phys + 30 planar = 68
+	var sl_pb: Dictionary = db.logic.resolve_slingshot_shot("slingshotammo_purebrilliance", true) # (sqrt(34*4+64)-8)*4=24.568 + 20 planar
+	_check(_approx(float(sl_lunar["total_damage"]), 68.0, 0.1) and float(sl_pb["planar_damage"]) == 20.0, "LOGIC_SLINGSHOT_PLANAR_AMMO", str(sl_lunar))
+	_check(db.logic.get_pigking_gold_payout("trinket_26") == 9 and db.logic.get_pigking_gold_payout("trinket_8") == 8, "LOGIC_PIGKING_TRINKET_GOLD")
+
+	# 역공학 로직 검증 21: 계절 조류 스포너 + 여름 들불(>80C) + 균열 스포너 + 비 연료 가속 + 그로기 0.4x 감속
+	_check(db.logic.pick_seasonal_bird("GRASS", "winter", false, false) == "robin_winter" and db.logic.pick_seasonal_bird("OCEAN_COASTAL", "autumn", false, false) == "puffin" and db.logic.pick_seasonal_bird("GRASS", "autumn", true, false) == "canary", "LOGIC_BIRD_SPAWNER_SEASONS")
+	_check(DSTLogicEngine.check_wildfire_ignition("summer", "day", 85.0, false, 0.10) and not DSTLogicEngine.check_wildfire_ignition("summer", "day", 75.0, false, 0.10) and not DSTLogicEngine.check_wildfire_ignition("summer", "day", 85.0, true, 0.10), "LOGIC_WILDFIRE_80C_GATE")
+	var rf_sp: Dictionary = DSTLogicEngine.step_rift_spawner({"rifts_count": 0, "spawn_timer": 10.0}, true, false, 15.0)
+	_check(str(rf_sp["spawned_kind"]) == "lunarrift" and not bool(rf_sp["can_spawn_more"]), "LOGIC_RIFTSPAWNER_MAX1", str(rf_sp))
+	var fl_rain: Dictionary = DSTLogicEngine.step_fueled_burn(0.0, 10.0, true, 1.0, "large") # 180 - 10*(1+2.5) = 145
+	_check(_approx(float(fl_rain["fuel_sec"]), 145.0, 0.05) and _approx(float(fl_rain["burn_rate"]), 3.5, 0.01), "LOGIC_FUELED_RAIN_35X", str(fl_rain))
+	var gr_st: Dictionary = DSTLogicEngine.step_grogginess({"grog_amount": 0.0, "resistance": 3.0, "knocked_out": false, "ko_timer": 0.0}, 1.5, 0.0)
+	var gr_ko: Dictionary = DSTLogicEngine.step_grogginess(gr_st, 2.0, 0.0)
+	_check(_approx(float(gr_st["speed_mult"]), 0.4) and bool(gr_ko["knocked_out"]) and _approx(float(gr_ko["ko_timer"]), 10.0), "LOGIC_GROGGINESS_04X_KO10S", str(gr_ko))
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")
