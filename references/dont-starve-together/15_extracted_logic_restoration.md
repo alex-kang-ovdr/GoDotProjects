@@ -30,12 +30,15 @@
 | **습기 이징·이중 정신력·유령 저항** | `components/moisture.lua`, `sanity.lua`, `easing.lua` | Penner `inSine`/`inExpo` 강수·건조 공식, 광기/계몽 모드별 주야간 드레인, `min(G,3)*(1-r²)` 유령 군집 저항 공식 복원 | 0 |
 | **비팔로 길들이기·수면 점감 저항** | `components/domesticatable.lua`, `sleeper.lua`, `nightmareclock.lua` | 순종도/성향 감쇠·`domestication_latch`·3대 성향(`ORNERY`/`RIDER`/`PUDGY`), 수면 점감 저항(`max(0.2, 1-0.1*r)`), 악몽 시계 세그먼트 검증 | 0 |
 | **해양 어종(18종)·월드젠 태스크(140종)** | `prefabs/oceanfishdef.lua`, `map/tasks/**/*.lua`, `map/tasksets/*.lua` | **18종** 해양 물고기 무게·스태미나·낚시 AI 및 **140종** 월드젠 태스크(`CaveExitTask1..10` 동적 루프 포함) + 지상(`default` 15/15)/동굴(`cave_default` 33/33) 태스크셋 100% 추출 | 0 |
+| **17종 비료 N/P/K & 크람푸스(22종)** | `fertilizer_nutrient_defs.lua`, `constants.lua`, `kramped.lua` | **17종** 비료 `[N, P, K]` 수치 전수 추출 및 **22종** `NAUGHTY_VALUE`(글로머=50)·경고 3단계·일수별 크람푸스 증원 공식 복원 | 0 |
+| **위그프리드 노래(10)·위커바텀 책(18)** | `prefabs/battlesongdefs.lua`, `prefabs/books.lua` | **10종** 전투 노래(즉발 비용·스킬 게이트) 및 **18종** 마법서(`uses`·`read_sanity`) 전수 추출 | 0 |
+| **볼프강·완다·그림자 스포너·보트 선체** | `mightiness.lua`, `oldager.lua`, `shadowcreaturespawner.lua`, `hullhealth.lua` | 근력 5단계 허기 배수(`0.5×~8×`), 완다 노화 지연 피해(`0.4×`·치유 상쇄), 공포부리 `<0.1` 임계치, 보트 선체 `cos75°` 스침 무시·누수(`0.5/1.0 DPS`) 공식 복원 | 0 |
 
 ---
 
 ## 2. 핵심 역공학 복원 엔진 (`DSTLogicEngine`)
 
-### 2.4 추가 복원 엔진 (Pass 2 ~ Pass 4)
+### 2.4 추가 복원 엔진 (Pass 2 ~ Pass 5)
 - **950종 `Recipe2` & TechTree 검증기 (`can_craft_recipe2`)**: 64종 원작 `TECH.*` 티어, 캐릭터 전용 `builder_tag`(예: 윌로우 `pyromaniac` → `lighter`), 스킬 해금 조건(`builder_skill`), 정확한 재료 수량 검증
 - **12인 360노드 방향성 스킬트리 그래프 (`can_unlock_tree_node`)**: `root` 노드 선행 해금 후 `parents` 연결 노드만 해금 가능한 원작 DAG 위상 검증(예: `wilson_alchemy_1` → `wilson_alchemy_2` → `wilson_alchemy_5`)
 - **WX-78 23종 회로 6슬롯 전력 예산 엔진 (`wx78_can_plug_module`, `wx78_calc_circuit_bonuses`)**: 6칸 초과 차단 및 `maxhealth2`/`movespeed2`/`nightvision`/`heat`/`cold` 스탯 합산
@@ -44,13 +47,15 @@
 - **계절 16세그 사인 보간 & 왈리 4양념 & 3상태 빙결 파쇄 (`calc_interpolated_season_segs`, `apply_spice_to_food`, `step_freezable`)**: `DSTWorldSim.get_season_segs()`에 원작 일별 사인 보간 직접 적용
 - **전투/평면압축/다중방어구 & 부패/식용 감쇠 (`resolve_combat_hit`, `calc_perish_rate_mult`, `dilute_perish_stack`, `eval_edible_with_spoilage`)**: `DSTWorldSim.eat_food()`에 원작 신선/눅눅/상함 및 위커바텀 감쇠 엔진 직접 연동
 - **습기 이징·이중 정신력·비팔로 길들이기·수면 점감·해양 낚시 (`step_moisture`, `calc_sanity_rate`, `step_beefalo_domestication`, `step_sleeper_diminishing`, `step_ocean_fish_reel`)**: 18종 해양 어종 스태미나 낚시 루프 및 생존/상태이상 원작 공식 런타임 복원
+- **17종 비료·크람푸스·전투노래·마법서·볼프강/완다/그림자/보트선체 (`apply_fertilizer_to_soil`, `step_krampus_naughtiness`, `can_cast_battlesong`, `can_read_book`, `step_wolfgang_mightiness`, `step_wanda_oldager`, `calc_shadow_spawner_target`, `resolve_boat_hull_collision`)**: 캐릭터 고유 자원 및 월드 이벤트·항해 물리 원작 공식 런타임 복원
 
 ---
 
 ## 3. 자동화 회귀 검증 결과
 - Python 추출기 크로스체크: **12/12** 원작 레시피 조합 PASS (`ast_failures == 0`)
-- Godot 4.7.2 헤드리스 회귀 테스트 (`tests/dst_restore_tests.gd`): **139개 체크 전체 PASS**
+- Godot 4.7.2 헤드리스 회귀 테스트 (`tests/dst_restore_tests.gd`): **150개 체크 전체 PASS**
   - 79종 AST 요리, 14종 작물 N/P/K·7스트레스, 외눈사슴 31f 카이팅 회피, `hounded.lua` 웨이브 에스컬레이션
   - 950종 `Recipe2` 윌로우 `pyromaniac` 태그 게이트, 12인 360노드 스킬트리 부모 선행 차단/해금, WX-78 23종 회로 6슬롯 상한, 단열 열관성 `-10 * 30/150 = -2.0`, 봄철 화재 전파 사거리(`0.67×`) 분리 검증
   - 229종 루트 테이블(`deerclops` 눈알+고기 8), 222종 월드젠 룸(`Forest` 샘플링), 16세그 계절 보간, 왈리 4양념(`perogies+salt=50HP`, `chili=1.2×`, `garlic=0.67×`), 3상태 빙결 파쇄 검증
   - 평면 개체 물리 압축(`54.16`), 다중 방어구 비례 내구도·평면방어 균등 분할(`46` 마모), 부패 다중 배수·스택 희석(`80.0`)·위커바텀 상함 감쇠, `inSine`/`inExpo` 습기·건조, 광기/계몽 유령 군집 저항(`1.5×`), 비팔로 길들이기 래치(`RIDER`), 수면 점감 하한(`0.2×`), 18종 해양 어종 낚시 스태미나 및 140종 지상/동굴 월드젠 태스크셋(15/15 · 33/33) 검증
+  - 17종 비료(`compostwrap` +[24,32,24]), 크람푸스 글로머(50) 즉발 3마리 소환, 10종 전투노래 스킬 게이트, 18종 위커바텀 마법서(`book_tentacles` -50 정신력), 볼프강 기아 8× 감쇠, 완다 노화 지연피해(7yr/s) 및 치유 상쇄, 그림자 스포너 공포부리 `<0.1` 분기, 보트 선체 `cos75°` 스침 무시 및 `med_leak` 1.0 DPS 검증

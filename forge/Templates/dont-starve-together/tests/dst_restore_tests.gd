@@ -496,6 +496,41 @@ func _run() -> void:
 	var ts_caves: Dictionary = db.logic.get_worldgen_taskset_plan("cave_default")
 	_check(int(ts_forest["resolved_count"]) >= 12 and int(ts_caves["resolved_count"]) >= 25, "LOGIC_WORLDGEN_TASKSETS_FOREST_CAVES", "f=%d c=%d" % [int(ts_forest["resolved_count"]), int(ts_caves["resolved_count"])])
 
+	# 역공학 로직 검증 16: 17종 비료 N/P/K 토양 적용 + 크람푸스 악행(22종, 글로머=50 즉발)
+	_check(db.logic.fertilizers.size() == 17, "LOGIC_17_FERTILIZERS_LOADED", "cnt=%d" % db.logic.fertilizers.size())
+	var f_comp: Dictionary = db.logic.apply_fertilizer_to_soil([10.0, 10.0, 10.0], "compostwrap") # +[24, 32, 24]
+	_check(bool(f_comp["ok"]) and _approx(float(f_comp["soil_after"][0]), 34.0) and _approx(float(f_comp["soil_after"][1]), 42.0) and _approx(float(f_comp["soil_after"][2]), 34.0), "LOGIC_FERTILIZER_COMPOSTWRAP_NPK", str(f_comp))
+	var kr_st: Dictionary = {"actions": 0, "threshold": 40, "timetodecay": 60.0}
+	kr_st = db.logic.step_krampus_naughtiness(kr_st, "glommer", 120, 0.0, sim.rng) # glommer=50 >= 40, day>100 -> 3마리 소환!
+	_check(int(kr_st["krampus_spawned"]) >= 3 and int(kr_st["actions"]) == 0, "LOGIC_KRAMPUS_GLOMMER_50_SPAWN", str(kr_st))
+
+	# 역공학 로직 검증 17: 위그프리드 10종 전투 노래(스킬 게이트) & 위커바텀 18종 마법서
+	_check(db.logic.battlesongs.size() == 10 and db.logic.books.size() == 18, "LOGIC_10_SONGS_18_BOOKS", "s=%d b=%d" % [db.logic.battlesongs.size(), db.logic.books.size()])
+	var sg_rev_fail: Dictionary = db.logic.can_cast_battlesong("battlesong_instant_revive", 100.0, {})
+	var sg_rev_ok: Dictionary = db.logic.can_cast_battlesong("battlesong_instant_revive", 100.0, {"wathgrithr_songs_revivewarrior": true})
+	_check(not bool(sg_rev_fail["ok"]) and bool(sg_rev_ok["ok"]), "LOGIC_BATTLESONG_SKILL_GATE", str(sg_rev_fail))
+	var bk_wil: Dictionary = db.logic.can_read_book("book_tentacles", "wilson", 200.0)
+	var bk_wck: Dictionary = db.logic.can_read_book("book_tentacles", "wickerbottom", 250.0)
+	_check(not bool(bk_wil["ok"]) and bool(bk_wck["ok"]) and _approx(float(bk_wck["read_sanity"]), -50.0), "LOGIC_WICKERBOTTOM_BOOK_READ", str(bk_wck))
+
+	# 역공학 로직 검증 18: 볼프강 근력 3상태·5허기배수 + 완다 노화 지연피해/치유 상쇄
+	var wg: Dictionary = DSTLogicEngine.step_wolfgang_mightiness({"current": 80.0, "max": 100.0}, 0.0, 0.0, 10.0) # starving 8x: -0.2*8*10 = -16 -> 64 (normal)
+	_check(str(wg["state"]) == "normal" and _approx(float(wg["current"]), 64.0, 0.01) and _approx(float(wg["damage_mult"]), 1.0), "LOGIC_WOLFGANG_MIGHTINESS_STARVE_8X", str(wg))
+	var wn: Dictionary = DSTLogicEngine.step_wanda_oldager({"age": 40.0, "year_timer": 0.0, "damage_remaining": 0.0, "damage_per_second": 0.0}, -50.0, 0.0)
+	# -50 HP -> +20 yrs pending, dps = ceil(sqrt(20)*1.5) = ceil(6.708) = 7
+	_check(_approx(float(wn["damage_remaining"]), 20.0, 0.01) and _approx(float(wn["damage_per_second"]), 7.0, 0.01), "LOGIC_WANDA_OLDAGER_DELAYED_DMG", str(wn))
+	var wn_heal: Dictionary = DSTLogicEngine.step_wanda_oldager(wn, 20.0, 1.0) # 치유(+20 HP) -> 기존 노화 풀 즉시 상쇄 후 -8 yrs 회춘!
+	_check(float(wn_heal["damage_per_second"]) < 0.0 and float(wn_heal["age"]) < 40.0, "LOGIC_WANDA_OLDAGER_HEAL_CANCEL", str(wn_heal))
+
+	# 역공학 로직 검증 19: 그림자 생물 스포너(공포부리 <0.1) & 보트 선체 충돌(cos75° 스침 무시 · 누수 DPS)
+	var sh_ok: Dictionary = DSTLogicEngine.calc_shadow_spawner_target(0.60, true)
+	var sh_cr: Dictionary = DSTLogicEngine.calc_shadow_spawner_target(0.25, true)
+	var sh_tb: Dictionary = DSTLogicEngine.calc_shadow_spawner_target(0.08, true)
+	_check(int(sh_ok["max_pop"]) == 0 and str(sh_cr["prefab"]) == "crawlinghorror" and str(sh_tb["prefab"]) == "terrorbeak" and int(sh_tb["max_pop"]) == 2, "LOGIC_SHADOW_SPAWNER_THRESHOLDS")
+	var bh_graze: Dictionary = DSTLogicEngine.resolve_boat_hull_collision(200.0, 4.5, 0.20, [], 0.0) # 0.20 <= 0.258 -> 스침 무시!
+	var bh_slam: Dictionary = DSTLogicEngine.resolve_boat_hull_collision(200.0, 4.0, 1.0, [], 10.0) # adj=4 -> med_leak(1.0/s * 10 = 10) + floor(70*0.8=56) = 66 dmg -> 134 HP
+	_check(bool(bh_graze["grazed"]) and _approx(float(bh_graze["hull_hp"]), 200.0) and _approx(float(bh_slam["hull_hp"]), 134.0, 0.5) and bh_slam["leaks"].has("med_leak"), "LOGIC_BOAT_HULL_GRAZE_AND_LEAK", str(bh_slam))
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")

@@ -30,6 +30,10 @@ var worldgen_rooms: Dictionary = {}
 var worldgen_tasks: Dictionary = {}
 var worldgen_tasksets: Dictionary = {}
 var ocean_fish: Dictionary = {}
+var fertilizers: Dictionary = {}
+var krampus: Dictionary = {}
+var battlesongs: Dictionary = {}
+var books: Dictionary = {}
 
 
 func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> bool:
@@ -47,6 +51,10 @@ func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> boo
 	ingredients = raw.get("cooking_ingredients", {})
 	aliases = raw.get("cooking_aliases", {})
 	farm_crops = raw.get("farm_crops", {})
+	fertilizers = raw.get("fertilizers", {})
+	krampus = raw.get("krampus", {})
+	battlesongs = raw.get("battlesongs", {})
+	books = raw.get("books", {})
 	stategraphs = raw.get("stategraphs", {})
 	brains = raw.get("brains", {})
 	hounded = raw.get("hounded", {})
@@ -943,4 +951,231 @@ func get_worldgen_taskset_plan(taskset_id: String = "default") -> Dictionary:
 		"resolved_count": resolved.size(),
 		"optional_count": int(ts.get("num_optional", 0)),
 		"tasks": resolved,
+	}
+
+
+## prefabs/fertilizer_nutrient_defs.lua — 17종 비료 3영양분(N/P/K) 토양 적용기
+func apply_fertilizer_to_soil(soil_nutrients: Array, fert_id: String) -> Dictionary:
+	var fdef: Dictionary = fertilizers.get(fert_id, {})
+	if fdef.is_empty():
+		return {"ok": false, "soil_after": soil_nutrients.duplicate()}
+	var add_npk: Array = fdef.get("nutrients", [0.0, 0.0, 0.0])
+	var next_soil: Array = [
+		clamp((float(soil_nutrients[0]) if soil_nutrients.size() > 0 else 0.0) + float(add_npk[0]), 0.0, 100.0),
+		clamp((float(soil_nutrients[1]) if soil_nutrients.size() > 1 else 0.0) + float(add_npk[1]), 0.0, 100.0),
+		clamp((float(soil_nutrients[2]) if soil_nutrients.size() > 2 else 0.0) + float(add_npk[2]), 0.0, 100.0),
+	]
+	return {"ok": true, "fertilizer": fert_id, "uses": int(fdef.get("uses", 1)), "added": add_npk, "soil_after": next_soil}
+
+
+## constants.lua NAUGHTY_VALUE + components/kramped.lua — 크람푸스 악행 누적·감쇠·소환 머신
+func step_krampus_naughtiness(
+	st: Dictionary,
+	victim_prefab: String,
+	day_num: int,
+	dt: float,
+	rng: RandomNumberGenerator = null
+) -> Dictionary:
+	var actions: int = int(st.get("actions", 0))
+	var base_t: int = int(krampus.get("threshold_base", 30))
+	var var_t: int = int(krampus.get("threshold_variance", 20))
+	var threshold: int = int(st.get("threshold", base_t + (rng.randi_range(1, var_t) if rng != null else 10)))
+	var decay_period: float = float(krampus.get("decay_period_sec", 60.0))
+	var decay_t: float = float(st.get("timetodecay", decay_period))
+	var spawned: int = 0
+	var warn_lvl: int = 0
+
+	var nvals: Dictionary = krampus.get("naughty_values", {})
+	if victim_prefab != "" and nvals.has(victim_prefab):
+		actions += int(nvals[victim_prefab])
+		decay_t = decay_period
+		if actions >= threshold and threshold > 0:
+			actions = 0
+			threshold = base_t + (rng.randi_range(1, var_t) if rng != null else 10)
+			var lvl1: int = int(krampus.get("increase_lvl1_day", 50))
+			var lvl2: int = int(krampus.get("increase_lvl2_day", 100))
+			var ramp: int = rng.randi_range(1, 1) if rng != null else 1
+			spawned = (2 + ramp) if day_num > lvl2 else ((1 + ramp) if day_num > lvl1 else 1)
+		else:
+			var rem: int = threshold - actions
+			if rem < 5:
+				warn_lvl = 3
+			elif rem < 15:
+				warn_lvl = 2
+			elif rem < 20:
+				warn_lvl = 1
+
+	if actions > 0 and dt > 0.0:
+		decay_t -= dt
+		while decay_t < 0.0 and actions > 0:
+			decay_t += decay_period
+			actions = max(0, actions - 1)
+
+	return {
+		"actions": actions,
+		"threshold": threshold,
+		"timetodecay": decay_t,
+		"warning_level": warn_lvl,
+		"krampus_spawned": spawned,
+	}
+
+
+## prefabs/battlesongdefs.lua — 위그프리드 10종 전투 노래 스킬·고양감 비용 검증기
+func can_cast_battlesong(song_id: String, inspiration: float, unlocked_skills: Dictionary = {}) -> Dictionary:
+	if not battlesongs.has(song_id):
+		return {"ok": false, "reason": "unknown_song"}
+	var s: Dictionary = battlesongs[song_id]
+	var req_sk: String = str(s.get("require_skill", ""))
+	if req_sk != "" and not unlocked_skills.has(req_sk):
+		return {"ok": false, "reason": "missing_skill:" + req_sk}
+	var cost: float = float(s.get("inspiration_cost", 0.0))
+	if bool(s.get("instant", false)) and inspiration < cost:
+		return {"ok": false, "reason": "low_inspiration"}
+	return {
+		"ok": true,
+		"song_id": song_id,
+		"instant": bool(s.get("instant", false)),
+		"inspiration_after": max(0.0, inspiration - cost),
+	}
+
+
+## prefabs/books.lua — 위커바텀 18종 마법서 낭독 가능 여부 및 정신력 소모 계산
+func can_read_book(book_id: String, reader_char: String, cur_sanity: float) -> Dictionary:
+	if not books.has(book_id):
+		return {"ok": false, "reason": "unknown_book"}
+	if reader_char != "wickerbottom" and reader_char != "waxwell":
+		return {"ok": false, "reason": "not_bookreader"}
+	var b: Dictionary = books[book_id]
+	var delta_san: float = float(b.get("read_sanity", -33.0))
+	return {
+		"ok": true,
+		"book_id": book_id,
+		"uses": int(b.get("uses", 3)),
+		"read_sanity": delta_san,
+		"sanity_after": max(0.0, cur_sanity + delta_san),
+	}
+
+
+## components/mightiness.lua — 볼프강 근력(0..100) 3상태 · 5단계 허기 감쇠 배수
+static func step_wolfgang_mightiness(st: Dictionary, gain_delta: float, hunger_pct: float, dt: float) -> Dictionary:
+	var cur: float = float(st.get("current", 50.0))
+	var max_m: float = float(st.get("max", 100.0))
+	if gain_delta > 0.0:
+		cur = min(max_m, cur + gain_delta)
+	elif gain_delta < 0.0:
+		cur = max(0.0, cur + gain_delta)
+
+	if dt > 0.0:
+		var mult: float = 0.5
+		if hunger_pct <= 0.001:
+			mult = 8.0
+		elif hunger_pct < 0.25:
+			mult = 3.0
+		elif hunger_pct < 0.50:
+			mult = 2.0
+		elif hunger_pct < 0.75:
+			mult = 1.0
+		cur = max(0.0, cur - 0.2 * mult * dt)
+
+	var state: String = "mighty" if cur >= 75.0 else ("normal" if cur >= 25.0 else "wimpy")
+	var dmg_mult: float = 2.0 if state == "mighty" else (1.0 if state == "normal" else 0.75)
+	return {"current": cur, "max": max_m, "state": state, "damage_mult": dmg_mult}
+
+
+## components/oldager.lua — 완다 노화(20~80세) 지연 피해 풀 및 치유 상쇄 공식
+static func step_wanda_oldager(st: Dictionary, hp_delta: float, dt: float) -> Dictionary:
+	var age: float = float(st.get("age", 38.0))
+	var year_timer: float = float(st.get("year_timer", 0.0))
+	var dmg_rem: float = float(st.get("damage_remaining", 0.0))
+	var dps: float = float(st.get("damage_per_second", 0.0))
+
+	if abs(hp_delta) > 0.0001:
+		var age_amount: float = -hp_delta # 피격(-HP) -> 양의 노화, 치유(+HP) -> 음의 회춘
+		if (dmg_rem > 0.0 and age_amount < 0.0) or (dmg_rem < 0.0 and age_amount > 0.0):
+			dmg_rem = 0.0
+		dmg_rem += age_amount * 0.4 # OLDAGE_HEALTH_SCALE = 60/150
+		dps = min(ceil(sqrt(abs(dmg_rem)) * 1.5), 30.0)
+		if dmg_rem < 0.0:
+			dps = -dps
+
+	if dt > 0.0:
+		var frame_age: float = (dt * 0.025) if (dmg_rem >= 0.0 and age < 80.0) else 0.0
+		if abs(dmg_rem) > 0.0001:
+			var f_dmg: float = dps * dt
+			var prev_rem: float = dmg_rem
+			dmg_rem -= f_dmg
+			if (prev_rem > 0.0 and dmg_rem < 0.0) or (prev_rem < 0.0 and dmg_rem > 0.0):
+				f_dmg = prev_rem
+				dmg_rem = 0.0
+				dps = 0.0
+			frame_age += f_dmg
+		var yt: float = year_timer + frame_age
+		var whole_yrs: float = floor(yt)
+		year_timer = yt - whole_yrs
+		age = clamp(age + whole_yrs, 20.0, 80.0)
+
+	var form: String = "old" if age >= 65.0 else ("normal" if age >= 35.0 else "young")
+	return {
+		"age": age,
+		"year_timer": year_timer,
+		"damage_remaining": dmg_rem,
+		"damage_per_second": dps,
+		"form": form,
+		"dead": age >= 80.0,
+	}
+
+
+## components/shadowcreaturespawner.lua — 광기 그림자 생물 개체수 & 공포부리 분기
+static func calc_shadow_spawner_target(sanity_pct: float, is_insanity_mode: bool = true, induced: bool = false) -> Dictionary:
+	if not is_insanity_mode:
+		return {"max_pop": 0, "prefab": "none"}
+	if induced:
+		return {"max_pop": 5, "prefab": "terrorbeak" if sanity_pct < 0.1 else "crawlinghorror"}
+	if sanity_pct > 0.5:
+		return {"max_pop": 0, "prefab": "none"}
+	if sanity_pct > 0.1:
+		return {"max_pop": 1, "prefab": "crawlinghorror"}
+	return {"max_pop": 2, "prefab": "terrorbeak"}
+
+
+## components/hullhealth.lua — 보트 선체 충돌(cos75° 스침 무시) · 누수(0.5/1.0 DPS) 물리
+static func resolve_boat_hull_collision(
+	hull_hp: float,
+	boat_speed: float,
+	hit_dot_velocity: float,
+	leaks: Array,
+	dt: float = 0.0
+) -> Dictionary:
+	var align: float = abs(hit_dot_velocity)
+	var next_leaks: Array = leaks.duplicate()
+	var collision_dmg: float = 0.0
+	var grazed: bool = align <= 0.258 # THROAWAY_ALIGNMENT_VALUE = cos(75 deg)
+
+	if not grazed:
+		var adj_speed: float = boat_speed * align
+		if adj_speed > 2.0:
+			var sev: float = min(adj_speed - 2.0, 1.0)
+			if sev >= 0.85:
+				next_leaks.append("med_leak")
+			elif sev >= 0.2:
+				next_leaks.append("small_leak")
+		if adj_speed > 0.65:
+			var pct: float = min(adj_speed / 5.0, 1.0)
+			collision_dmg = floor(70.0 * pct)
+
+	var leak_dps: float = 0.0
+	for lk in next_leaks:
+		if str(lk) == "med_leak":
+			leak_dps += 1.0
+		elif str(lk) == "small_leak":
+			leak_dps += 0.5
+	var leak_dmg: float = leak_dps * max(0.0, dt)
+	var next_hp: float = max(0.0, hull_hp - collision_dmg - leak_dmg)
+	return {
+		"hull_hp": next_hp,
+		"grazed": grazed,
+		"collision_damage": collision_dmg,
+		"leak_dps": leak_dps,
+		"leaks": next_leaks,
+		"sunk": next_hp <= 0.0,
 	}

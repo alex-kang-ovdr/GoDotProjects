@@ -884,6 +884,48 @@ def extract_physics_rules(scripts_dir: Path, tuning: dict) -> dict:
                 and "NIGHTMARE_SEG_VARIATION" in read_lua(scripts_dir, "components/nightmareclock.lua")
             ),
         },
+        "wolfgang_mightiness": {
+            "source_file": "components/mightiness.lua",
+            "max": tuning.get("MIGHTINESS_MAX", 100.0),
+            "mighty_threshold": tuning.get("MIGHTY_THRESHOLD", 75.0),
+            "wimpy_threshold": tuning.get("WIMPY_THRESHOLD", 25.0),
+            "drain_rate": tuning.get("MIGHTINESS_DRAIN_RATE", 0.2),
+            "drain_mults": {
+                "slow": tuning.get("MIGHTINESS_DRAIN_MULT_SLOW", 0.5),
+                "normal": tuning.get("MIGHTINESS_DRAIN_MULT_NORMAL", 1.0),
+                "fast": tuning.get("MIGHTINESS_DRAIN_MULT_FAST", 2.0),
+                "fastest": tuning.get("MIGHTINESS_DRAIN_MULT_FASTEST", 3.0),
+                "starving": tuning.get("MIGHTINESS_DRAIN_MULT_STARVING", 8.0),
+            },
+            "verified_in_lua": ("TUNING.MIGHTY_THRESHOLD" in read_lua(scripts_dir, "components/mightiness.lua")),
+        },
+        "wanda_oldager": {
+            "source_file": "components/oldager.lua",
+            "base_rate_yr_per_sec": 0.025,
+            "oldage_health_scale": tuning.get("OLDAGE_HEALTH_SCALE", 0.4),
+            "max_dps": 30.0,
+            "verified_in_lua": ("math.min(math.ceil(math.sqrt(math.abs(self.damage_remaining)) * 1.5), 30)" in read_lua(scripts_dir, "components/oldager.lua")),
+        },
+        "shadow_spawner": {
+            "source_file": "components/shadowcreaturespawner.lua",
+            "sanity_zero_pop": 0.5,
+            "terrorbeak_thresh": 0.1,
+            "maxpop_mid": 1,
+            "maxpop_low": 2,
+            "induced_maxpop": int(tuning.get("SANITYMONSTERS_INDUCED_MAXPOP", 5)),
+            "verified_in_lua": ('"terrorbeak"' in read_lua(scripts_dir, "components/shadowcreaturespawner.lua") and "SANITYMONSTERS_INDUCED_MAXPOP" in read_lua(scripts_dir, "components/shadowcreaturespawner.lua")),
+        },
+        "boat_hullhealth": {
+            "source_file": "components/hullhealth.lua",
+            "throwaway_alignment": 0.258,
+            "leak_speed_threshold": 2.0,
+            "small_leak_dps": 0.5,
+            "med_leak_dps": 1.0,
+            "small_leak_dmg": 0.2,
+            "med_leak_dmg": 0.85,
+            "max_hull_damage": 70.0,
+            "verified_in_lua": ("THROAWAY_ALIGNMENT_VALUE = 0.258" in read_lua(scripts_dir, "components/hullhealth.lua")),
+        },
     }
 
 
@@ -1051,6 +1093,101 @@ def extract_worldgen_tasks(scripts_dir: Path) -> dict:
     return {"task_count": len(tasks), "tasks": tasks, "tasksets": tasksets}
 
 
+# ---------------------------------------------------------------------------
+# 16. Extract ALL 17 Fertilizer 3-Nutrient (N/P/K) Defs
+# ---------------------------------------------------------------------------
+
+def extract_fertilizers(scripts_dir: Path, tuning: dict, tuning_src: str) -> dict:
+    # Parse TUNING.*_NUTRIENTS = { n, p, k } triples directly from tuning.lua
+    nut_tables = {}
+    for m in re.finditer(r"^\s*([A-Z0-9_]+_NUTRIENTS(?:_[A-Z]+)?)\s*=\s*\{\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\}", tuning_src, re.M):
+        nut_tables[m.group(1)] = [float(m.group(2)), float(m.group(3)), float(m.group(4))]
+
+    fsrc = read_lua(scripts_dir, "prefabs/fertilizer_nutrient_defs.lua")
+    ferts = {}
+    for m in re.finditer(r"FERTILIZER_DEFS\.([a-z0-9_]+)\s*=\s*\{([^}]+)\}", fsrc):
+        fid, body = m.group(1), m.group(2)
+        nm = re.search(r"nutrients\s*=\s*TUNING\.([A-Z0-9_]+)", body)
+        um = re.search(r"uses\s*=\s*TUNING\.([A-Z0-9_]+)", body)
+        if not nm:
+            continue
+        npk = nut_tables.get(nm.group(1), [0.0, 0.0, 0.0])
+        uses = int(round(tuning.get(um.group(1), 1.0))) if um else 1
+        ferts[fid] = {"id": fid, "nutrients": npk, "uses": uses}
+    return {"source_file": "prefabs/fertilizer_nutrient_defs.lua", "fertilizer_count": len(ferts), "fertilizers": ferts}
+
+
+# ---------------------------------------------------------------------------
+# 17. Extract Krampus NAUGHTY_VALUE Table & Threshold Rules
+# ---------------------------------------------------------------------------
+
+def extract_krampus_naughtiness(scripts_dir: Path, tuning: dict) -> dict:
+    csrc = read_lua(scripts_dir, "constants.lua")
+    ksrc = read_lua(scripts_dir, "components/kramped.lua")
+    i0 = csrc.find("NAUGHTY_VALUE =")
+    block = csrc[i0:i0 + 1400] if i0 >= 0 else ""
+    i_end = block.find("\n}")
+    if i_end > 0:
+        block = block[:i_end + 2]
+    naughty = {}
+    for m in re.finditer(r'\["([a-z0-9_]+)"\]\s*=\s*([0-9]+)', block):
+        naughty[m.group(1)] = int(m.group(2))
+    # Dynamic guards (`pigman` -> 3 unless werepig/franken, `bunnyman` -> 3 unless vampire)
+    if '["pigman"]' in block and "pigman" not in naughty:
+        naughty["pigman"] = 3
+    if '["bunnyman"]' in block and "bunnyman" not in naughty:
+        naughty["bunnyman"] = 3
+    return {
+        "source_files": ["constants.lua", "components/kramped.lua"],
+        "verified_in_lua": ("KRAMPUS_NAUGHTINESS_DECAY_PERIOD" in ksrc and "NAUGHTY_VALUE[data.victim.prefab]" in ksrc),
+        "threshold_base": int(tuning.get("KRAMPUS_THRESHOLD", 30)),
+        "threshold_variance": int(tuning.get("KRAMPUS_THRESHOLD_VARIANCE", 20)),
+        "decay_period_sec": float(tuning.get("KRAMPUS_NAUGHTINESS_DECAY_PERIOD", 60.0)),
+        "increase_lvl1_day": int(tuning.get("KRAMPUS_INCREASE_LVL1", 50)),
+        "increase_lvl2_day": int(tuning.get("KRAMPUS_INCREASE_LVL2", 100)),
+        "creature_count": len(naughty),
+        "naughty_values": naughty,
+    }
+
+
+# ---------------------------------------------------------------------------
+# 18. Extract ALL 10 Wigfrid Battle Songs & ALL 18 Wickerbottom Books
+# ---------------------------------------------------------------------------
+
+def extract_battlesongs_and_books(scripts_dir: Path, tuning: dict) -> tuple:
+    bsrc = read_lua(scripts_dir, "prefabs/battlesongdefs.lua")
+    songs = {}
+    s_starts = list(re.finditer(r"^\s{1,4}(battlesong_[a-z0-9_]+)\s*=\s*$", bsrc, re.M))
+    for i, m in enumerate(s_starts):
+        sid = m.group(1)
+        s0 = m.end()
+        s1 = s_starts[i + 1].start() if i + 1 < len(s_starts) else len(bsrc)
+        chunk = bsrc[s0:s1]
+        is_inst = bool(re.search(r"\bINSTANT\s*=\s*true\b", chunk))
+        dm = re.search(r"DELTA\s*=\s*([\-A-Za-z0-9_.]+)", chunk)
+        req_sk = re.search(r'REQUIRE_SKILL\s*=\s*"([^"]+)"', chunk)
+        delta_val = eval_tuning_expr(dm.group(1), tuning, 16.67) if dm else 0.0
+        songs[sid] = {
+            "id": sid,
+            "instant": is_inst,
+            "inspiration_cost": abs(delta_val) if is_inst else 0.0,
+            "require_skill": req_sk.group(1) if req_sk else "",
+        }
+
+    bksrc = read_lua(scripts_dir, "prefabs/books.lua")
+    books = {}
+    for m in re.finditer(r'name\s*=\s*"(book_[a-z0-9_]+)".{0,520}?uses\s*=\s*([A-Z0-9_.]+).{0,260}?read_sanity\s*=\s*([\-A-Z0-9_.*]+)', bksrc, re.S):
+        bid = m.group(1)
+        uses_v = int(round(eval_tuning_expr(m.group(2), tuning, 3.0)))
+        san_v = eval_tuning_expr(m.group(3), tuning, -33.0)
+        books[bid] = {"id": bid, "uses": max(1, uses_v), "read_sanity": san_v}
+
+    return (
+        {"source_file": "prefabs/battlesongdefs.lua", "song_count": len(songs), "songs": songs},
+        {"source_file": "prefabs/books.lua", "book_count": len(books), "books": books},
+    )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scripts-dir", default=str(SCRIPTS_DIR_DEFAULT))
@@ -1185,9 +1322,21 @@ def main():
     ocean_fish = extract_ocean_fish_defs(sdir)
     print(f"  -> ocean_fish={ocean_fish['fish_count']}")
 
-    print("[13/13] Extracting ALL WorldGen Tasks & Forest/Caves TaskSets...")
+    print("[13/16] Extracting ALL WorldGen Tasks & Forest/Caves TaskSets...")
     world_tasks = extract_worldgen_tasks(sdir)
     print(f"  -> worldgen_tasks={world_tasks['task_count']}, tasksets={len(world_tasks['tasksets'])}")
+
+    print("[14/16] Extracting ALL 17 Fertilizer 3-Nutrient (N/P/K) defs...")
+    ferts = extract_fertilizers(sdir, tuning, tuning_src)
+    print(f"  -> fertilizers={ferts['fertilizer_count']}")
+
+    print("[15/16] Extracting Krampus NAUGHTY_VALUE table & thresholds...")
+    krampus = extract_krampus_naughtiness(sdir, tuning)
+    print(f"  -> krampus_creatures={krampus['creature_count']}, verified={krampus['verified_in_lua']}")
+
+    print("[16/16] Extracting ALL 10 Wigfrid Battle Songs & ALL 18 Wickerbottom Books...")
+    battlesongs, books = extract_battlesongs_and_books(sdir, tuning)
+    print(f"  -> battlesongs={battlesongs['song_count']}, books={books['book_count']}")
 
     bundle = {
         "meta": {
@@ -1203,6 +1352,7 @@ def main():
                 "prepared_foods_total": len(all_foods),
                 "spiced_foods_combinations": len(all_foods) * 4,
                 "farm_crops": len(crops),
+                "fertilizers": ferts["fertilizer_count"],
                 "characters_19": len(chars19),
                 "stategraphs": len(sgs),
                 "brains": len(brains),
@@ -1215,6 +1365,9 @@ def main():
                 "worldgen_rooms": world_rooms["room_count"],
                 "worldgen_tasks": world_tasks["task_count"],
                 "ocean_fish": ocean_fish["fish_count"],
+                "krampus_naughty_creatures": krampus["creature_count"],
+                "battlesongs": battlesongs["song_count"],
+                "wickerbottom_books": books["book_count"],
             },
         },
         "tuning": key_tuning,
@@ -1223,6 +1376,10 @@ def main():
         "cooking_ingredients": ing_bundle["ingredients"],
         "prepared_foods": all_foods,
         "farm_crops": crops,
+        "fertilizers": ferts["fertilizers"],
+        "krampus": krampus,
+        "battlesongs": battlesongs["songs"],
+        "books": books["books"],
         "stategraphs": sgs,
         "brains": brains,
         "hounded": hounded,

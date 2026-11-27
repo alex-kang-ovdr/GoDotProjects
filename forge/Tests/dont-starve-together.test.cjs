@@ -87,8 +87,12 @@ test('DST reverse-engineered Lua logic JSON compiles all 79 Crock Pot ASTs with 
   assert.equal(logic.meta.counts.wx78_modules, 23);
   assert.ok(logic.meta.counts.shared_loot_tables >= 220);
   assert.ok(logic.meta.counts.worldgen_rooms >= 220);
-  assert.ok(logic.meta.counts.worldgen_tasks >= 125);
+  assert.ok(logic.meta.counts.worldgen_tasks >= 135);
   assert.equal(logic.meta.counts.ocean_fish, 18);
+  assert.equal(logic.meta.counts.fertilizers, 17);
+  assert.equal(logic.meta.counts.krampus_naughty_creatures, 22);
+  assert.equal(logic.meta.counts.battlesongs, 10);
+  assert.equal(logic.meta.counts.wickerbottom_books, 18);
   assert.equal(logic.meta.counts.spiced_foods_combinations, 316);
   assert.equal(logic.physics.propagator.verified_in_lua, true);
   assert.equal(logic.physics.temperature_insulation.verified_in_lua, true);
@@ -101,6 +105,11 @@ test('DST reverse-engineered Lua logic JSON compiles all 79 Crock Pot ASTs with 
   assert.equal(logic.physics.sanity_dual.verified_in_lua, true);
   assert.equal(logic.physics.beefalo_domestication.verified_in_lua, true);
   assert.equal(logic.physics.sleeper_nightmare.verified_in_lua, true);
+  assert.equal(logic.physics.wolfgang_mightiness.verified_in_lua, true);
+  assert.equal(logic.physics.wanda_oldager.verified_in_lua, true);
+  assert.equal(logic.physics.shadow_spawner.verified_in_lua, true);
+  assert.equal(logic.physics.boat_hullhealth.verified_in_lua, true);
+  assert.equal(logic.krampus.verified_in_lua, true);
   assert.equal(logic.stategraphs.deerclops.attack_hit_frame, 31);
   assert.equal(logic.stategraphs.wilson.attack_hit_frame, 6);
 });
@@ -153,5 +162,5 @@ test('DST Godot 4.7.2 restoration passes QA-01~QA-10 formulas, 3-day simulation,
   assert.ok(m, `Missing DST_TEST_RESULT:\n${out}`);
   const summary = JSON.parse(m[1]);
   assert.equal(summary.failed, 0, out);
-  assert.ok(summary.passed >= 138, `expected >= 138 checks, got ${summary.passed}\n${out}`);
+  assert.ok(summary.passed >= 148, `expected >= 148 checks, got ${summary.passed}\n${out}`);
 });
