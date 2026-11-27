@@ -78,6 +78,9 @@ var nightmare_timer: float = 120.0
 var _master_state: Dictionary = {}
 var _caves_state: Dictionary = {}
 
+# 마우스/터치 클릭 이동·채집·공격 타겟
+var click_target: Dictionary = {} # { mode: "move"|"interact"|"attack", pos: Vector2, uid: int }
+
 # 시각 피드백 큐 (렌더러가 소비)
 var floating_events: Array = [] # { pos: Vector2, text: String, color: Color }
 
@@ -158,6 +161,7 @@ func init_world(database: DSTDatabase, seed_value: int = 20261126, char_id: Stri
 	nightmare_timer = 120.0
 	_master_state.clear()
 	_caves_state.clear()
+	click_target.clear()
 
 	inventory = {
 		"twigs": 4,
@@ -177,6 +181,7 @@ func init_world(database: DSTDatabase, seed_value: int = 20261126, char_id: Stri
 		"purebrilliance": 2,
 		"thulecite": 2,
 		"nightmarefuel": 2,
+		"horrorfuel": 2,
 	}
 	food_freshness = {
 		"berries": 1.0,
@@ -494,10 +499,12 @@ func spawn_creature(kind: String, pos: Vector2) -> Dictionary:
 		"speed": float(d["speed"]),
 		"range": float(d["range"]),
 		"planar_entity": bool(d.get("planar_entity", false)),
+		"alignment": str(d.get("alignment", "")),
 		"boss": bool(d.get("boss", false)),
 		"loot": d.get("loot", {}),
 		"aggro": bool(d.get("boss", false)),
 		"hit_flash": 0.0,
+		"shield_timer": 0.0,
 		"special_cd": 3.5 if bool(d.get("boss", false)) else 999.0,
 	}
 	_next_uid += 1
@@ -838,14 +845,25 @@ func revive_player(apply_penalty: bool = true) -> void:
 	push_log("부활 완료! (최대 체력 페널티 %.0f%%, 현재 최대체력 %.0f)" % [health_penalty * 100.0, get_max_health_with_penalty()])
 
 
-func receive_attack(raw_damage: float, raw_planar: float = 0.0, source_name: String = "enemy") -> Dictionary:
+func receive_attack(raw_damage: float, raw_planar: float = 0.0, source_name: String = "enemy", source_alignment: String = "") -> Dictionary:
 	var armors: Array = []
+	var has_lunar_set: bool = (str(equip_head.get("id", "")) == "lunarplanthat" and str(equip_body.get("id", "")) == "armor_lunarplant")
+	var has_shadow_set: bool = (str(equip_head.get("id", "")) == "voidclothhat" and str(equip_body.get("id", "")) == "armor_voidcloth")
+	var align_resist: float = 1.0
+	if source_alignment == "lunar" and has_lunar_set:
+		align_resist = 0.90 # 브라이트셰이드 세트 달 진영 저항 -10%
+	elif source_alignment == "shadow" and has_shadow_set:
+		align_resist = 0.90 # 공허 세트 그림자 진영 저항 -10%
+
 	if not equip_head.is_empty():
-		armors.append(equip_head)
+		var h_copy: Dictionary = equip_head.duplicate()
+		if (has_lunar_set or has_shadow_set):
+			h_copy["planar_defense"] = float(h_copy.get("planar_defense", 0.0)) + 5.0
+		armors.append(h_copy)
 	if not equip_body.is_empty():
 		armors.append(equip_body)
 
-	var res: Dictionary = DSTDatabase.apply_armor_and_planar(raw_damage, raw_planar, armors, 1.0)
+	var res: Dictionary = DSTDatabase.apply_armor_and_planar(raw_damage, raw_planar, armors, align_resist)
 	var wear: Dictionary = res["armor_wear"]
 	for slot_armor in [equip_head, equip_body]:
 		if not slot_armor.is_empty():
@@ -903,9 +921,23 @@ func player_attack_nearest() -> Dictionary:
 	attack_cooldown = float(db.data["survival"]["wilson_attack_period"])
 	attack_anim_timer = 0.25
 	var target: Dictionary = creatures[best_idx]
+	if float(target.get("shield_timer", 0.0)) > 0.0:
+		push_floating(target["pos"], "그림자 방패 무효!", Color(0.76, 0.35, 0.95))
+		push_log("%s의 그림자 방패가 공격을 완전히 차단했습니다!" % str(target["name"]))
+		return {"hit": false, "blocked": true}
 	var char_mult: float = get_effective_damage_mult()
 	var phys_dmg: float = float(w["damage"]) * char_mult
 	var planar_dmg: float = float(w.get("planar_damage", 0.0))
+	var w_align: String = str(w.get("alignment", ""))
+	var t_align: String = str(target.get("alignment", ""))
+	# 진영 상성 보너스 (달 무기 vs 그림자 적 +10%, 그림자 무기 vs 달 적 +10%, 세트 추가 +10%)
+	if (w_align == "lunar" and t_align == "shadow") or (w_align == "shadow" and t_align == "lunar"):
+		phys_dmg *= 1.10
+		planar_dmg *= 1.10
+	if t_align == "shadow" and str(equip_head.get("id", "")) == "lunarplanthat" and str(equip_body.get("id", "")) == "armor_lunarplant":
+		phys_dmg *= 1.10
+	elif t_align == "lunar" and str(equip_head.get("id", "")) == "voidclothhat" and str(equip_body.get("id", "")) == "armor_voidcloth":
+		phys_dmg *= 1.10
 	if unlocked_skills.has("affinity_lunar"):
 		planar_dmg += 12.0
 	if unlocked_skills.has("affinity_shadow") and (bool(target.get("boss", false)) or bool(target.get("planar_entity", false))):
@@ -1268,6 +1300,7 @@ func _update_creatures(dt: float) -> void:
 	for c in creatures:
 		c["cd"] = max(0.0, float(c["cd"]) - dt)
 		c["hit_flash"] = max(0.0, float(c.get("hit_flash", 0.0)) - dt)
+		c["shield_timer"] = max(0.0, float(c.get("shield_timer", 0.0)) - dt)
 		var dist: float = player_pos.distance_to(c["pos"])
 		if not is_ghost and dist < (14.0 if bool(c["boss"]) else 8.5):
 			c["aggro"] = true
@@ -1291,7 +1324,7 @@ func _update_creatures(dt: float) -> void:
 				c["cd"] = float(c["attack_period"])
 				var eff_dmg: float = float(c["damage"]) * float(c["player_dmg_pct"])
 				var p_dmg: float = float(c["planar_damage"])
-				var res: Dictionary = receive_attack(eff_dmg, p_dmg, str(c["name"]))
+				var res: Dictionary = receive_attack(eff_dmg, p_dmg, str(c["name"]), str(c.get("alignment", "")))
 				push_log("%s의 공격! 피해 %.1f (흡수 %.0f%%)" % [str(c["name"]), float(res["total_damage"]), float(res["absorbed_percent"]) * 100.0])
 
 
@@ -1311,6 +1344,12 @@ func _trigger_boss_telegraph(boss: Dictionary) -> void:
 			t_kind = "lava_ring"; rad = 6.2; windup = 1.15; col = Color(1.0, 0.28, 0.12, 0.58); center = boss["pos"]
 		"moose":
 			t_kind = "honk_gust"; rad = 6.5; windup = 1.10; col = Color(0.55, 0.96, 0.85, 0.52); center = boss["pos"]
+		"fuelweaver":
+			boss["shield_timer"] = 3.5
+			push_floating(boss["pos"], "그림자 방패 3.5s!", Color(0.75, 0.30, 0.96))
+			t_kind = "shadow_snare"; rad = 6.5; windup = 1.25; col = Color(0.58, 0.16, 0.82, 0.58); center = player_pos
+		"celestial_champion":
+			t_kind = "gestalt_barrage"; rad = 6.8; windup = 1.20; col = Color(0.42, 0.92, 1.0, 0.58); center = player_pos
 	boss_telegraphs.append({
 		"id": _next_uid, "kind": t_kind, "boss_kind": bk,
 		"pos": center, "radius": rad, "timer": windup, "max_timer": windup, "color": col,
@@ -1372,6 +1411,17 @@ func _update_boss_telegraphs(dt: float) -> void:
 						if (player_pos + kb).length() <= 53.0:
 							player_pos += kb
 						push_floating(player_pos, "강풍 넉백!", Color(0.65, 0.98, 0.90))
+				"shadow_snare":
+					if in_zone:
+						receive_attack(40.0, 25.0, "shadow_snare", "shadow")
+						delta_sanity(-15.0)
+						push_floating(player_pos, "그림자 속박!", Color(0.75, 0.32, 0.98))
+				"gestalt_barrage":
+					if in_zone:
+						receive_attack(35.0, 35.0, "gestalt_barrage", "lunar")
+						if sanity_mode == 1:
+							delta_sanity(15.0)
+						push_floating(player_pos, "달 게슈탈트⚡", Color(0.45, 0.94, 1.0))
 			boss_telegraphs.remove_at(i)
 
 
@@ -1420,3 +1470,192 @@ func _update_coop_ally(dt: float) -> void:
 		var follow_target: Vector2 = player_pos + Vector2(-2.4, 1.6)
 		if coop_ally_pos.distance_to(follow_target) > 0.6:
 			coop_ally_pos = coop_ally_pos.lerp(follow_target, clamp(dt * 3.8, 0.0, 1.0))
+
+
+## 마우스/터치 클릭 이동·채집·공격 타겟 설정 및 자동 추적 벡터
+func set_click_target(world_pos: Vector2) -> Dictionary:
+	# 1. 생물 클릭 판정 -> 자동 추격 공격
+	for c in creatures:
+		if world_pos.distance_to(c["pos"]) <= (3.6 if bool(c.get("boss", false)) else 2.4):
+			click_target = {"mode": "attack", "pos": c["pos"], "uid": int(c["id"])}
+			return click_target
+	# 2. 구조물/자원/농경지 클릭 판정 -> 자동 접근 상호작용
+	for s in structures:
+		if world_pos.distance_to(s["pos"]) <= 2.6:
+			click_target = {"mode": "interact", "pos": s["pos"], "uid": int(s["id"])}
+			return click_target
+	for r in resources:
+		if int(r["hp"]) > 0 and world_pos.distance_to(r["pos"]) <= 2.4:
+			click_target = {"mode": "interact", "pos": r["pos"], "uid": int(r["id"])}
+			return click_target
+	for fp in farm_plots:
+		if world_pos.distance_to(fp["pos"]) <= 2.5:
+			click_target = {"mode": "interact", "pos": fp["pos"], "uid": int(fp["id"])}
+			return click_target
+	click_target = {"mode": "move", "pos": world_pos, "uid": -1}
+	return click_target
+
+
+func resolve_click_move_vector() -> Dictionary:
+	if click_target.is_empty():
+		return {"move": Vector2.ZERO, "event": ""}
+	var mode: String = str(click_target.get("mode", "move"))
+	var tpos: Vector2 = click_target["pos"]
+	var uid: int = int(click_target.get("uid", -1))
+	if mode == "attack":
+		var found: bool = false
+		for c in creatures:
+			if int(c["id"]) == uid:
+				tpos = c["pos"]
+				click_target["pos"] = tpos
+				found = true
+				break
+		if not found:
+			click_target.clear()
+			return {"move": Vector2.ZERO, "event": ""}
+		if player_pos.distance_to(tpos) <= 3.1:
+			var res: Dictionary = player_attack_nearest()
+			return {"move": Vector2.ZERO, "event": "attack" if bool(res.get("hit", false)) else ""}
+		return {"move": (tpos - player_pos).normalized(), "event": ""}
+	elif mode == "interact":
+		if player_pos.distance_to(tpos) <= 2.8:
+			var ok: bool = interact_nearest()
+			click_target.clear()
+			return {"move": Vector2.ZERO, "event": "gather" if ok else ""}
+		return {"move": (tpos - player_pos).normalized(), "event": ""}
+	else:
+		if player_pos.distance_to(tpos) <= 0.65:
+			click_target.clear()
+			return {"move": Vector2.ZERO, "event": ""}
+		return {"move": (tpos - player_pos).normalized(), "event": ""}
+
+
+## 월드 전체 상태 JSON 직렬화 / 역직렬화 (세이브/로드 & M3 스냅샷 공용)
+static func _v2_to_arr(v: Vector2) -> Array:
+	return [snapped(v.x, 0.01), snapped(v.y, 0.01)]
+
+
+static func _arr_to_v2(a: Variant) -> Vector2:
+	if a is Array and a.size() >= 2:
+		return Vector2(float(a[0]), float(a[1]))
+	return Vector2.ZERO
+
+
+static func _pack_entities(arr: Array) -> Array:
+	var out: Array = []
+	for it in arr:
+		var d: Dictionary = it.duplicate(true)
+		if d.has("pos") and d["pos"] is Vector2:
+			d["pos"] = _v2_to_arr(d["pos"])
+		out.append(d)
+	return out
+
+
+static func _unpack_entities(arr: Variant) -> Array:
+	var out: Array = []
+	if not (arr is Array):
+		return out
+	for it in arr:
+		if it is Dictionary:
+			var d: Dictionary = it.duplicate(true)
+			if d.has("pos"):
+				d["pos"] = _arr_to_v2(d["pos"])
+			out.append(d)
+	return out
+
+
+func serialize_state() -> Dictionary:
+	return {
+		"version": 1,
+		"day": day, "season_index": season_index, "day_in_season": day_in_season,
+		"time_in_day": time_in_day, "phase": phase, "moon_phase": moon_phase,
+		"shard": shard, "nightmare_phase": nightmare_phase, "nightmare_timer": nightmare_timer,
+		"character_id": character_id, "player_pos": _v2_to_arr(player_pos),
+		"health": health, "max_health": max_health, "health_penalty": health_penalty,
+		"hunger": hunger, "max_hunger": max_hunger,
+		"sanity": sanity, "max_sanity": max_sanity, "sanity_mode": sanity_mode, "is_sane": is_sane,
+		"temperature": temperature, "moisture": moisture, "is_wet": is_wet, "is_ghost": is_ghost,
+		"world_reset_countdown": world_reset_countdown,
+		"inventory": inventory.duplicate(true), "food_freshness": food_freshness.duplicate(true),
+		"equip_hands": equip_hands, "equip_head": equip_head.duplicate(true), "equip_body": equip_body.duplicate(true),
+		"learned_recipes": learned_recipes.duplicate(true),
+		"boat_active": boat_active, "boat_pos": _v2_to_arr(boat_pos), "boat_masts": boat_masts, "on_boat": on_boat,
+		"insight_points": insight_points, "unlocked_skills": unlocked_skills.duplicate(true),
+		"coop_ally_active": coop_ally_active, "coop_ally_pos": _v2_to_arr(coop_ally_pos),
+		"resources": _pack_entities(resources), "structures": _pack_entities(structures),
+		"creatures": _pack_entities(creatures), "farm_plots": _pack_entities(farm_plots),
+	}
+
+
+func deserialize_state(st: Dictionary) -> bool:
+	if st.is_empty() or not st.has("day"):
+		return false
+	day = int(st.get("day", 1))
+	season_index = int(st.get("season_index", 0))
+	day_in_season = int(st.get("day_in_season", 1))
+	time_in_day = float(st.get("time_in_day", 25.0))
+	phase = str(st.get("phase", "day"))
+	moon_phase = str(st.get("moon_phase", "new"))
+	shard = str(st.get("shard", "master"))
+	nightmare_phase = str(st.get("nightmare_phase", "calm"))
+	nightmare_timer = float(st.get("nightmare_timer", 120.0))
+	character_id = str(st.get("character_id", "wilson"))
+	player_pos = _arr_to_v2(st.get("player_pos", [0.0, 0.0]))
+	health = float(st.get("health", 150.0))
+	max_health = float(st.get("max_health", 150.0))
+	health_penalty = float(st.get("health_penalty", 0.0))
+	hunger = float(st.get("hunger", 150.0))
+	max_hunger = float(st.get("max_hunger", 150.0))
+	sanity = float(st.get("sanity", 200.0))
+	max_sanity = float(st.get("max_sanity", 200.0))
+	sanity_mode = int(st.get("sanity_mode", 0))
+	is_sane = bool(st.get("is_sane", true))
+	temperature = float(st.get("temperature", 35.0))
+	moisture = float(st.get("moisture", 0.0))
+	is_wet = bool(st.get("is_wet", false))
+	is_ghost = bool(st.get("is_ghost", false))
+	world_reset_countdown = float(st.get("world_reset_countdown", -1.0))
+	inventory = st.get("inventory", {}).duplicate(true)
+	food_freshness = st.get("food_freshness", {}).duplicate(true)
+	equip_hands = str(st.get("equip_hands", ""))
+	equip_head = st.get("equip_head", {}).duplicate(true)
+	equip_body = st.get("equip_body", {}).duplicate(true)
+	learned_recipes = st.get("learned_recipes", {}).duplicate(true)
+	boat_active = bool(st.get("boat_active", false))
+	boat_pos = _arr_to_v2(st.get("boat_pos", [18.0, -14.0]))
+	boat_masts = int(st.get("boat_masts", 0))
+	on_boat = bool(st.get("on_boat", false))
+	insight_points = int(st.get("insight_points", 3))
+	unlocked_skills = st.get("unlocked_skills", {}).duplicate(true)
+	coop_ally_active = bool(st.get("coop_ally_active", false))
+	coop_ally_pos = _arr_to_v2(st.get("coop_ally_pos", [-2.5, 1.5]))
+	resources = _unpack_entities(st.get("resources", []))
+	structures = _unpack_entities(st.get("structures", []))
+	creatures = _unpack_entities(st.get("creatures", []))
+	farm_plots = _unpack_entities(st.get("farm_plots", []))
+	click_target.clear()
+	boss_telegraphs.clear()
+	push_log("저장 데이터 불러오기 완료 (Day %d · %s · %s)" % [day, get_season_name().to_upper(), shard.to_upper()])
+	return true
+
+
+func save_to_disk(path: String = "user://dst_save.json") -> bool:
+	var f: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+	if f == null:
+		return false
+	f.store_string(JSON.stringify(serialize_state()))
+	f.close()
+	push_log("월드 저장 완료: %s (Day %d)" % [path, day])
+	push_floating(player_pos, "SAVED!", Color(0.55, 0.96, 0.65))
+	return true
+
+
+func load_from_disk(path: String = "user://dst_save.json") -> bool:
+	if not FileAccess.file_exists(path):
+		push_log("저장 파일이 없습니다: %s" % path)
+		return false
+	var raw: String = FileAccess.get_file_as_string(path)
+	var parsed: Variant = JSON.parse_string(raw)
+	if parsed is Dictionary:
+		return deserialize_state(parsed)
+	return false

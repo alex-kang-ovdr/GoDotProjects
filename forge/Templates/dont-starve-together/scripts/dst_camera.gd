@@ -69,3 +69,16 @@ func update_camera(dt: float, target_xz: Vector2) -> void:
 	var dz: float = -cos(pitch) * sin(heading)
 	var cam_pos: Vector3 = current_pos - Vector3(dx, dy, dz) * distance
 	look_at_from_position(cam_pos, current_pos, Vector3.UP)
+
+
+## 마우스/터치 화면 좌표를 지면(Y=0) XZ 월드 좌표로 투영 (클릭 이동·채집·공격용)
+func screen_to_ground_xz(screen_pos: Vector2) -> Dictionary:
+	var orig: Vector3 = project_ray_origin(screen_pos)
+	var dir: Vector3 = project_ray_normal(screen_pos)
+	if abs(dir.y) < 0.0001:
+		return {"ok": false, "pos": Vector2.ZERO}
+	var t: float = -orig.y / dir.y
+	if t <= 0.0 or t > 400.0:
+		return {"ok": false, "pos": Vector2.ZERO}
+	var hit: Vector3 = orig + dir * t
+	return {"ok": true, "pos": Vector2(hit.x, hit.z)}

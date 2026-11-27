@@ -14,7 +14,9 @@ var _sim_accum: float = 0.0
 var _hud_accum: float = 0.0
 var _char_keys: Array = ["wilson", "willow", "wolfgang", "wendy", "wathgrithr", "wx78"]
 var _boss_keys: Array = ["deerclops", "bearger", "moose", "dragonfly"]
+var _endgame_boss_keys: Array = ["celestial_champion", "fuelweaver", "mutated_deerclops"]
 var _boss_idx: int = 0
+var _endgame_idx: int = 0
 
 
 func _ready() -> void:
@@ -54,6 +56,14 @@ func _play_sfx(key: String) -> void:
 
 func _process(dt: float) -> void:
 	var move_vec: Vector2 = _read_camera_relative_move()
+	if move_vec.length_squared() > 0.001:
+		sim.click_target.clear()
+	else:
+		var ck: Dictionary = sim.resolve_click_move_vector()
+		move_vec = ck["move"]
+		var ev: String = str(ck["event"])
+		if ev != "":
+			_play_sfx(ev)
 	_sim_accum += min(dt, 0.1)
 	var fixed_step: float = 1.0 / 30.0 # 원작 30 FPS 시뮬레이션 틱
 	while _sim_accum >= fixed_step:
@@ -128,8 +138,16 @@ func _unhandled_input(event: InputEvent) -> void:
 			hud.refresh()
 		elif k == KEY_T:
 			_on_hud_action("toggle_speed", "")
+		elif k == KEY_F5:
+			_on_hud_action("save_world", "")
+		elif k == KEY_F9:
+			_on_hud_action("load_world", "")
 	elif event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			var hit: Dictionary = cam.screen_to_ground_xz(event.position)
+			if bool(hit.get("ok", false)):
+				sim.set_click_target(hit["pos"])
+		elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			cam.zoom_in()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			cam.zoom_out()
@@ -204,6 +222,17 @@ func _on_hud_action(action: String, arg: String) -> void:
 			_boss_idx += 1
 			sim.spawn_creature(bkind, sim.player_pos + Vector2(9.0, 0.0))
 			_play_sfx("boss_roar")
+		"spawn_endgame_boss":
+			var ekind: String = str(_endgame_boss_keys[_endgame_idx % _endgame_boss_keys.size()])
+			_endgame_idx += 1
+			sim.spawn_creature(ekind, sim.player_pos + Vector2(9.0, 0.0))
+			_play_sfx("boss_roar")
+		"save_world":
+			if sim.save_to_disk():
+				_play_sfx("ui_click")
+		"load_world":
+			if sim.load_from_disk():
+				_play_sfx("magic")
 		"spawn_deerclops":
 			sim.spawn_creature("deerclops", sim.player_pos + Vector2(10.0, 0.0))
 			_play_sfx("boss_roar")

@@ -136,7 +136,10 @@
     { "id": "armorruins", "name": "툴레사이트 갑옷 (Ruins)", "tech": 3, "category": "ANCIENT", "ingredients": { "thulecite": 4, "nightmarefuel": 2 }, "result_type": "armor" },
     { "id": "sword_lunarplant", "name": "브라이트셰이드 검", "tech": 2, "category": "WEAPONS", "ingredients": { "purebrilliance": 2, "log": 2 }, "result_type": "weapon" },
     { "id": "lunarplanthat", "name": "브라이트셰이드 투구", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "rocks": 2 }, "result_type": "armor" },
-    { "id": "armor_lunarplant", "name": "브라이트셰이드 갑옷", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "log": 4 }, "result_type": "armor" }
+    { "id": "armor_lunarplant", "name": "브라이트셰이드 갑옷", "tech": 2, "category": "ARMOUR", "ingredients": { "purebrilliance": 2, "log": 4 }, "result_type": "armor" },
+    { "id": "voidcloth_scythe", "name": "그림자 사신 낫", "tech": 3, "category": "SHADOW", "ingredients": { "horrorfuel": 2, "nightmarefuel": 2 }, "result_type": "weapon" },
+    { "id": "voidclothhat", "name": "공허의 두건", "tech": 3, "category": "SHADOW", "ingredients": { "horrorfuel": 2, "rocks": 2 }, "result_type": "armor" },
+    { "id": "armor_voidcloth", "name": "공허의 로브", "tech": 3, "category": "SHADOW", "ingredients": { "horrorfuel": 2, "cutgrass": 4 }, "result_type": "armor" }
   ],
   "foods": [
     { "id": "berries", "name": "베리", "health": 0.0, "hunger": 9.375, "sanity": 0.0, "perish_days": 6.0, "tags": { "fruit": 0.5 } },
@@ -171,6 +174,8 @@
     "bearger": { "name": "곰소리 (가을 보스)", "health": 6000.0, "damage": 200.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 3.0, "speed": 4.2, "range": 4.5, "planar_entity": false, "boss": true, "loot": { "meat": 6, "honey": 3 } },
     "moose": { "name": "큰사슴/거위 (봄 보스)", "health": 6000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 3.0, "speed": 4.8, "range": 4.2, "planar_entity": false, "boss": true, "loot": { "meat": 6, "egg": 4 } },
     "dragonfly": { "name": "용파리 (여름 레이드)", "health": 27500.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 0.0, "attack_period": 3.5, "speed": 5.0, "range": 4.8, "planar_entity": false, "boss": true, "loot": { "meat": 8, "goldnugget": 8, "dragonfruit": 2 } },
-    "mutated_deerclops": { "name": "결정화 외눈사슴 (Planar)", "health": 6000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 30.0, "attack_period": 3.0, "speed": 3.8, "range": 4.5, "planar_entity": true, "boss": true, "loot": { "purebrilliance": 4, "meat": 4 } }
+    "mutated_deerclops": { "name": "결정화 외눈사슴 (Planar)", "health": 6000.0, "damage": 150.0, "player_dmg_pct": 0.5, "planar_damage": 30.0, "attack_period": 3.0, "speed": 3.8, "range": 4.5, "planar_entity": true, "alignment": "lunar", "boss": true, "loot": { "purebrilliance": 4, "meat": 4 } },
+    "fuelweaver": { "name": "고대 연료직조기 (Shadow 최종)", "health": 16000.0, "damage": 100.0, "player_dmg_pct": 0.5, "planar_damage": 25.0, "attack_period": 3.0, "speed": 4.0, "range": 4.6, "planar_entity": true, "alignment": "shadow", "boss": true, "loot": { "horrorfuel": 6, "thulecite": 4, "nightmarefuel": 6 } },
+    "celestial_champion": { "name": "천체 대변자 (Lunar 최종)", "health": 13000.0, "damage": 120.0, "player_dmg_pct": 0.5, "planar_damage": 35.0, "attack_period": 3.2, "speed": 4.2, "range": 5.0, "planar_entity": true, "alignment": "lunar", "boss": true, "loot": { "purebrilliance": 6, "goldnugget": 6 } }
   }
 }

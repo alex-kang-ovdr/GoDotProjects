@@ -23,6 +23,8 @@ var abigail_sprite: Sprite3D
 
 var ally_root: Node3D
 var ally_sprite: Sprite3D
+var click_ring: MeshInstance3D
+var click_ring_mat: StandardMaterial3D
 var telegraph_nodes: Dictionary = {} # uid -> { root, outer, inner }
 
 var resource_nodes: Dictionary = {} # uid -> Node3D { root, sprite }
@@ -51,6 +53,7 @@ func setup(world_sim: DSTWorldSim) -> void:
 	_build_boat_visual()
 	_build_abigail_visual()
 	_build_ally_visual()
+	_build_click_ring()
 	_build_weather_pool()
 	sync_visuals(0.0)
 
@@ -285,6 +288,20 @@ func _build_ally_visual() -> void:
 	ally_root.add_child(lbl)
 
 
+func _build_click_ring() -> void:
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = 0.95; cm.bottom_radius = 0.95; cm.height = 0.04
+	click_ring_mat = StandardMaterial3D.new()
+	click_ring_mat.albedo_color = Color(0.98, 0.85, 0.30, 0.60)
+	click_ring_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	click_ring_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	click_ring = MeshInstance3D.new()
+	click_ring.mesh = cm
+	click_ring.material_override = click_ring_mat
+	click_ring.visible = false
+	add_child(click_ring)
+
+
 func _build_weather_pool() -> void:
 	var drop_mesh: BoxMesh = BoxMesh.new()
 	drop_mesh.size = Vector3(0.06, 0.55, 0.06)
@@ -457,8 +474,19 @@ func sync_visuals(dt: float) -> void:
 		ally_sprite.position.y = abs(sin(_anim_time * 9.5)) * 0.14
 		ally_sprite.flip_h = sim.player_pos.x < sim.coop_ally_pos.x
 
-	# 2c. 보스 특수 패턴 바닥 텔레그래프 링 동기화
+	# 2c. 보스 특수 패턴 바닥 텔레그래프 링 및 클릭 타겟 링 동기화
 	_sync_telegraphs()
+	if click_ring != null:
+		if sim.click_target.is_empty():
+			click_ring.visible = false
+		else:
+			click_ring.visible = true
+			var tp: Vector2 = sim.click_target["pos"]
+			var pulse: float = 0.85 + sin(_anim_time * 9.0) * 0.16
+			click_ring.position = Vector3(tp.x, 0.05, tp.y)
+			click_ring.scale = Vector3(pulse, 1.0, pulse)
+			var mode: String = str(sim.click_target.get("mode", "move"))
+			click_ring_mat.albedo_color = Color(1.0, 0.28, 0.24, 0.62) if mode == "attack" else (Color(0.45, 0.96, 0.55, 0.62) if mode == "interact" else Color(0.98, 0.85, 0.30, 0.58))
 
 	# 3. 보트 & 돛 3D 동기화
 	boat_root.visible = sim.boat_active
@@ -576,6 +604,8 @@ func sync_visuals(dt: float) -> void:
 			"bearger": col = Color(0.45, 0.42, 0.38); h = 5.6; sh_s = 2.3
 			"dragonfly": col = Color(0.88, 0.42, 0.22); h = 5.5; sh_s = 2.1
 			"moose": col = Color(0.68, 0.66, 0.62); h = 5.4; sh_s = 2.1
+			"fuelweaver": col = Color(0.28, 0.16, 0.36); h = 6.2; sh_s = 2.2
+			"celestial_champion": col = Color(0.58, 0.90, 0.98); h = 6.4; sh_s = 2.4
 		return _make_entity_bundle(_get_sprite_tex(k, col), h, sh_s, true)
 	, false, true)
 
@@ -625,7 +655,12 @@ func _sync_entities(items: Array, cache: Dictionary, factory: Callable, hide_whe
 			var bob: float = abs(sin(_anim_time * 8.5 + float(uid))) * 0.14 if aggro else 0.0
 			sp.position.y = bob
 			sp.flip_h = (sim.player_pos.x < p.x)
-			sp.modulate = Color(1.0, 0.35, 0.35, 1.0) if float(it.get("hit_flash", 0.0)) > 0.0 else Color(1.0, 1.0, 1.0, 1.0)
+			if float(it.get("hit_flash", 0.0)) > 0.0:
+				sp.modulate = Color(1.0, 0.35, 0.35, 1.0)
+			elif float(it.get("shield_timer", 0.0)) > 0.0:
+				sp.modulate = Color(0.76, 0.42, 1.0, 1.0)
+			else:
+				sp.modulate = Color(1.0, 1.0, 1.0, 1.0)
 			var hp_lbl: Label3D = bundle.get("hp_label", null)
 			if hp_lbl != null:
 				var cur_hp: float = float(it["hp"])

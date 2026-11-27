@@ -31,12 +31,12 @@ func _run() -> void:
 	_check(db.load_from_path("res://data/dst_tuning.json"), "DB_LOAD", "dst_tuning.json 로드")
 	_check(db.foods_by_id.has("meatballs") and db.foods_by_id.has("perogies"), "DB_FOODS", "핵심 요리 존재")
 
-	# 원작 추출 에셋(KTEX 타일 10 + 초상화 6 + 아이콘 46 + KAnim 30 + FSB5 SFX 10 + 셰이더 70) 검증
+	# 원작 추출 에셋(KTEX 타일 10 + 초상화 6 + 아이콘 50 + KAnim 32 + FSB5 SFX 10 + 셰이더 70) 검증
 	DSTMedia.ensure_loaded()
 	_check(DSTMedia.terrain_tiles.size() >= 10, "MEDIA_TILES", "tiles=%d" % DSTMedia.terrain_tiles.size())
 	_check(DSTMedia.portraits.size() >= 6, "MEDIA_PORTRAITS", "portraits=%d" % DSTMedia.portraits.size())
-	_check(DSTMedia.icons.size() >= 46, "MEDIA_ICONS", "icons=%d" % DSTMedia.icons.size())
-	_check(DSTMedia.kanim_sprites.size() >= 30, "MEDIA_KANIM", "kanim=%d" % DSTMedia.kanim_sprites.size())
+	_check(DSTMedia.icons.size() >= 50, "MEDIA_ICONS", "icons=%d" % DSTMedia.icons.size())
+	_check(DSTMedia.kanim_sprites.size() >= 32, "MEDIA_KANIM", "kanim=%d" % DSTMedia.kanim_sprites.size())
 	_check(DSTMedia.sfx_streams.size() >= 10, "MEDIA_SFX", "sfx=%d" % DSTMedia.sfx_streams.size())
 	_check(DSTMedia.shader_count == 70, "MEDIA_SHADERS", "shaders=%d" % DSTMedia.shader_count)
 
@@ -312,6 +312,45 @@ func _run() -> void:
 	for _r in range(12):
 		sim.step(0.5, Vector2.ZERO)
 	_check(not sim.is_ghost, "COOP_ALLY_AUTO_REVIVE")
+
+	# M5 최종 보스 (고대 연료직조기 그림자 방패 + 천체 대변자 + 진영 세트 보너스)
+	sim.init_world(db, 1016, "wilson")
+	sim.equip_armor("lunarplanthat")
+	sim.equip_armor("armor_lunarplant")
+	sim.equip_hands = "sword_lunarplant"
+	var fw: Dictionary = sim.spawn_creature("fuelweaver", Vector2(2.0, 0.0))
+	fw["cd"] = 5.0
+	var h_norm: Dictionary = sim.player_attack_nearest()
+	_check(bool(h_norm["hit"]) and float(h_norm["planar"]) > 30.0, "M5_LUNAR_VS_SHADOW_BONUS", str(h_norm))
+	fw["shield_timer"] = 3.5
+	sim.attack_cooldown = 0.0
+	var h_blk: Dictionary = sim.player_attack_nearest()
+	_check(not bool(h_blk["hit"]) and bool(h_blk.get("blocked", false)), "M5_FUELWEAVER_SHADOW_SHIELD", str(h_blk))
+
+	var cc: Dictionary = sim.spawn_creature("celestial_champion", Vector2(4.0, 0.0))
+	_check(_approx(float(cc["max_hp"]), 13000.0) and str(cc["alignment"]) == "lunar", "M5_CELESTIAL_CHAMPION_SPAWN")
+	var r_align: Dictionary = sim.receive_attack(0.0, 35.0, "cc", "lunar")
+	# 35 * 0.9(달 세트 저항) = 31.5 - (10+5 + 10 = 25 평면방어) = 6.5
+	_check(float(r_align["total_damage"]) < 10.0, "M5_LUNAR_SET_RESIST_BONUS", "got %.2f" % float(r_align["total_damage"]))
+
+	# 마우스/터치 클릭 이동·공격 타겟 해석 검증
+	var ct_atk: Dictionary = sim.set_click_target(Vector2(2.0, 0.0))
+	_check(str(ct_atk["mode"]) == "attack", "CLICK_TARGET_ATTACK", str(ct_atk))
+	var ct_mv: Dictionary = sim.set_click_target(Vector2(-25.0, 25.0))
+	_check(str(ct_mv["mode"]) == "move", "CLICK_TARGET_MOVE", str(ct_mv))
+
+	# 세이브 / 로드 JSON 라운드트립 영속성 검증
+	sim.day = 17
+	sim.season_index = 1
+	sim.boat_active = true
+	sim.boat_masts = 2
+	sim.unlock_skill("combat_mastery")
+	var save_path: String = "user://dst_test_save.json"
+	_check(sim.save_to_disk(save_path), "SAVE_WORLD_DISK")
+	sim.init_world(db, 9999, "wx78")
+	_check(sim.day == 1 and sim.character_id == "wx78", "SAVE_MUTATE_BEFORE_LOAD")
+	_check(sim.load_from_disk(save_path), "LOAD_WORLD_DISK")
+	_check(sim.day == 17 and sim.season_index == 1 and sim.character_id == "wilson" and sim.boat_masts == 2 and sim.unlocked_skills.has("combat_mastery"), "SAVE_LOAD_EXACT_RESTORE", "day=%d char=%s masts=%d" % [sim.day, sim.character_id, sim.boat_masts])
 
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")

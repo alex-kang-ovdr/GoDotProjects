@@ -359,14 +359,14 @@ func _build_ui() -> void:
 	var row3: HBoxContainer = HBoxContainer.new()
 	tbox.add_child(row3)
 	_add_small_btn(row3, "4계절 보스", "spawn_seasonal_boss")
-	_add_small_btn(row3, "평면보스", "spawn_mutated")
+	_add_small_btn(row3, "최종 보스", "spawn_endgame_boss")
 	_add_small_btn(row3, "연금술(G)", "transmute")
 
 	var row4: HBoxContainer = HBoxContainer.new()
 	tbox.add_child(row4)
 	_add_small_btn(row4, "협동동료(P)", "toggle_ally")
-	_add_small_btn(row4, "달섬/본토", "toggle_moon")
-	_add_small_btn(row4, "미니맵(M)", "toggle_minimap")
+	_add_small_btn(row4, "저장(F5)", "save_world")
+	_add_small_btn(row4, "로드(F9)", "load_world")
 
 	log_label = Label.new()
 	log_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -400,7 +400,7 @@ func _build_ui() -> void:
 
 	var hint_lbl: Label = Label.new()
 	hint_lbl.add_theme_font_size_override("font_size", 11)
-	hint_lbl.text = "WASD 이동 · Space 채집/부활 · F 공격 · Q/E 회전 · B 보트 · K 스킬트리 · M 미니맵 · 인벤토리 클릭(식사/장착)"
+	hint_lbl.text = "좌클릭 이동/채집/공격 · WASD · Space 채집 · F 공격 · V 요리 · C 동굴 · B 보트 · K 스킬 · P 동료 · F5/F9 저장·로드"
 	bot_v.add_child(hint_lbl)
 
 	# 5. 중앙 인사이트 스킬트리 팝업 패널 (K키 토글)
@@ -546,7 +546,8 @@ func refresh() -> void:
 	if not boss.is_empty():
 		boss_panel.visible = true
 		var ptag: String = " [PLANAR]" if bool(boss.get("planar_entity", false)) else ""
-		boss_label.text = "%s%s — %.0f / %.0f HP" % [str(boss["name"]), ptag, max(0.0, float(boss["hp"])), float(boss["max_hp"])]
+		var stag: String = " [🛡방패!]" if float(boss.get("shield_timer", 0.0)) > 0.0 else ""
+		boss_label.text = "%s%s%s — %.0f / %.0f HP" % [str(boss["name"]), ptag, stag, max(0.0, float(boss["hp"])), float(boss["max_hp"])]
 		boss_bar.max_value = float(boss["max_hp"])
 		boss_bar.value = max(0.0, float(boss["hp"]))
 	else:

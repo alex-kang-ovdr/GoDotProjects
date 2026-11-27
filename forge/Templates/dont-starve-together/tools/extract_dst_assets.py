@@ -626,6 +626,8 @@ def main():
         "nightmarefuel": "nightmarefuel.tex", "lightbulb": "lightbulb.tex", "honey": "honey.tex",
         "dragonfruit": "dragonfruit.tex", "fish": "fish.tex", "dragonpie": "dragonpie.tex",
         "honeyham": "honeyham.tex", "fishsticks": "fishsticks.tex",
+        "voidclothhat": "voidclothhat.tex", "armor_voidcloth": "armor_voidcloth.tex",
+        "voidcloth_scythe": "voidcloth_scythe.tex", "horrorfuel": "horrorfuel.tex",
     }
     inv_icons_b64 = {}
     total_atlas_elements = 0
@@ -709,6 +711,8 @@ def main():
         "bearger": (["bearger_build.zip"], load_anim_zip(anim_dir, "bearger_basic.zip"), ["idle_loop", "walk_loop", "idle"], 160),
         "dragonfly": (["dragonfly_build.zip"], load_anim_zip(anim_dir, "dragonfly_basic.zip"), ["idle", "idle_loop", "walk_loop"], 160),
         "moose": (["goosemoose_build.zip"], load_anim_zip(anim_dir, "goosemoose_basic.zip"), ["idle", "idle_loop", "walk_loop"], 160),
+        "fuelweaver": (["stalker_atrium_build.zip"], load_anim_zip(anim_dir, "stalker_basic.zip"), ["idle", "idle_loop", "walk_loop"], 160),
+        "celestial_champion": (["alterguardian_phase3.zip"], None, ["idle", "idle_loop", "walk_loop"], 160),
         # Caves & Ruins (4)
         "cave_entrance": (["cave_entrance.zip"], None, ["open", "idle"], 128),
         "ancient_altar": (["statue_ruins_gem.zip", "statue_ruins.zip"], None, ["idle_full", "full", "idle"], 144),
