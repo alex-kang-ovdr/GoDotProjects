@@ -38,6 +38,10 @@ const SKILL_XP_THRESHOLDS := {
 const ION_SEC_PER_DMG := 5.0
 const ION_MAX_LOCK_SEC := 25.0
 const ZOLTAN_DEATH_BLAST_DMG := 15.0
+const DOOR_HP_BY_LEVEL := [30.0, 60.0, 120.0, 240.0]            # 4Door (0x90c61c): Lv1..Lv4
+const BOSS_PHASE_HULL := [20, 22, 20]                           # 8BossShip (0x90cef4): Phase 1/2/3
+const BOSS_SURGE_MIN_SEC := 20.0                                # 0x4062a0 (20000 ms)
+const BOSS_SURGE_MAX_SEC := 30.0                                # 0x406296 (30000 ms)
 const CREW_NAMES := [
 	"Charlie", "Kestrel", "Vance", "Sora", "Kael", "Nora", "Marek", "Talia",
 	"Dax", "Elena", "Orin", "Lyra", "Bram", "Zara", "Juno", "Cyrus"
@@ -113,8 +117,10 @@ var _next_crew_id: int = 1
 # Enemy/boss state
 var is_boss: bool = false
 var is_unmanned: bool = false
+var boss_ai_active: bool = false
 var boss_phase: int = 1
-var boss_surge_timer: float = 18.0
+var boss_surge_timer: float = 20.0
+var boss_surge_count: int = 0
 var ai_decision_timer: float = 0.6
 var surrender_offered: bool = false
 var surrender_declined: bool = false
@@ -153,12 +159,18 @@ func init_from_blueprint(p_db: FTLDatabase, bp_id: String, p_is_player: bool, se
 	weapon_slots = clampi(int(bp.get("weaponSlots", 4)), 1, 4)
 	drone_slots = clampi(int(bp.get("droneSlots", 2)), 0, 3)
 	is_boss = bp_id.begins_with("BOSS_")
+	boss_ai_active = false
+	boss_surge_count = 0
 	if bp_id == "BOSS_1":
 		boss_phase = 1
 	elif bp_id == "BOSS_2":
 		boss_phase = 2
 	elif bp_id == "BOSS_3":
 		boss_phase = 3
+	if is_boss:
+		max_hull = int(BOSS_PHASE_HULL[clampi(boss_phase - 1, 0, 2)])
+		hull = max_hull
+		boss_surge_timer = BOSS_SURGE_MIN_SEC
 
 	# Rooms
 	rooms.clear()
@@ -1216,14 +1228,62 @@ func toggle_door(door_idx: int) -> void:
 
 
 func get_door_max_hp() -> float:
+	# Authentic FTL 1.6 4Door HP levels (Lv1=30, Lv2=60, Lv3=120, Manned Lv3/Lv4=240)
 	var dlvl := get_effective_system_power("doors")
 	var manned := systems.has("doors") and int(systems.doors.manned_by) != -1
-	var eff := dlvl + (1 if manned else 0)
-	if eff <= 1:
-		return 30.0
-	elif eff == 2:
-		return 75.0
-	return 140.0
+	var eff := clampi(dlvl + (1 if manned else 0), 1, DOOR_HP_BY_LEVEL.size())
+	return float(DOOR_HP_BY_LEVEL[eff - 1])
+
+
+func sell_weapon(idx: int, from_cargo: bool = false) -> int:
+	if from_cargo:
+		if idx < 0 or idx >= cargo_weapons.size():
+			return 0
+		var wid := cargo_weapons[idx]
+		var val := maxi(1, int(floor(float(db.weapons.get(wid, {}).get("cost", 40)) * 0.5)))
+		cargo_weapons.remove_at(idx)
+		scrap += val
+		pending_sfx.append("upgradeSystem")
+		return val
+	if idx < 0 or idx >= weapons.size():
+		return 0
+	var w: Dictionary = weapons[idx]
+	var val := maxi(1, int(floor(float(w.bp.get("cost", 40)) * 0.5)))
+	weapons.remove_at(idx)
+	scrap += val
+	pending_sfx.append("upgradeSystem")
+	return val
+
+
+func sell_drone(idx: int, from_cargo: bool = false) -> int:
+	if from_cargo:
+		if idx < 0 or idx >= cargo_drones.size():
+			return 0
+		var did := cargo_drones[idx]
+		var val := maxi(1, int(floor(float(db.drones.get(did, {}).get("cost", 40)) * 0.5)))
+		cargo_drones.remove_at(idx)
+		scrap += val
+		pending_sfx.append("upgradeSystem")
+		return val
+	if idx < 0 or idx >= drones.size():
+		return 0
+	var d: Dictionary = drones[idx]
+	var val := maxi(1, int(floor(float(d.bp.get("cost", 40)) * 0.5)))
+	drones.remove_at(idx)
+	scrap += val
+	pending_sfx.append("upgradeSystem")
+	return val
+
+
+func sell_augment(idx: int) -> int:
+	if idx < 0 or idx >= augments.size():
+		return 0
+	var aid := augments[idx]
+	var val := maxi(1, int(floor(float(db.augments.get(aid, {}).get("cost", 40)) * 0.5)))
+	augments.remove_at(idx)
+	scrap += val
+	pending_sfx.append("upgradeSystem")
+	return val
 
 
 func get_door_between(room_a: int, room_b: int) -> int:
@@ -1573,13 +1633,16 @@ func _step_atmosphere(delta: float) -> void:
 			if float(r.fire_hp) <= 0.0:
 				r.fires = 0
 		else:
-			# Fire damages system in room slowly
+			# Fire damages system in room slowly (Authentic FTL: +1 hull damage when system reaches full destruction)
 			var sname := str(r.system)
-			if not sname.is_empty() and systems.has(sname):
+			if not sname.is_empty() and systems.has(sname) and int(systems[sname].damage) < int(systems[sname].level):
 				r.repair_progress = float(r.repair_progress) - 0.08 * float(r.fires) * delta
 				if float(r.repair_progress) <= -1.0:
 					r.repair_progress = 0.0
 					apply_system_damage(sname, 1)
+					if int(systems[sname].damage) >= int(systems[sname].level):
+						hull = maxi(0, hull - 1)
+						pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(r.id)), "text": "FIRE DESTROYED -1!", "color": Color("ff5c5c")})
 			# Fire spread through open doors to adjacent oxygenated rooms
 			r["fire_spread"] = float(r.get("fire_spread", 0.0)) + 0.07 * float(r.fires) * delta
 			if float(r["fire_spread"]) >= 1.0:
@@ -1768,6 +1831,17 @@ func _step_crew(delta: float) -> void:
 			else:
 				surviving.append(c)
 		crew = surviving
+		# Authentic FTL 1.6 Rebel Flagship AI Takeover: when all Flagship crew die, AI takes over & auto-repairs!
+		if is_boss and not boss_ai_active:
+			var boss_alive := 0
+			for bc in crew:
+				if bool(bc.is_player) == is_player and float(bc.hp) > 0.0:
+					boss_alive += 1
+			if boss_alive == 0:
+				boss_ai_active = true
+				is_unmanned = true
+				pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "FLAGSHIP AI ACTIVATED!", "color": Color("ff5c5c")})
+				pending_sfx.append("ionHit1")
 
 
 func _step_clone_queue(delta: float) -> void:
@@ -2100,13 +2174,14 @@ func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
 			pending_popups.append({"ship": player_ship, "pos_local": player_ship.get_room_center_local(dest_rid), "text": "INTRUDERS!", "color": Color("ff5c5c")})
 			pending_sfx.append("teleport")
 
-	# Rebel Flagship Phase 1 / Phase 2 / Phase 3 Distinct Patterns
+	# Rebel Flagship Phase 1 / Phase 2 / Phase 3 Distinct Patterns (0x406296..0x4062b4: 20..30s surge cadence)
 	if is_boss:
 		boss_surge_timer -= 0.75
 		if boss_surge_timer <= 0.0:
+			boss_surge_count += 1
+			boss_surge_timer = randf_range(BOSS_SURGE_MIN_SEC, BOSS_SURGE_MAX_SEC)
 			if boss_phase == 1:
 				# Phase 1: Hacking pulse on a random player system
-				boss_surge_timer = 20.0
 				if not target_rooms.is_empty() and player_ship.zoltan_shield <= 0:
 					var htr := target_rooms[randi() % target_rooms.size()]
 					player_ship.hacked_room = htr
@@ -2116,7 +2191,6 @@ func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
 					pending_sfx.append("ionHit1")
 			elif boss_phase == 2:
 				# Phase 2: Drone Surge (5-drone volley across multiple rooms) + occasional Boarding Drone
-				boss_surge_timer = 21.0
 				var drone_bp := {
 					"id": "BOSS_DRONE_SURGE", "type": "LASER", "damage": 1, "sysDamage": 0, "persDamage": 0,
 					"ion": 0, "shots": 1, "sp": 0, "fireChance": 1, "breachChance": 0, "stunChance": 0,
@@ -2133,29 +2207,34 @@ func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
 				pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "DRONE POWER SURGE!", "color": Color("65e8ff")})
 				pending_sfx.append("lightLaser1")
 			else:
-				# Phase 3: 7-Shot Laser Surge + Mind Control / Boarding on player ship
-				boss_surge_timer = 22.0
-				var surge_bp := {
-					"id": "BOSS_SURGE", "type": "LASER", "damage": 1, "sysDamage": 0, "persDamage": 0,
-					"ion": 0, "shots": 7, "sp": 0, "fireChance": 1, "breachChance": 0, "stunChance": 0,
-					"speed": 58.0, "image": "laser_heavy1", "color": Color(1.0, 0.35, 0.15),
-					"hitShieldSounds": ["hitShield1"], "hitShipSounds": ["hitHull2"], "missSounds": ["miss"],
-				}
-				var tr := target_rooms[randi() % target_rooms.size()] if not target_rooms.is_empty() else 0
-				pending_shots.append({
-					"from_ship": self, "to_ship": player_ship,
-					"weapon": {"id": "BOSS_SURGE", "bp": surge_bp, "mount_idx": 0},
-					"weapon_idx": 0, "target_room": tr,
-				})
-				# Phase 3 Mind Control a random player crew if Zoltan shield is down
-				if player_ship.zoltan_shield <= 0 and not player_ship.crew.is_empty():
-					for pc in player_ship.crew:
-						if bool(pc.is_player) and float(pc.hp) > 0.0 and float(pc.get("mind_timer", 0.0)) <= 0.0:
-							pc.mind_timer = 12.0
-							pc.mind_combat_mult = 1.25
-							pending_popups.append({"ship": player_ship, "pos_local": pc.pos, "text": "MIND CONTROLLED!", "color": Color("e070ff")})
-							break
-				pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "LASER POWER SURGE!", "color": Color("ff5c5c")})
+				# Phase 3: Alternating 7-Shot Laser Surge & 12-HP SuperShield Recharge Surge (authentic FTL 1.6!)
+				if (boss_surge_count % 2 == 0) and zoltan_shield <= 0:
+					zoltan_shield_max = 12
+					zoltan_shield = 12
+					pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "SUPER SHIELD SURGE (+12)!", "color": Color("7eff8b")})
+					pending_sfx.append("powerUpSystem")
+				else:
+					var surge_bp := {
+						"id": "BOSS_SURGE", "type": "LASER", "damage": 1, "sysDamage": 0, "persDamage": 0,
+						"ion": 0, "shots": 7, "sp": 0, "fireChance": 1, "breachChance": 0, "stunChance": 0,
+						"speed": 58.0, "image": "laser_heavy1", "color": Color(1.0, 0.35, 0.15),
+						"hitShieldSounds": ["hitShield1"], "hitShipSounds": ["hitHull2"], "missSounds": ["miss"],
+					}
+					var tr := target_rooms[randi() % target_rooms.size()] if not target_rooms.is_empty() else 0
+					pending_shots.append({
+						"from_ship": self, "to_ship": player_ship,
+						"weapon": {"id": "BOSS_SURGE", "bp": surge_bp, "mount_idx": 0},
+						"weapon_idx": 0, "target_room": tr,
+					})
+					# Phase 3 Mind Control a random non-slug player crew if Zoltan shield is down
+					if player_ship.zoltan_shield <= 0 and not player_ship.crew.is_empty():
+						for pc in player_ship.crew:
+							if bool(pc.is_player) and str(pc.species) != "slug" and float(pc.hp) > 0.0 and float(pc.get("mind_timer", 0.0)) <= 0.0:
+								pc.mind_timer = 14.0
+								pc.mind_combat_mult = 1.0
+								pending_popups.append({"ship": player_ship, "pos_local": pc.pos, "text": "MIND CONTROLLED!", "color": Color("e070ff")})
+								break
+					pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "LASER POWER SURGE!", "color": Color("ff5c5c")})
 
 	# Enemy crew anti-boarder & repair AI
 	var intruder_room := -1

@@ -4,6 +4,9 @@ extends Node2D
 ## Loads real blueprints, ship layouts, sprites, events, and OGG/WAV audio directly from C:\Temp\FTL\ftl.dat.vanilla.
 
 const SAVE_PATH := "user://ftl_godot_run_v1.json"
+const REPAIR_COST_BY_SECTOR := [2, 2, 3, 3, 3, 4, 4, 4]
+const START_SCRAP_BY_DIFF := [30, 10, 10]
+const SCRAP_MULT_BY_DIFF := [1.10, 1.00, 0.80]
 
 var pkg: FTLPkg
 var db: FTLDatabase
@@ -29,6 +32,8 @@ var active_event: Dictionary = {}
 var current_store_inventory: Dictionary = {}
 var ships_defeated: int = 0
 var scrap_collected: int = 0
+var boss_saved_crew_count: int = -1
+var boss_saved_ai_active: bool = false
 var hazard_timer: float = 11.0
 var status_banner_text: String = ""
 var status_banner_time: float = 0.0
@@ -669,11 +674,13 @@ func _start_new_run() -> void:
 	var custom_n := str(hangar_refs["name_edit"].text).strip_edges()
 	if not custom_n.is_empty():
 		player_ship.ship_name = custom_n
-	player_ship.scrap = 30 if difficulty == 0 else (15 if difficulty == 1 else 10)
+	player_ship.scrap = int(START_SCRAP_BY_DIFF[clampi(difficulty, 0, 2)])
 	player_ship.fuel = 16
 	enemy_ship = null
 	ships_defeated = 0
 	scrap_collected = 0
+	boss_saved_crew_count = -1
+	boss_saved_ai_active = false
 	selected_crew_id = int(player_ship.crew[0].id) if not player_ship.crew.is_empty() else -1
 	selected_boarder_id = -1
 	if selected_crew_id >= 0:
@@ -813,8 +820,16 @@ func _step_hazard(delta: float) -> void:
 	hazard_timer -= delta
 	if hazard_timer > 0.0:
 		return
-	hazard_timer = 11.5
-	if battle_view.hazard_kind == "asteroid":
+	if battle_view.hazard_kind == "pds":
+		# Authentic FTL 1.6 Anti-Ship Battery (7PDSFire): 3 hull dmg + 100% breach + shield-piercing every 20s!
+		hazard_timer = 20.0
+		if player_ship != null and player_ship.hull > 0 and not player_ship.rooms.is_empty():
+			var pds_bp := {"id": "PDS_ASB", "type": "MISSILES", "damage": 3, "sysDamage": 0, "persDamage": 0, "ion": 0, "shots": 1, "sp": 5, "fireChance": 0, "breachChance": 10, "speed": 70.0, "color": Color("ff5c5c")}
+			var rid := int(player_ship.rooms[randi() % player_ship.rooms.size()].id)
+			player_ship.apply_projectile_impact(pds_bp, rid)
+			_banner("반란군 대함 포대(ASB) 포격! (3 피해 · 선체 파열)")
+	elif battle_view.hazard_kind == "asteroid":
+		hazard_timer = 9.0
 		var rock_bp := {"type": "LASER", "damage": 1, "shots": 1, "sp": 0, "fireChance": 0, "breachChance": 1, "speed": 42.0, "color": Color("c8a070")}
 		for sh in [player_ship, enemy_ship]:
 			if sh != null and sh.hull > 0 and not sh.rooms.is_empty():
@@ -822,18 +837,34 @@ func _step_hazard(delta: float) -> void:
 				sh.apply_projectile_impact(rock_bp, rid)
 		_banner("소행성대 충돌 주의!")
 	elif battle_view.hazard_kind == "sun":
+		hazard_timer = 20.0
 		for sh in [player_ship, enemy_ship]:
 			if sh != null and sh.hull > 0 and not sh.rooms.is_empty():
-				var r: Dictionary = sh.rooms[randi() % sh.rooms.size()]
-				if float(r.oxygen) > 10.0:
-					r.fires = mini(int(r.w) * int(r.h), int(r.fires) + 1)
-					r.fire_hp = 100.0
-		_banner("태양 플레어 발생! 선내 화재 주의!")
+				if sh.shield_layers <= 0 and sh.zoltan_shield <= 0:
+					sh.hull = maxi(0, sh.hull - 1)
+				for _f in range(2):
+					var r: Dictionary = sh.rooms[randi() % sh.rooms.size()]
+					if float(r.oxygen) > 10.0 and int(r.breach) == 0:
+						r.fires = mini(int(r.w) * int(r.h), int(r.fires) + 1)
+						r.fire_hp = 100.0
+		_banner("태양 플레어 발생! 선체 과열 및 화재 주의!")
 	elif battle_view.hazard_kind == "pulsar":
+		hazard_timer = 15.0
 		for sh in [player_ship, enemy_ship]:
 			if sh != null and sh.hull > 0:
-				sh.apply_ion_damage("shields", 2)
-		_banner("펄사 전자기파! 방어막 이온화!")
+				var hit_sys: Array[String] = []
+				if sh.systems.has("shields") and sh.get_effective_system_power("shields") > 0:
+					sh.apply_ion_damage("shields", 2)
+					hit_sys.append("shields")
+				var others: Array[String] = []
+				for sname in sh.systems.keys():
+					if not (sname in hit_sys) and sh.get_effective_system_power(sname) > 0:
+						others.append(str(sname))
+				if not others.is_empty():
+					sh.apply_ion_damage(others[randi() % others.size()], 2)
+		_banner("펄사 전자기파! 2개 시스템 이온화!")
+	else:
+		hazard_timer = 12.0
 
 
 func _check_combat_outcome() -> void:
@@ -886,6 +917,13 @@ func _check_combat_outcome() -> void:
 		audio.play_sfx("explosion")
 
 		if was_boss and prev_phase < 3:
+			# Persist surviving Flagship crew count & AI state into next phase!
+			var boss_alive := 0
+			for bc in enemy_ship.crew:
+				if not bool(bc.is_player) and float(bc.hp) > 0.0:
+					boss_alive += 1
+			boss_saved_crew_count = boss_alive
+			boss_saved_ai_active = enemy_ship.boss_ai_active or (boss_alive == 0)
 			sector_map.flagship_phase = prev_phase + 1
 			var reward := 45 + prev_phase * 20
 			player_ship.scrap += reward
@@ -908,10 +946,10 @@ func _check_combat_outcome() -> void:
 			return
 
 		var scrap_gain := (18 + sector_map.current_sector_index * 9 + randi_range(0, 12)) * (1.25 if dead_crew else 1.0)
-		if difficulty == 0:
-			scrap_gain *= 1.15
-		if player_ship.has_augment("SCRAP_COLLECTOR"):
-			scrap_gain *= 1.10
+		scrap_gain *= float(SCRAP_MULT_BY_DIFF[clampi(difficulty, 0, 2)])
+		var sc_cnt := player_ship.count_augment("SCRAP_COLLECTOR")
+		if sc_cnt > 0:
+			scrap_gain *= (1.0 + 0.10 * float(sc_cnt))
 		if player_ship.has_augment("REPAIR_ARM"):
 			scrap_gain *= 0.85
 			player_ship.hull = mini(player_ship.max_hull, player_ship.hull + 2)
@@ -1776,7 +1814,9 @@ func _trigger_beacon_encounter(b: Dictionary) -> void:
 		})
 		return
 	if bool(b.rebel):
-		_start_combat("REBEL_SKINNY_ELITE" if db.ships.has("REBEL_SKINNY_ELITE") else "REBEL_SKINNY", "Warning! The Rebel Fleet has overtaken this beacon! An elite cruiser intercepts you!")
+		battle_view.set_backdrop(int(b.id) + sector_map.current_sector_index * 31, bool(b.nebula), "pds")
+		_start_combat("REBEL_SKINNY_ELITE" if db.ships.has("REBEL_SKINNY_ELITE") else "REBEL_SKINNY", "Warning! The Rebel Fleet has overtaken this beacon! An elite cruiser intercepts you under Anti-Ship Battery (ASB) fire!")
+		hazard_timer = 18.0
 		return
 	if btype == "exit":
 		_show_event_modal({
@@ -1843,12 +1883,22 @@ func _start_boss_fight(phase: int) -> void:
 	enemy_ship.init_from_blueprint(db, bp_id, false, 7)
 	enemy_ship.is_boss = true
 	enemy_ship.boss_phase = phase
+	# Carry over surviving Flagship crew & AI state across phases (authentic FTL 1.6!)
+	if phase > 1 and boss_saved_crew_count >= 0:
+		while enemy_ship.crew.size() > boss_saved_crew_count:
+			enemy_ship.crew.pop_back()
+		if boss_saved_ai_active or boss_saved_crew_count == 0:
+			enemy_ship.boss_ai_active = true
+			enemy_ship.is_unmanned = true
 	in_combat = true
 	player_ship.ftl_charge = 0.0
 	battle_view.set_ships(player_ship, enemy_ship)
 	audio.play_track("laststand", true)
 	_show_event_modal({
-		"text": "THE REBEL FLAGSHIP (PHASE %d / 3)\nThe massive Rebel flagship looms ahead of the Federation Base. Destroy it to save the Federation!" % phase,
+		"text": "THE REBEL FLAGSHIP (PHASE %d / 3)\nThe massive Rebel flagship looms ahead of the Federation Base. Destroy it to save the Federation!%s" % [
+			phase,
+			"\n[WARNING: Autonomous Flagship AI is active — systems will auto-repair!]" if enemy_ship.boss_ai_active else ""
+		],
 		"choices": [{"text": "Engage Flagship! (기함 교전 개시)", "event": {}}],
 	})
 
@@ -2128,11 +2178,22 @@ func _open_store() -> void:
 		if player_ship.scrap >= 8:
 			player_ship.scrap -= 8; player_ship.drone_parts += 1; audio.play_sfx("upgradeSystem"); _open_store()
 	))
-	var rep_cost := 2 + int(sector_map.current_sector_index / 3)
+	var rep_cost := int(REPAIR_COST_BY_SECTOR[clampi(sector_map.current_sector_index, 0, REPAIR_COST_BY_SECTOR.size() - 1)])
 	sup.add_child(_mk_btn("Repair +1 Hull (%d Scrap)" % rep_cost, func():
 		if player_ship.scrap >= rep_cost and player_ship.hull < player_ship.max_hull:
 			player_ship.scrap -= rep_cost; player_ship.hull += 1; audio.play_sfx("upgradeSystem"); _open_store()
 	, player_ship.hull < player_ship.max_hull and player_ship.scrap >= rep_cost))
+	var missing_hull := player_ship.max_hull - player_ship.hull
+	var full_rep_cost := missing_hull * rep_cost
+	if missing_hull > 1:
+		sup.add_child(_mk_btn("Repair All +%d (%d Scrap)" % [missing_hull, full_rep_cost], func():
+			var can_buy := mini(missing_hull, int(player_ship.scrap / rep_cost))
+			if can_buy > 0:
+				player_ship.scrap -= can_buy * rep_cost
+				player_ship.hull += can_buy
+				audio.play_sfx("upgradeSystem")
+				_open_store()
+		, player_ship.scrap >= rep_cost))
 
 	modal_box.add_child(_mk_label("WEAPONS & DRONES", 14, Color("ffd54f")))
 	for wid in current_store_inventory.get("weapons", []):
@@ -2220,6 +2281,49 @@ func _open_store() -> void:
 			, player_ship.scrap >= scost)
 			sbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			sgrid.add_child(sbtn)
+
+	# Authentic FTL 1.6 Store Selling (50% scrap resale for Weapons, Drones, Augments)
+	if not player_ship.weapons.is_empty() or not player_ship.cargo_weapons.is_empty() or not player_ship.drones.is_empty() or not player_ship.augments.is_empty():
+		modal_box.add_child(_mk_label("SELL EQUIPMENT (50% 스크랩 환급)", 14, Color("ffcf5c")))
+		var sell_grid := GridContainer.new()
+		sell_grid.columns = 2
+		sell_grid.add_theme_constant_override("h_separation", 8)
+		sell_grid.add_theme_constant_override("v_separation", 6)
+		modal_box.add_child(sell_grid)
+		for wi in range(player_ship.weapons.size()):
+			var w_item: Dictionary = player_ship.weapons[wi]
+			var sval := maxi(1, int(floor(float(w_item.bp.get("cost", 40)) * 0.5)))
+			var idx_w := wi
+			sell_grid.add_child(_mk_btn("Sell %s (+%d Scrap)" % [str(w_item.bp.get("title", w_item.id)), sval], func():
+				if player_ship.sell_weapon(idx_w, false) > 0:
+					_rebuild_hud_controls(); _open_store()
+			))
+		for ci in range(player_ship.cargo_weapons.size()):
+			var cwid := player_ship.cargo_weapons[ci]
+			var cw_bp: Dictionary = db.weapons.get(cwid, {})
+			var sval := maxi(1, int(floor(float(cw_bp.get("cost", 40)) * 0.5)))
+			var idx_cw := ci
+			sell_grid.add_child(_mk_btn("Sell Cargo %s (+%d Scrap)" % [str(cw_bp.get("title", cwid)), sval], func():
+				if player_ship.sell_weapon(idx_cw, true) > 0:
+					_open_store()
+			))
+		for di in range(player_ship.drones.size()):
+			var d_item: Dictionary = player_ship.drones[di]
+			var sval := maxi(1, int(floor(float(d_item.bp.get("cost", 40)) * 0.5)))
+			var idx_d := di
+			sell_grid.add_child(_mk_btn("Sell Drone %s (+%d Scrap)" % [str(d_item.bp.get("title", d_item.id)), sval], func():
+				if player_ship.sell_drone(idx_d, false) > 0:
+					_rebuild_hud_controls(); _open_store()
+			))
+		for ai in range(player_ship.augments.size()):
+			var aid_s := player_ship.augments[ai]
+			var abp_s: Dictionary = db.augments.get(aid_s, {})
+			var sval := maxi(1, int(floor(float(abp_s.get("cost", 40)) * 0.5)))
+			var idx_a := ai
+			sell_grid.add_child(_mk_btn("Sell Aug %s (+%d Scrap)" % [str(abp_s.get("title", aid_s)), sval], func():
+				if player_ship.sell_augment(idx_a) > 0:
+					_open_store()
+			))
 
 	# Sell Equipment (50% Scrap refund)
 	var has_sellable := not player_ship.cargo_weapons.is_empty() or not player_ship.cargo_drones.is_empty() or player_ship.weapons.size() > 1 or not player_ship.drones.is_empty() or not player_ship.augments.is_empty()

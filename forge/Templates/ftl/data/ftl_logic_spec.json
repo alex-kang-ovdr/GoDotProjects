@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBinary": "FTLGame_orig.exe",
-  "extractedAt": "2026-11-27T08:42:47.741577+00:00",
+  "extractedAt": "2026-11-27T08:54:23.433730+00:00",
   "simulationTickHz": 16,
   "simulationTickDt": 0.0625,
   "vtables": {
@@ -108,6 +108,21 @@
     "4Fire": {
       "vtable_va": "0x90c670",
       "slot_count": 32,
+      "on_loop_va": null
+    },
+    "7PDSFire": {
+      "vtable_va": "0x90cc2c",
+      "slot_count": 33,
+      "on_loop_va": null
+    },
+    "8Asteroid": {
+      "vtable_va": "0x90ce1c",
+      "slot_count": 33,
+      "on_loop_va": null
+    },
+    "5Store": {
+      "vtable_va": "0x90c948",
+      "slot_count": 17,
       "on_loop_va": null
     }
   },
@@ -298,5 +313,71 @@
     "humanLearningMultiplier": 0.9,
     "zoltanDeathBlastDamage": 15.0,
     "crystalSuffocationMultiplier": 0.5
+  },
+  "doors": {
+    "vtableVa": "0x90c61c",
+    "hpByEffectiveLevel": [
+      30.0,
+      60.0,
+      120.0,
+      240.0
+    ],
+    "mannedLevelBonus": 1
+  },
+  "bossShip": {
+    "vtableVa": "0x90cef4",
+    "surgeTimerMinMs": 20000,
+    "surgeTimerMaxMs": 30000,
+    "surgeTimerProofVa": "0x406296..0x4062b4",
+    "hullByPhase": [
+      20,
+      22,
+      20
+    ],
+    "phase3SuperShieldMax": 12,
+    "aiTakeoverOnCrewLoss": true,
+    "difficultyBlueprintSuffixes": [
+      "_EASY",
+      "_NORMAL",
+      "_HARD"
+    ],
+    "difficultyProofVa": "0x407204..0x407274"
+  },
+  "hazards": {
+    "pdsVtableVa": "0x90cc2c",
+    "asteroidVtableVa": "0x90ce1c",
+    "pdsIntervalSec": 20.0,
+    "pdsDamage": 3,
+    "pdsBreachChance": 10,
+    "pdsShieldPierce": 5,
+    "pulsarIntervalSec": 15.0,
+    "pulsarIonDamage": 2,
+    "pulsarTargetSystems": 2,
+    "sunIntervalSec": 20.0,
+    "asteroidIntervalSec": 9.0
+  },
+  "economy": {
+    "storeVtableVa": "0x90c948",
+    "startingScrapByDifficulty": [
+      30,
+      10,
+      10
+    ],
+    "scrapMultiplierByDifficulty": [
+      1.1,
+      1.0,
+      0.8
+    ],
+    "repairCostBySector": [
+      2,
+      2,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4
+    ],
+    "resaleValueRatio": 0.5
   }
 }

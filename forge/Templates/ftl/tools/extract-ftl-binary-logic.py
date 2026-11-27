@@ -100,6 +100,7 @@ def main():
         b"10MindSystem", b"14CloakingSystem", b"14TeleportSystem", b"15ArtillerySystem",
         b"12WeaponSystem", b"11DroneSystem", b"12DefenseDrone", b"10CrewMember",
         b"11ShipManager", b"8BossShip", b"4Door", b"4Room", b"4Fire",
+        b"7PDSFire", b"8Asteroid", b"5Store",
     ]
     vtables = {}
     for cn in class_names:
@@ -265,6 +266,42 @@ def main():
             "humanLearningMultiplier": 0.90,
             "zoltanDeathBlastDamage": 15.0,
             "crystalSuffocationMultiplier": 0.50,
+        },
+        "doors": {
+            "vtableVa": vtables.get("4Door", {}).get("vtable_va"),
+            "hpByEffectiveLevel": [30.0, 60.0, 120.0, 240.0],
+            "mannedLevelBonus": 1,
+        },
+        "bossShip": {
+            "vtableVa": vtables.get("8BossShip", {}).get("vtable_va"),
+            "surgeTimerMinMs": 20000,
+            "surgeTimerMaxMs": 30000,
+            "surgeTimerProofVa": "0x406296..0x4062b4",
+            "hullByPhase": [20, 22, 20],
+            "phase3SuperShieldMax": 12,
+            "aiTakeoverOnCrewLoss": True,
+            "difficultyBlueprintSuffixes": ["_EASY", "_NORMAL", "_HARD"],
+            "difficultyProofVa": "0x407204..0x407274",
+        },
+        "hazards": {
+            "pdsVtableVa": vtables.get("7PDSFire", {}).get("vtable_va"),
+            "asteroidVtableVa": vtables.get("8Asteroid", {}).get("vtable_va"),
+            "pdsIntervalSec": 20.0,
+            "pdsDamage": 3,
+            "pdsBreachChance": 10,
+            "pdsShieldPierce": 5,
+            "pulsarIntervalSec": 15.0,
+            "pulsarIonDamage": 2,
+            "pulsarTargetSystems": 2,
+            "sunIntervalSec": 20.0,
+            "asteroidIntervalSec": 9.0,
+        },
+        "economy": {
+            "storeVtableVa": vtables.get("5Store", {}).get("vtable_va"),
+            "startingScrapByDifficulty": [30, 10, 10],
+            "scrapMultiplierByDifficulty": [1.10, 1.00, 0.80],
+            "repairCostBySector": [2, 2, 3, 3, 3, 4, 4, 4],
+            "resaleValueRatio": 0.50,
         },
     }
 

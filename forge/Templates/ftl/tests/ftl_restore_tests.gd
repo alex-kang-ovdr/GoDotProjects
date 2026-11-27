@@ -515,6 +515,45 @@ func _run() -> void:
 		"Binary FTL 1.6 Combat: Zoltan -15 blast, Bomb blocked by Zoltan Shield (unless Bypass), Hacked O2 drains ship-wide -6%/s",
 		"foe_hp=%.1f o2=%.1f" % [float(z_foe.hp), float(z_ship.room_by_id[other_rid].oxygen)])
 
+	# 8v. Wave 2 Binary Logic: Flagship AI Takeover on crew loss, Phase 3 SuperShield Recharge Surge, 4-tier Door HP & 50% Store Resale
+	_check((spec_json.get("vtables", {}) as Dictionary).size() >= 24 and spec_json.has("bossShip") and spec_json.has("hazards") and spec_json.has("economy"),
+		"Wave 2 ftl_logic_spec.json includes 24 vtables + bossShip/hazards/economy/doors tables")
+
+	var boss3 := FTLShip.new()
+	boss3.init_from_blueprint(st_db, "BOSS_3", false, 7)
+	boss3.is_boss = true
+	boss3.boss_phase = 3
+	for bc in boss3.crew:
+		bc.hp = 0.0
+	boss3.step(0.05, z_ship, true)
+	var ai_takeover_ok := boss3.boss_ai_active and boss3.is_unmanned and boss3.has_living_crew()
+	boss3.zoltan_shield = 0
+	boss3.boss_surge_count = 1 # next surge is #2 (even) -> SuperShield Recharge Surge (+12)!
+	boss3.boss_surge_timer = 0.1
+	boss3.ai_decision_timer = 0.0
+	boss3.step(0.5, z_ship, true)
+	var ss_surge_ok := boss3.zoltan_shield == 12
+	_check(ai_takeover_ok and ss_surge_ok and boss3.max_hull == 20,
+		"Binary FTL 1.6 Flagship: AI Takeover on crew wipe & Phase 3 +12 SuperShield Recharge Surge",
+		"ai=%s zs=%d hull=%d" % [str(ai_takeover_ok), boss3.zoltan_shield, boss3.max_hull])
+
+	var d4_ship := FTLShip.new()
+	d4_ship.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	d4_ship.systems.doors.level = 3
+	var d_crew := d4_ship.add_crew("human", int(d4_ship.systems.doors.room), true, "DoorGuard")
+	d4_ship.step(0.05, null, false)
+	var door_lv4_hp := d4_ship.get_door_max_hp() # Lv3 + manned = Lv4 -> 240 HP!
+	var scrap_before_sell := d4_ship.scrap
+	var sold_w := d4_ship.sell_weapon(0, false)
+	var pds_bp := {"id": "PDS_ASB", "type": "MISSILES", "damage": 3, "sysDamage": 0, "persDamage": 0, "ion": 0, "sp": 5, "breachChance": 10}
+	d4_ship.systems.engines.power = 0
+	d4_ship.shield_layers = 2
+	var hull_pre_pds := d4_ship.hull
+	var pds_res := d4_ship.apply_projectile_impact(pds_bp, int(d4_ship.rooms[0].id))
+	_check(absf(door_lv4_hp - 240.0) < 0.1 and sold_w > 0 and d4_ship.scrap == scrap_before_sell + sold_w and pds_res == "hit" and (hull_pre_pds - d4_ship.hull) == 3 and int(d4_ship.rooms[0].breach) == 1,
+		"Binary FTL 1.6 Doors/Store/PDS: Manned Lv3 Door=240HP, 50% Weapon Sell, ASB deals 3 hull + breach through shields",
+		"door=%.0f sold=%d pds_dmg=%d" % [door_lv4_hp, sold_w, hull_pre_pds - d4_ship.hull])
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())
