@@ -514,6 +514,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 		if part.clock >= roundi(part.stats.production_interval * HZ):
 			part.energy = mini(part.capacity, part.energy + int(part.stats.production_quantity))
 			part.clock = 0
+	CombatSystems.tick_capacitor_distribution(ship, DT)
 	for id in CombatSystems.BRIDGE_IDS + [Special.ROCKET] + CombatSystems.WEAPON_IDS:
 		for uid in ship.ids.get(id, []):
 			ship.parts[uid].staffed = 0
@@ -610,6 +611,7 @@ func _operate(ship: Dictionary, other: Dictionary, side: String, target: int) ->
 				"damage": float(warhead.damage) if not warhead.is_empty() else float(gun.stats.damage) * dmg_mult,
 				"structural_damage": float(warhead.structural_damage) if not warhead.is_empty() else float(gun.stats.structural_damage) * dmg_mult,
 			})
+			CombatSystems.apply_weapon_recoil(ship, muzzle, direction, bolt_kind, dmg_mult)
 			_record("shot", side, uid, target)
 	var active_ions := CombatSystems.tick_ion_beams(ship, other, side, target, DT)
 	active_ions.append_array(CombatSystems.tick_tractor_beams(ship, other, side, DT))

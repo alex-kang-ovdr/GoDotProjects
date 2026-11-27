@@ -22,9 +22,9 @@ func _check(ok: bool, label: String) -> void:
 func test() -> void:
 	# 1. Verify reverse-engineered logic_trace.json & dll_mechanics.json load cleanly
 	var trace = JSON.parse_string(FileAccess.get_file_as_string("res://data/logic_trace.json"))
-	_check(trace is Dictionary and trace.get("methods", []).size() >= 42, "expanded logic_trace.json traces >= 42 Cosmoteer.dll methods")
+	_check(trace is Dictionary and trace.get("methods", []).size() >= 56, "expanded logic_trace.json traces >= 56 Cosmoteer.dll methods")
 	var mech := CombatSystems.get_dll_mechanics()
-	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 42, "dll_mechanics.json v2 loads reverse-engineered constants")
+	_check(not mech.is_empty() and int(mech.get("traced_methods", 0)) >= 56, "dll_mechanics.json v3 loads reverse-engineered constants")
 
 	# 2. BulletPenetratingHit: exact projectile penetration & part resistance
 	_check(is_equal_approx(CombatSystems.projectile_penetration("cannon"), 5.0), "medium cannon penetration == 5.0")
@@ -147,6 +147,47 @@ func test() -> void:
 	mock_ship.cells[Vector2i(8, 2)] = 21
 	_check(is_equal_approx(CombatSystems.thruster_engine_room_buff(mock_ship, mock_ship.parts[20]), 1.5), "adjacent powered engine_room grants +50% (1.5x) thruster buff")
 	_check(is_equal_approx(CombatSystems.thruster_engine_room_buff(mock_ship, mock_ship.parts[21]), 1.0), "non-adjacent thruster receives 1.0x unbuffed thrust")
+
+	# 9. BulletEmitter.Recoil: deck cannon imparts Newtonian linear recoil & off-center torque
+	var rec_ship := {"position": Vector2.ZERO, "velocity": Vector2.ZERO, "angular_velocity": 0.0, "mass": 60.0, "inertia": 200.0}
+	CombatSystems.apply_weapon_recoil(rec_ship, Vector2(0.0, 4.0), Vector2.RIGHT, "cannon_deck", 1.0)
+	_check(Vector2(rec_ship.velocity).x < -0.1, "BulletEmitter.Recoil pushes ship opposite fire direction")
+	_check(absf(float(rec_ship.angular_velocity)) > 0.05, "Off-center deck cannon recoil applies rotational torque")
+
+	# 10. ArcShield.RecalculateArcRadius: overclock extends active shield arc radius by 1.5x
+	var sh_ship := {
+		"command": true, "overclock": false,
+		"ids": {CombatSystems.SHIELD_SMALL: [1]},
+		"parts": {
+			1: {"id": CombatSystems.SHIELD_SMALL, "hp": 2000.0, "energy": 3000, "capacity": 6000, "clock": 0, "shield_hp": 5000.0, "shield_max_hp": 6000.0, "shield_active": true, "shield_reboot": 0.0, "shield_flash": 0.0, "shield_radius": 7.5, "stats": {"shield_radius": 7.5, "drain_interval": 1.0, "drain_quantity": 100, "recharge_rate": 600.0, "power_per_hp": 0.5}},
+		},
+	}
+	CombatSystems.tick_shields(sh_ship, 0.05)
+	var base_r := float(sh_ship.parts[1].shield_radius)
+	sh_ship.overclock = true
+	CombatSystems.tick_shields(sh_ship, 0.05)
+	_check(absf(float(sh_ship.parts[1].shield_radius) - base_r * 1.5) < 0.01, "Overclock extends ArcShield radius by 1.5x (150%)")
+
+	# 11. ResourceDistributor: capacitor shares power to orthogonally adjacent depleted weapon
+	var cap_ship := {
+		"ids": {CombatSystems.CAPACITOR: [30]},
+		"parts": {
+			30: {"id": CombatSystems.CAPACITOR, "hp": 1000.0, "energy": 4000, "capacity": 6000, "cell": Vector2i(2, 2), "size": Vector2i(2, 2), "severed": false},
+			31: {"id": CombatSystems.LASER_SMALL, "hp": 1000.0, "energy": 0, "capacity": 2000, "cell": Vector2i(4, 2), "size": Vector2i(2, 1), "severed": false},
+		},
+		"cells": {},
+	}
+	for dx in 2:
+		for dy in 2:
+			cap_ship.cells[Vector2i(2 + dx, 2 + dy)] = 30
+	cap_ship.cells[Vector2i(4, 2)] = 31
+	cap_ship.cells[Vector2i(5, 2)] = 31
+	var moved := CombatSystems.tick_capacitor_distribution(cap_ship, 0.5)
+	_check(moved > 0 and int(cap_ship.parts[31].energy) == moved and int(cap_ship.parts[30].energy) == 4000 - moved, "ResourceDistributor transfers power from capacitor to adjacent weapon")
+
+	# 12. Weapon.GetAIFirepowerRating: computes positive ship combat rating
+	var fp_full := CombatSystems.ship_firepower_rating(battle.player)
+	_check(fp_full > 100.0, "ship_firepower_rating computes positive combat firepower: %.1f" % fp_full)
 
 	print("DLL mechanics checks: %d; failures: %d" % [checks, failed])
 	quit(1 if failed else 0)

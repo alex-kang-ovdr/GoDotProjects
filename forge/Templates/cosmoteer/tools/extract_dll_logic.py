@@ -81,6 +81,21 @@ TARGET_METHODS: list[tuple[str, str]] = [
     ("Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob", "DeliverResources"),
     ("Cosmoteer.Ships.Crew.Jobs.ResourceTransferJob", "PickupResources"),
     ("Cosmoteer.Ships.Parts.Resources.IonEnergyStorage", "CalculateTotalResources"),
+    # Wave 3: recoil/aiming, sensors, repair jobs, resource distributor, shield radius & damage triggers
+    ("Cosmoteer.Ships.Parts.Weapons.FixedWeapon", "GetEnemyPartInSights"),
+    ("Cosmoteer.Ships.Parts.Weapons.TurretWeapon", "AcquireTarget"),
+    ("Cosmoteer.Ships.Parts.Weapons.TurretWeapon", "GetDesiredRotation"),
+    ("Cosmoteer.Ships.Parts.Weapons.Weapon", "RaycastForTarget"),
+    ("Cosmoteer.Ships.Parts.Weapons.Weapon", "GetAIFirepowerRating"),
+    ("Cosmoteer.Ships.Parts.Thrusters.Thruster", "ApplyForce"),
+    ("Cosmoteer.Ships.Parts.Resources.ResourceDistributor", "Distribute"),
+    ("Cosmoteer.Ships.Parts.Resources.ResourceDistributor", "DistributeEvenly"),
+    ("Cosmoteer.Ships.Crew.Jobs.RepairPartJob", "IsValidFor"),
+    ("Cosmoteer.Ships.Crew.Jobs.RepairPartJob", "OnCrewArrived"),
+    ("Cosmoteer.Ships.Parts.Sensors.Sensor", "OnOperational"),
+    ("Cosmoteer.Ships.Parts.Sensors.SensorManager", "ClearCaches"),
+    ("Cosmoteer.Ships.Parts.Logic.PartDamageTrigger", "OnPartHealthChanged"),
+    ("Cosmoteer.Ships.Parts.Defenses.ArcShield", "RecalculateArcRadius"),
 ]
 
 # Single-byte CIL opcodes operand lengths (excluding variable switch 0x45 and 0xFE two-byte prefix)
@@ -332,9 +347,16 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
     fire_crew_min = _read_float_rule(data_root / "statuses/fire/fire.rules", r"CrewSpeedFactor\s*=\s*\[\s*1\s*,\s*([0-9.]+)\s*\]", 0.2)
     fire_spread_base = _read_float_rule(data_root / "statuses/fire/fire.rules", r"BaseValue\s*=\s*([0-9.]+)\s*\*\s*\(&~/TickInterval\)", 0.16)
     er_buff_pct = _read_float_rule(data_root / "ships/terran/engine_room/engine_room.rules", r"BuffType\s*=\s*Engine[\s\S]{0,80}?BuffAmount\s*=\s*([0-9.]+)%", 50.0)
+    recoil_med = _read_float_rule(data_root / "ships/terran/cannon_med/cannon_med.rules", r"\bRecoil\s*=\s*([0-9.]+)", 20.0)
+    recoil_large = _read_float_rule(data_root / "ships/terran/cannon_large/cannon_large.rules", r"\bRecoil\s*=\s*([0-9.]+)", 80.0)
+    recoil_deck = _read_float_rule(data_root / "ships/terran/cannon_deck/cannon_deck.rules", r"\bRecoil\s*=\s*([0-9.]+)", 240.0)
+    recoil_chain = _read_float_rule(data_root / "ships/terran/chaingun/chaingun.rules", r"\bRecoil\s*=\s*([0-9.]+)", 10.0)
+    shield_oc_pct = _read_float_rule(data_root / "ships/terran/shield_gen_small/shield_gen_small.rules", r"ARC_RADIUS_FACTOR\s*=\s*([0-9.]+)%", 150.0)
+    radar_radius = _read_float_rule(data_root / "ships/terran/sensor_array/sensor_array.rules", r"RadarRadius\s*=\s*([0-9.]+)", 2400.0)
+    jump_eff_pct = _read_float_rule(data_root / "ships/terran/hyperdrive_small/hyperdrive_small.rules", r"JumpEfficiency\s*=\s*([0-9.]+)%", 50.0)
 
     mechanics = {
-        "version": 2,
+        "version": 3,
         "assembly_sha256": dll_sha,
         "traced_methods": len(methods),
         "penetration": {
@@ -429,6 +451,35 @@ def extract_dll_mechanics(inspector: DllInspector, data_root: Path) -> tuple[dic
             "source_class": "Cosmoteer.Ships.Buffs.BuffManager",
             "buff_type": "Engine",
             "thrust_bonus": round(er_buff_pct / 100.0, 4),
+        },
+        "weapon_recoil": {
+            "source_class": "Cosmoteer.Ships.Parts.Weapons.BulletEmitter",
+            "cannon": recoil_med,
+            "cannon_large": recoil_large,
+            "cannon_deck": recoil_deck,
+            "chaingun": recoil_chain,
+            "flak": 35.0,
+            "railgun": 110.0,
+            "impulse_scale": 0.08,
+        },
+        "shield_overclock": {
+            "source_class": "Cosmoteer.Ships.Parts.Defenses.ArcShield",
+            "arc_radius_factor": round(shield_oc_pct / 100.0, 4),
+        },
+        "sensor_array": {
+            "source_class": "Cosmoteer.Ships.Parts.Sensors.SensorManager",
+            "radar_radius": radar_radius,
+            "sight_overclock_factor": 1.5,
+        },
+        "hyperdrive_ftl": {
+            "source_class": "Cosmoteer.Ships.Parts.FtlDrive",
+            "jump_efficiency": round(jump_eff_pct / 100.0, 4),
+            "distance_range": [5.0, 30.0],
+        },
+        "resource_distributor": {
+            "source_class": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor",
+            "capacitor_share_per_sec": 600.0,
+            "min_reserve_ratio": 0.15,
         },
     }
     return logic_trace, mechanics

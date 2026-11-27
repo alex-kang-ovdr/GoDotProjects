@@ -16,7 +16,7 @@ class DllLogicExtractionTests(unittest.TestCase):
 
         trace = json.loads(LOGIC_TRACE_PATH.read_text(encoding="utf-8"))
         self.assertEqual(trace["assembly"], "Cosmoteer")
-        self.assertGreaterEqual(len(trace["methods"]), 42)
+        self.assertGreaterEqual(len(trace["methods"]), 56)
         method_keys = {(m["type"], m["name"]) for m in trace["methods"]}
         for required in [
             ("Cosmoteer.Ships.Parts.Weapons.BulletEmitter", "Emit"),
@@ -24,6 +24,7 @@ class DllLogicExtractionTests(unittest.TestCase):
             ("Cosmoteer.Bullets.Hits.BulletPenetratingHit", "HandlePenetrationDamage"),
             ("Cosmoteer.Bullets.Physics.BulletTargetHoming", ".cctor"),
             ("Cosmoteer.Ships.Parts.Defenses.ArcShield", "ValidateShieldHit"),
+            ("Cosmoteer.Ships.Parts.Defenses.ArcShield", "RecalculateArcRadius"),
             ("Cosmoteer.Ships.ShipPhysics", "ProcessUpdatedParts"),
             ("Cosmoteer.Ships.AI.TargetingModules.AIValueTargeterModule", "GetPartTargetValue"),
             ("Cosmoteer.Ships.Parts.StructureContiguityManager", "SplitIntoNewShips"),
@@ -31,6 +32,10 @@ class DllLogicExtractionTests(unittest.TestCase):
             ("Cosmoteer.Ships.Parts.DirectionalCrewSpeeds", "GetSpeed"),
             ("Cosmoteer.Ships.Parts.Thrusters.ThrusterManager", "CalculateDesiredSRF"),
             ("Cosmoteer.Ships.Crew.Jobs.JobManager", "GetCrewForJob"),
+            ("Cosmoteer.Ships.Parts.Resources.ResourceDistributor", "Distribute"),
+            ("Cosmoteer.Ships.Parts.Weapons.FixedWeapon", "GetEnemyPartInSights"),
+            ("Cosmoteer.Ships.Parts.Weapons.TurretWeapon", "AcquireTarget"),
+            ("Cosmoteer.Ships.Crew.Jobs.RepairPartJob", "OnCrewArrived"),
         ]:
             self.assertIn(required, method_keys, f"missing traced DLL method: {required}")
 
@@ -54,6 +59,13 @@ class DllLogicExtractionTests(unittest.TestCase):
         self.assertAlmostEqual(mech["directional_crew_speeds"]["fire_speed_min"], 0.2, places=4)
         self.assertAlmostEqual(mech["engine_room_buff"]["thrust_bonus"], 0.5, places=4)
         self.assertTrue(mech["structure_contiguity"]["sever_disconnected_from_bridge"])
+        self.assertEqual(mech["weapon_recoil"]["cannon"], 20.0)
+        self.assertEqual(mech["weapon_recoil"]["cannon_large"], 80.0)
+        self.assertEqual(mech["weapon_recoil"]["cannon_deck"], 240.0)
+        self.assertEqual(mech["weapon_recoil"]["chaingun"], 10.0)
+        self.assertAlmostEqual(mech["shield_overclock"]["arc_radius_factor"], 1.5, places=4)
+        self.assertEqual(mech["sensor_array"]["radar_radius"], 2400.0)
+        self.assertAlmostEqual(mech["hyperdrive_ftl"]["jump_efficiency"], 0.5, places=4)
 
     @unittest.skipUnless(
         (COSMOTEER_ROOT / "Bin" / "Cosmoteer.dll").is_file(),

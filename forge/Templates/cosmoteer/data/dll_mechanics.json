@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "assembly_sha256": "da314bf6d4d84224c7ab380c8b6cb6f67f1626e0ae92a6a8690fe3e997dfe788",
-  "traced_methods": 46,
+  "traced_methods": 60,
   "penetration": {
     "source_class": "Cosmoteer.Bullets.Hits.BulletPenetratingHit",
     "projectiles": {
@@ -109,5 +109,37 @@
     "source_class": "Cosmoteer.Ships.Buffs.BuffManager",
     "buff_type": "Engine",
     "thrust_bonus": 0.5
+  },
+  "weapon_recoil": {
+    "source_class": "Cosmoteer.Ships.Parts.Weapons.BulletEmitter",
+    "cannon": 20.0,
+    "cannon_large": 80.0,
+    "cannon_deck": 240.0,
+    "chaingun": 10.0,
+    "flak": 35.0,
+    "railgun": 110.0,
+    "impulse_scale": 0.08
+  },
+  "shield_overclock": {
+    "source_class": "Cosmoteer.Ships.Parts.Defenses.ArcShield",
+    "arc_radius_factor": 1.5
+  },
+  "sensor_array": {
+    "source_class": "Cosmoteer.Ships.Parts.Sensors.SensorManager",
+    "radar_radius": 2400.0,
+    "sight_overclock_factor": 1.5
+  },
+  "hyperdrive_ftl": {
+    "source_class": "Cosmoteer.Ships.Parts.FtlDrive",
+    "jump_efficiency": 0.5,
+    "distance_range": [
+      5.0,
+      30.0
+    ]
+  },
+  "resource_distributor": {
+    "source_class": "Cosmoteer.Ships.Parts.Resources.ResourceDistributor",
+    "capacitor_share_per_sec": 600.0,
+    "min_reserve_ratio": 0.15
   }
 }

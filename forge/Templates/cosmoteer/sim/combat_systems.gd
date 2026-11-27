@@ -1285,6 +1285,88 @@ static func thruster_engine_room_buff(ship: Dictionary, thruster: Dictionary) ->
 	return 1.0
 
 
+## Cosmoteer.Ships.Parts.Weapons.BulletEmitter: Newtonian recoil linear impulse & torque on firing.
+static func apply_weapon_recoil(ship: Dictionary, muzzle_world: Vector2, fire_dir: Vector2, kind: String, scale_mult: float = 1.0) -> void:
+	var rec: Dictionary = get_dll_mechanics().get("weapon_recoil", {})
+	var mag := float(rec.get(kind, 0.0)) * maxf(1.0, scale_mult)
+	if mag <= 0.0 or fire_dir.length_squared() < 1e-6:
+		return
+	var impulse_vec := -fire_dir.normalized() * mag * float(rec.get("impulse_scale", 0.08))
+	var mass := maxf(10.0, float(ship.get("mass", 40.0)))
+	var inertia := maxf(20.0, float(ship.get("inertia", 120.0)))
+	ship["velocity"] = Vector2(ship.get("velocity", Vector2.ZERO)) + (impulse_vec / mass).limit_length(3.5)
+	var arm := muzzle_world - Vector2(ship.get("position", Vector2.ZERO))
+	ship["angular_velocity"] = float(ship.get("angular_velocity", 0.0)) + clampf(arm.cross(impulse_vec) / inertia, -0.45, 0.45)
+
+
+## Cosmoteer.Ships.Parts.Resources.ResourceDistributor: capacitors auto-distribute stored power to adjacent rooms.
+static func tick_capacitor_distribution(ship: Dictionary, dt: float) -> int:
+	var cap_uids: Array = ship.get("ids", {}).get(CAPACITOR, [])
+	if cap_uids.is_empty():
+		return 0
+	var cfg: Dictionary = get_dll_mechanics().get("resource_distributor", {})
+	var max_transfer := maxi(1, roundi(float(cfg.get("capacitor_share_per_sec", 600.0)) * dt))
+	var min_ratio := float(cfg.get("min_reserve_ratio", 0.15))
+	var cells_map: Dictionary = ship.get("cells", {})
+	var transferred_total := 0
+	for cuid in cap_uids:
+		var cap: Dictionary = ship.parts[cuid]
+		if float(cap.hp) <= 0.0 or bool(cap.get("severed", false)):
+			continue
+		var reserve := roundi(float(cap.get("capacity", 0)) * min_ratio)
+		var avail := maxi(0, int(cap.get("energy", 0)) - reserve)
+		if avail <= 0:
+			continue
+		var cc: Vector2i = cap.cell
+		var cs: Vector2i = cap.size
+		var seen := {}
+		var targets: Array[Dictionary] = []
+		for x in range(cc.x - 1, cc.x + cs.x + 1):
+			for y in range(cc.y - 1, cc.y + cs.y + 1):
+				var in_x := x >= cc.x and x < cc.x + cs.x
+				var in_y := y >= cc.y and y < cc.y + cs.y
+				if (in_x and in_y) or ((not in_x) and (not in_y)):
+					continue
+				var nuid := int(cells_map.get(Vector2i(x, y), -1))
+				if nuid >= 0 and nuid != int(cuid) and not seen.has(nuid) and ship.parts.has(nuid):
+					seen[nuid] = true
+					var np: Dictionary = ship.parts[nuid]
+					if float(np.hp) > 0.0 and not bool(np.get("severed", false)) and not is_reactor(np.id) and str(np.id) != CAPACITOR:
+						var room := int(np.get("capacity", 0)) - int(np.get("energy", 0))
+						if room > 0:
+							targets.append(np)
+		if targets.is_empty():
+			continue
+		var per_target := maxi(1, mini(avail, max_transfer) / targets.size())
+		for np in targets:
+			var room := int(np.get("capacity", 0)) - int(np.get("energy", 0))
+			var give := mini(mini(avail, per_target), room)
+			if give > 0:
+				cap.energy = int(cap.energy) - give
+				np.energy = int(np.energy) + give
+				avail -= give
+				transferred_total += give
+	return transferred_total
+
+
+## Cosmoteer.Ships.Parts.Weapons.Weapon.GetAIFirepowerRating: tactical combat rating.
+static func ship_firepower_rating(ship: Dictionary) -> float:
+	var total := 0.0
+	for part in ship.get("parts", {}).values():
+		if float(part.get("hp", 0.0)) <= 0.0 or bool(part.get("severed", false)):
+			continue
+		var id := str(part.get("id", ""))
+		var st: Dictionary = part.get("stats", {})
+		if is_weapon(id):
+			if st.has("beam_dps"):
+				total += float(st.beam_dps) * 0.45
+			elif float(st.get("fire_interval", 0.0)) > 0.0:
+				total += (float(st.get("damage", 0.0)) / float(st.fire_interval)) * 0.45
+		elif is_shield(id):
+			total += float(part.get("shield_max_hp", 0.0)) * 0.06
+	return total
+
+
 static func prepare_part(part: Dictionary) -> void:
 	part["fire"] = 0.0
 	if is_shield(part.id):
@@ -1407,12 +1489,15 @@ static func activate_initial_shields(ship: Dictionary) -> void:
 
 
 static func tick_shields(ship: Dictionary, dt: float) -> void:
+	var oc_rad_mult := float(get_dll_mechanics().get("shield_overclock", {}).get("arc_radius_factor", 1.5)) if bool(ship.get("overclock", false)) else 1.0
 	for sid in SHIELD_IDS:
 		for uid in ship.ids.get(sid, []):
 			var part: Dictionary = ship.parts[uid]
+			var base_r := float(part.stats.get("shield_radius", 7.5))
+			part["shield_radius"] = base_r * oc_rad_mult
 			if part.shield_flash > 0.0:
 				part.shield_flash = maxf(0.0, part.shield_flash - dt * 3.5)
-			if part.hp <= 0.0 or not ship.command:
+			if part.hp <= 0.0 or bool(part.get("severed", false)) or not ship.command:
 				part.shield_active = false
 				part.shield_hp = 0.0
 				continue
