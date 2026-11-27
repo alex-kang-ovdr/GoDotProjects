@@ -1032,12 +1032,24 @@
       const cpQ=state.crossplay?`&room=${encodeURIComponent(state.crossplay.roomCode||'')}&matchRoom=${encodeURIComponent(state.crossplay.matchRoomId||'')}&platform=web`:'';
       let mpQuery='';
       const mpInfo=play.multiplayer||game.multiplayer||null;
-      if(mpInfo&&mpInfo.wsPath&&!local){
+      if(mpInfo&&!local){
         const wsProto=location.protocol==='https:'?'wss:':'ws:';
-        const wsUrl=`${wsProto}//${location.host}${mpInfo.wsPath}`;
         const playerLabel=state.session?.displayName||'WebPlayer';
         const roomParam=state.crossplay?.roomCode||new URLSearchParams(location.search).get('room')||'';
-        mpQuery=`&multiplayer=1&ws=${encodeURIComponent(wsUrl)}&gameId=${encodeURIComponent(mpInfo.gameId||game.id)}&name=${encodeURIComponent(playerLabel)}`+(roomParam&&!state.crossplay?`&room=${encodeURIComponent(roomParam)}`:'');
+        let match=null;
+        if(mpInfo.matchPath){
+          try{match=await api(mpInfo.matchPath,{method:'POST',body:{gameId:mpInfo.gameId||game.id,platform:'web',partyCode:roomParam||undefined},timeout:3000});}catch{}
+        }
+        const resolvedWsPath=match?.wsPath||mpInfo.wsPath||'';
+        const wsUrl=match?.wsUrl||mpInfo.wsUrl||(resolvedWsPath?`${wsProto}//${location.host}${resolvedWsPath}`:'');
+        const protoParam=match?.protocol||mpInfo.protocol||'';
+        const ticketParam=match?.joinTicket||mpInfo.joinTicket||'';
+        if(wsUrl){
+          mpQuery=`&multiplayer=1&ws=${encodeURIComponent(wsUrl)}&gameId=${encodeURIComponent(mpInfo.gameId||game.id)}&name=${encodeURIComponent(playerLabel)}`
+            +(protoParam?`&protocol=${encodeURIComponent(protoParam)}`:'')
+            +(ticketParam?`&ticket=${encodeURIComponent(ticketParam)}`:'')
+            +(roomParam&&!state.crossplay?`&room=${encodeURIComponent(roomParam)}`:'');
+        }
       }
       iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}${cpQ}${mpQuery}#nonce=${nonce}`;
       const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,failed:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;

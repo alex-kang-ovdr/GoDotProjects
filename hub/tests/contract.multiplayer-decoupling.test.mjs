@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { createApp } from '../server/app.mjs';
 import { createSpatialRelayService } from '../server/spatial-relay-service.mjs';
 import { createUgcMultiplayer } from '../server/ugc-multiplayer.mjs';
+import { createForgeTemplatePublisher } from '../server/forge-template-publisher.mjs';
 
 const require = createRequire(import.meta.url);
 const WebSocket = require('../../forge/node_modules/ws');
@@ -376,4 +377,164 @@ test('Phase 2 Type 2 RuntimeHost: dynamically launches game-owned BrawlLabs AND 
   // 3. Graceful SIGTERM stop removes session cleanly
   assert.equal(await host.stopSession('ugc01'), true);
   assert.equal(host.sessions.has('ugc01'), false);
+});
+
+test('Phase 3 Zero-Dep Relay: standalone spatial-relay-service runs cleanly without ws package (slim Hub Docker image compatibility)', async t => {
+  const authority = new RelayTicketAuthority({ secret: 'slim-docker-relay-secret-0123456789abcdef' });
+  const relay = createSpatialRelayService({
+    ticketAuthority: authority,
+    requireTicket: true,
+    forceNativeWs: true,
+    flushIntervalMs: 25,
+  });
+  const server = relay.createStandaloneServer();
+  const port = await listen(server);
+  const baseWs = `ws://127.0.0.1:${port}/ws/relay-spatial`;
+  const opened = [];
+  t.after(async () => {
+    for (const ws of opened) { try { ws.terminate(); } catch {} }
+    relay.close();
+    server.closeAllConnections?.();
+    await new Promise(r => server.close(r));
+  });
+
+  const rejected = await expectUpgradeRejection(`${baseWs}?ticket=bad.token`);
+  assert.equal(rejected, 401);
+
+  const tok1 = authority.issue({ sub: 'm1', name: 'SlimA', gameId: 'slim-demo', runtime: 'relay-spatial-v1' }).token;
+  const tok2 = authority.issue({ sub: 'm2', name: 'SlimB', gameId: 'slim-demo', runtime: 'relay-spatial-v1' }).token;
+  const c1 = await connectWs(`${baseWs}?ticket=${encodeURIComponent(tok1)}`, { protocols: ['playhub.v1'] });
+  const c2 = await connectWs(`${baseWs}?ticket=${encodeURIComponent(tok2)}`, { protocols: ['playhub.v1'] });
+  opened.push(c1.ws, c2.ws);
+
+  c1.ws.send(JSON.stringify({ t: 'join', p: [10, 10], d: { tag: 'a' } }));
+  c2.ws.send(JSON.stringify({ t: 'join', p: [20, 20], d: { tag: 'b' } }));
+  const w1 = await waitFor(() => c1.messages.find(m => m.t === 'welcome'));
+  await waitFor(() => c2.messages.find(m => m.t === 'welcome'));
+
+  c1.ws.send(JSON.stringify({ t: 'pub', seq: 1, p: [15, 15], d: { ping: 777 } }));
+  const got = await waitFor(() => c2.messages.find(m => Array.isArray(m.b) && m.b.some(e => e[0] === w1.shortId && e[2]?.ping === 777)));
+  assert.ok(got, 'Native zero-dependency WS relay must forward batched opaque payloads');
+});
+
+test('Phase 3 Mobile + Web Client Flow: /api/mobile/play-sessions and /api/mobile/multiplayer/match issue signed JoinTickets', async t => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'hub-mobile-ticket-'));
+  const dataDir = path.join(temp, 'data');
+  fs.mkdirSync(dataDir, { recursive: true });
+  const app = createApp({
+    dataDir,
+    dbPath: path.join(dataDir, 'hub.sqlite'),
+    publicHost: '127.0.0.1',
+    publicPort: 0,
+    adminHost: '127.0.0.1',
+    adminPort: 0,
+    secureCookies: false,
+    userBaseUrl: 'http://127.0.0.1',
+    userOrigins: ['http://127.0.0.1'],
+    adminOrigins: ['http://127.0.0.1'],
+    mobile: { enabled: true },
+    requireWsTicket: true,
+    relayTicketSecret: 'mobile-ticket-secret-0123456789abcdef',
+  }, { rootDir: HUB_ROOT, platformRoot: REPO_ROOT });
+  const addrs = await app.listen();
+  const base = `http://127.0.0.1:${addrs.public.port}`;
+  t.after(async () => {
+    await app.close();
+    fs.rmSync(temp, { recursive: true, force: true });
+  });
+
+  // Seed Type 1 game publication
+  const nowMs = Date.now();
+  app.db.prepare(`INSERT INTO hub_publications
+    (game_id, host_slug, owner_key, owner_id, project_id, active_release_id, active_submission_id,
+     visibility, deploy_mode, status, unpublished_by, artifact_sha256, artifact_base_url, manifest_json, deploy_profile_json,
+     cas_version, published_at, updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,NULL,?,?,?,?,?,?,?)`).run(
+    'sky-glide-mmo', 'pskyglidemmoaaaaa', 'c'.repeat(64), 'creator-2', '3'.repeat(24), '4'.repeat(24), null,
+    'public', 'mmo', 'published', 'd'.repeat(64), '/play-ugc/pskyglidemmoaaaaa/' + '4'.repeat(24),
+    JSON.stringify({ schemaVersion: 1, id: 'sky-glide-mmo', title: { en: 'Sky Glide' }, entry: 'index.html', version: '1.0.0' }),
+    JSON.stringify({ deployMode: 'mmo', serverRuntime: 'relay-spatial-v1', relayConfig: { dimensions: 1, aoiRadius: 520 } }),
+    1, nowMs, nowMs
+  );
+
+  // Mobile guest login -> age-gate -> play-session returns signed joinTicket
+  const guestAuth = await (await fetch(`${base}/api/mobile/auth/guest`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).json();
+  await fetch(`${base}/api/mobile/age-gate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${guestAuth.accessToken}` },
+    body: JSON.stringify({ birthYear: 1995, birthMonth: 6, regionCode: 'KR' }),
+  });
+
+  const sessRes = await fetch(`${base}/api/mobile/play-sessions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${guestAuth.accessToken}` },
+    body: JSON.stringify({ gameId: 'sky-glide-mmo', partyCode: 'SQD99' }),
+  });
+  const sessText = await sessRes.text();
+  assert.equal(sessRes.status, 201, sessText);
+  const sess = JSON.parse(sessText);
+  assert.equal(sess.multiplayer?.runtime, 'relay-spatial-v1');
+  assert.equal(sess.multiplayer?.protocol, 'playhub.relay.v1');
+  assert.equal(sess.multiplayer?.wsPath, '/ws/relay-spatial');
+  assert.ok(sess.multiplayer?.joinTicket, 'Mobile play-session must include signed JoinTicket');
+
+  // Re-match endpoint issues a fresh ticket
+  const matchRes = await fetch(`${base}/api/mobile/multiplayer/match`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${guestAuth.accessToken}` },
+    body: JSON.stringify({ gameId: 'sky-glide-mmo', partyCode: 'SQD99' }),
+  });
+  assert.equal(matchRes.status, 201);
+  const refreshed = await matchRes.json();
+  assert.ok(refreshed.joinTicket && refreshed.joinTicket !== sess.multiplayer.joinTicket);
+
+  // Connect using the mobile JoinTicket
+  const mobWs = await connectWs(`ws://127.0.0.1:${addrs.public.port}${refreshed.wsPath}?ticket=${encodeURIComponent(refreshed.joinTicket)}`, { protocols: ['playhub.v1'] });
+  t.after(() => mobWs.ws.close());
+  mobWs.ws.send(JSON.stringify({ t: 'join', p: [0] }));
+  const welcome = await waitFor(() => mobWs.messages.find(m => m.t === 'welcome'));
+  assert.ok(welcome);
+  assert.equal(welcome.partyCode, 'SQD99');
+  assert.equal(welcome.platform, 'android');
+
+  // Verify Web app.js integrates matchPath + ticket + protocol query params
+  const webAppSrc = fs.readFileSync(path.join(REPO_ROOT, 'hub', 'web', 'user', 'app.js'), 'utf8');
+  assert.match(webAppSrc, /mpInfo\.matchPath/);
+  assert.match(webAppSrc, /&ticket=\$\{encodeURIComponent\(ticketParam\)\}/);
+  assert.match(webAppSrc, /&protocol=\$\{encodeURIComponent\(protoParam\)\}/);
+});
+
+test('Phase 3 Single-Game Publisher: preserves deployProfile and packages game-owned Server/ bundle atomically', async t => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'pub-decouple-'));
+  fs.mkdirSync(path.join(tempRoot, 'games'), { recursive: true });
+  fs.mkdirSync(path.join(tempRoot, 'hub'), { recursive: true });
+  // Symlink/junction forge dir into tempRoot so publisher reads real Templates/ without mutating repo games/
+  fs.symlinkSync(path.join(REPO_ROOT, 'forge'), path.join(tempRoot, 'forge'), 'junction');
+  t.after(() => fs.rmSync(tempRoot, { recursive: true, force: true }));
+
+  const publisher = createForgeTemplatePublisher({
+    platformRoot: tempRoot,
+    exportTemplate: async (_tpl, outDir) => {
+      fs.writeFileSync(path.join(outDir, 'index.html'), '<html>ok</html>', 'utf8');
+    },
+    syncAndBuild: async () => {},
+  });
+
+  const started = publisher.startBatchPublish({ templateIds: ['tappy-chicken-mmo', 'brawllabs'], rebuildDist: false });
+  const done = await waitFor(() => {
+    const st = publisher.getJob(started.id);
+    return st && ['completed', 'failed', 'partial'].includes(st.status) ? st : null;
+  }, 5000);
+  assert.equal(done.status, 'completed', JSON.stringify(done));
+
+  // Type 1: tappy-chicken-mmo manifest carries full deployProfile (relay-spatial-v1 + relayConfig)
+  const tappyManifest = JSON.parse(fs.readFileSync(path.join(tempRoot, 'games', 'forge-tappy-chicken-mmo', 'game.manifest.json'), 'utf8'));
+  assert.equal(tappyManifest.deployProfile?.serverRuntime, 'relay-spatial-v1');
+  assert.equal(tappyManifest.deployProfile?.relayConfig?.dimensions, 1);
+
+  // Type 2: brawllabs packages its own Server/entry.cjs and records serverBundle metadata
+  const brawlManifest = JSON.parse(fs.readFileSync(path.join(tempRoot, 'games', 'forge-brawllabs', 'game.manifest.json'), 'utf8'));
+  assert.equal(brawlManifest.deployProfile?.serverRuntime, 'node-wss-v1');
+  assert.equal(brawlManifest.serverBundle?.entry, 'server/entry.cjs');
+  assert.ok(fs.existsSync(path.join(tempRoot, 'games', 'forge-brawllabs', 'Server', 'entry.cjs')));
 });

@@ -31,14 +31,26 @@ function service(name) {
 }
 
 const hub = service('hub');
+const relay = service('relay');
 const forge = service('forge');
 const caddySvc = service('caddy');
 
-test('Hub and Forge bind to loopback; only Caddy is public', () => {
-  for (const svc of [hub, forge, caddySvc]) assert.match(svc.body, /^    network_mode: host$/m);
+test('Hub, Relay and Forge bind to loopback; only Caddy is public', () => {
+  for (const svc of [hub, relay, forge, caddySvc]) assert.match(svc.body, /^    network_mode: host$/m);
   assert.equal(hub.env.HOST, '127.0.0.1');
+  assert.equal(relay.env.HOST, '127.0.0.1');
   assert.equal(forge.env.HOST, '127.0.0.1');
   assert.doesNotMatch(compose, /^\s+ports:/m, 'host networking must not publish extra ports');
+});
+
+test('Standalone Spatial Relay is isolated from Hub and shares JoinTicket secret', () => {
+  const relayPort = relay.env.RELAY_PORT;
+  assert.equal(relayPort, '8095');
+  assert.match(relay.body, /spatial-relay-service\.mjs/);
+  assert.equal(hub.env.PLAYHUB_REQUIRE_WS_TICKET, '1');
+  assert.equal(hub.env.PLAYHUB_RELAY_TICKET_SECRET, '${PLAYHUB_RELAY_TICKET_SECRET:?set PLAYHUB_RELAY_TICKET_SECRET in .env}');
+  assert.equal(relay.env.PLAYHUB_RELAY_TICKET_SECRET, '${PLAYHUB_RELAY_TICKET_SECRET}');
+  assert.match(caddy, new RegExp(`reverse_proxy @relay 127\\.0\\.0\\.1:${relayPort}\\b`));
 });
 
 test('ports line up: Caddy -> Hub edge -> Forge, and Forge -> Hub verify', () => {

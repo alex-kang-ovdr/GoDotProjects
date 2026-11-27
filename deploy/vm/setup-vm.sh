@@ -50,9 +50,11 @@ install -d -m 0700 "${DATA_DIR}/caddy"
 
 if [[ ! -f "${APP_DIR}/.env" ]]; then
   SECRET="$(openssl rand -hex 32)"
+  RELAY_SECRET="$(openssl rand -hex 32)"
   sed -e "s|^PLAYHUB_SITE=.*|PLAYHUB_SITE=${SITE}|" \
       -e "s|^PLAYHUB_PUBLIC_ORIGIN=.*|PLAYHUB_PUBLIC_ORIGIN=https://${SITE}|" \
       -e "s|^PLAYHUB_FORGE_INTERNAL_SECRET=.*|PLAYHUB_FORGE_INTERNAL_SECRET=${SECRET}|" \
+      -e "s|^PLAYHUB_RELAY_TICKET_SECRET=.*|PLAYHUB_RELAY_TICKET_SECRET=${RELAY_SECRET}|" \
       "${HERE}/vm.env.example" > "${APP_DIR}/.env"
   chmod 600 "${APP_DIR}/.env"
 fi

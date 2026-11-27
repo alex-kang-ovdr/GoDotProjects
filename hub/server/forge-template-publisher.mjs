@@ -173,6 +173,7 @@ function buildManifest(template, gameId, today, existingManifest = null) {
   const gm = defaults?.gameMetadata && typeof defaults.gameMetadata === 'object' ? defaults.gameMetadata : null;
   const dp = defaults?.deployProfile && typeof defaults.deployProfile === 'object' ? defaults.deployProfile : null;
   const deployMode = ['singleplay', 'mo', 'mmo'].includes(dp?.deployMode) ? dp.deployMode : 'singleplay';
+  const deployProfile = dp ? structuredClone(dp) : null;
   const koTitle = gm?.title?.ko || preset.koName || `${template.name} (Forge)`;
   const enTitle = gm?.title?.en || `${template.name} (Forge)`;
   const koSummary = gm?.summary?.ko || preset.koSummary || template.description || `${template.name} PlayForge 스타터 템플릿 게임입니다.`;
@@ -201,6 +202,7 @@ function buildManifest(template, gameId, today, existingManifest = null) {
     id: gameId,
     slug: gameId,
     deployMode,
+    ...(deployProfile ? { deployProfile } : {}),
     title: fillLocales(koTitle, enTitle),
     summary: fillLocales(koSummary, enSummary),
     instructions: fillLocales(koInstructions, enInstructions),
@@ -415,6 +417,37 @@ export function createForgeTemplatePublisher({
           const existingManifest = readExistingManifest(gameDir);
           const previousVersion = existingManifest ? (String(existingManifest.version || '').trim() || '1.0.0') : null;
           const manifest = buildManifest(tpl, item.gameId, today, existingManifest);
+
+          // Package game-owned Type 2 server bundle (`forge/Templates/<id>/server/` -> `games/<gameId>/Server/`)
+          // so single-game deployment ships both client & server without touching platform servers.
+          const templateServerDir = path.join(forgeRoot, 'Templates', tpl.id, 'server');
+          if (fs.existsSync(templateServerDir) && fs.statSync(templateServerDir).isDirectory()) {
+            const stageServer = path.join(gameDir, `.Server-stage-${process.pid}-${Date.now()}`);
+            const targetServer = path.join(gameDir, 'Server');
+            const backupServer = path.join(gameDir, `.Server-old-${process.pid}-${Date.now()}`);
+            try {
+              copyTemplateSource(templateServerDir, stageServer);
+              if (fs.existsSync(targetServer)) fs.renameSync(targetServer, backupServer);
+              try {
+                fs.renameSync(stageServer, targetServer);
+              } catch (err) {
+                if (fs.existsSync(backupServer)) {
+                  try { fs.renameSync(backupServer, targetServer); } catch {}
+                }
+                throw err;
+              }
+              safeRmDir(backupServer);
+              const serverFiles = fs.readdirSync(targetServer).sort();
+              manifest.serverBundle = {
+                runtime: manifest.deployProfile?.serverRuntime || 'node-wss-v1',
+                entry: manifest.deployProfile?.runtimeConfig?.serverEntry || 'server/entry.cjs',
+                files: serverFiles,
+              };
+            } finally {
+              safeRmDir(stageServer);
+            }
+          }
+
           fs.writeFileSync(path.join(gameDir, 'game.manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
           const existingCatalog = readGamesCatalogMap().get(item.gameId);
           upsertCatalogEntry(gamesRoot, {

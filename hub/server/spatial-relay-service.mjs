@@ -60,6 +60,108 @@ function writeUpgradeError(socket, status, text) {
   }
 }
 
+const WS_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+
+function encodeWsFrame(opcode, payloadBuf) {
+  const len = payloadBuf.length;
+  let hdr;
+  if (len < 126) {
+    hdr = Buffer.allocUnsafe(2);
+    hdr[0] = 0x80 | opcode;
+    hdr[1] = len;
+  } else if (len < 65536) {
+    hdr = Buffer.allocUnsafe(4);
+    hdr[0] = 0x80 | opcode;
+    hdr[1] = 126;
+    hdr.writeUInt16BE(len, 2);
+  } else {
+    hdr = Buffer.allocUnsafe(10);
+    hdr[0] = 0x80 | opcode;
+    hdr[1] = 127;
+    hdr.writeBigUInt64BE(BigInt(len), 2);
+  }
+  return Buffer.concat([hdr, payloadBuf]);
+}
+
+// Zero-dependency RFC 6455 fallback adapter (used when `ws` is not installed in slim Hub Docker images).
+class NativeRelayWsSocket {
+  constructor(socket, maxPayload) {
+    this.socket = socket;
+    this.maxPayload = maxPayload;
+    this.readyState = 1;
+    this._chunks = [];
+    this._bufferedLen = 0;
+    this._listeners = { message: [], close: [], pong: [] };
+    socket.setNoDelay(true);
+    socket.on('data', chunk => this._onData(chunk));
+    socket.on('close', () => this._emitClose());
+    socket.on('error', () => this.terminate());
+  }
+  get bufferedAmount() { return this.socket.writableLength || 0; }
+  on(ev, fn) { if (this._listeners[ev]) this._listeners[ev].push(fn); }
+  send(text) {
+    if (this.readyState !== 1 || this.socket.destroyed) return;
+    try { this.socket.write(encodeWsFrame(0x1, Buffer.from(String(text), 'utf8'))); } catch { this.terminate(); }
+  }
+  ping() {
+    if (this.readyState !== 1 || this.socket.destroyed) return;
+    try { this.socket.write(encodeWsFrame(0x9, Buffer.alloc(0))); } catch { this.terminate(); }
+  }
+  close(code = 1000, reason = '') {
+    if (this.readyState !== 1) return;
+    this.readyState = 3;
+    try {
+      const rbuf = Buffer.from(String(reason || ''), 'utf8').subarray(0, 120);
+      const body = Buffer.allocUnsafe(2 + rbuf.length);
+      body.writeUInt16BE(code, 0);
+      rbuf.copy(body, 2);
+      this.socket.end(encodeWsFrame(0x8, body));
+    } catch { this.socket.destroy(); }
+    this._emitClose();
+  }
+  terminate() {
+    this.readyState = 3;
+    try { this.socket.destroy(); } catch {}
+    this._emitClose();
+  }
+  _emitClose() {
+    if (this._closedEmitted) return;
+    this._closedEmitted = true;
+    this.readyState = 3;
+    for (const fn of this._listeners.close) fn();
+  }
+  _onData(chunk) {
+    if (this.readyState !== 1) return;
+    this._bufferedLen += chunk.length;
+    if (this._bufferedLen > this.maxPayload * 4) { this.close(1009, 'Frame too large'); return; }
+    this._chunks.push(chunk);
+    let buf = this._chunks.length === 1 ? this._chunks[0] : Buffer.concat(this._chunks);
+    while (this.readyState === 1 && buf.length >= 2) {
+      const b0 = buf[0];
+      const b1 = buf[1];
+      const fin = (b0 & 0x80) !== 0;
+      const opcode = b0 & 0x0f;
+      const masked = (b1 & 0x80) !== 0;
+      let plen = b1 & 0x7f;
+      let off = 2;
+      if (plen === 126) { if (buf.length < 4) break; plen = buf.readUInt16BE(2); off = 4; }
+      else if (plen === 127) { if (buf.length < 10) break; plen = Number(buf.readBigUInt64BE(2)); off = 10; }
+      if (!masked || plen > this.maxPayload) { this.close(1009, 'Invalid frame'); return; }
+      if (buf.length < off + 4 + plen) break;
+      const mask = buf.subarray(off, off + 4);
+      const data = Buffer.from(buf.subarray(off + 4, off + 4 + plen));
+      for (let i = 0; i < plen; i += 1) data[i] ^= mask[i & 3];
+      buf = buf.subarray(off + 4 + plen);
+      if (opcode === 0x8) { this.close(1000, 'Normal closure'); return; }
+      if (opcode === 0x9) { try { this.socket.write(encodeWsFrame(0xA, data)); } catch {} continue; }
+      if (opcode === 0xA) { for (const fn of this._listeners.pong) fn(); continue; }
+      if (fin && opcode === 0x1) { for (const fn of this._listeners.message) fn(data); }
+    }
+    this._chunks = buf.length ? [buf] : [];
+    this._bufferedLen = buf.length;
+  }
+}
+
 export function createSpatialRelayService({
   now = Date.now,
   allowedOrigins = null,
@@ -76,12 +178,10 @@ export function createSpatialRelayService({
   maxTotalSockets = DEFAULT_MAX_TOTAL_SOCKETS,
   maxSocketsPerIp = DEFAULT_MAX_SOCKETS_PER_IP,
   socketPath = RELAY_SOCKET_PATH,
+  forceNativeWs = false,
 } = {}) {
-  const wsLib = tryLoadWs();
-  if (!wsLib || !wsLib.WebSocketServer) {
-    throw new Error('ws library is required for standalone spatial-relay-service');
-  }
-  const { WebSocketServer } = wsLib;
+  const wsLib = forceNativeWs ? null : tryLoadWs();
+  const WebSocketServer = wsLib?.WebSocketServer || null;
 
   const authority = ticketAuthority || new RelayTicketAuthority({
     secret: ticketSecret || crypto.randomBytes(32),
@@ -98,14 +198,16 @@ export function createSpatialRelayService({
   const allSockets = new Set();
   const socketsByIp = new Map();  // realIp -> count
 
-  const wss = new WebSocketServer({
-    noServer: true,
-    maxPayload: MAX_FRAME_BYTES,
-    handleProtocols: protocols => {
-      if (protocols.has('playhub.v1')) return 'playhub.v1';
-      return false;
-    },
-  });
+  const wss = WebSocketServer
+    ? new WebSocketServer({
+        noServer: true,
+        maxPayload: MAX_FRAME_BYTES,
+        handleProtocols: protocols => {
+          if (protocols.has('playhub.v1')) return 'playhub.v1';
+          return false;
+        },
+      })
+    : null;
 
   function resolveConfig(gameId, overrides = {}) {
     const fromResolver = typeof resolveGameRelayConfig === 'function' ? (resolveGameRelayConfig(gameId) || {}) : {};
@@ -360,9 +462,30 @@ export function createSpatialRelayService({
       verifiedTicket = check.payload;
     }
 
-    wss.handleUpgrade(req, socket, head, ws => {
-      attachSocket(ws, req, clientIp, verifiedTicket);
-    });
+    if (wss) {
+      wss.handleUpgrade(req, socket, head, ws => {
+        attachSocket(ws, req, clientIp, verifiedTicket);
+      });
+    } else {
+      const key = req.headers['sec-websocket-key'];
+      if (!key || String(req.headers.upgrade || '').toLowerCase() !== 'websocket') {
+        writeUpgradeError(socket, 400, 'Bad Request');
+        return true;
+      }
+      const accept = crypto.createHash('sha1').update(String(key).trim() + WS_GUID).digest('base64');
+      const protos = String(req.headers['sec-websocket-protocol'] || '').split(',').map(s => s.trim());
+      const protoHdr = protos.includes('playhub.v1') ? 'Sec-WebSocket-Protocol: playhub.v1\r\n' : '';
+      socket.write(
+        'HTTP/1.1 101 Switching Protocols\r\n' +
+        'Upgrade: websocket\r\n' +
+        'Connection: Upgrade\r\n' +
+        protoHdr +
+        `Sec-WebSocket-Accept: ${accept}\r\n\r\n`
+      );
+      const nativeWs = new NativeRelayWsSocket(socket, MAX_FRAME_BYTES);
+      attachSocket(nativeWs, req, clientIp, verifiedTicket);
+      if (head && head.length) nativeWs._onData(head);
+    }
     return true;
   }
 
@@ -424,7 +547,7 @@ export function createSpatialRelayService({
     rooms.clear();
     partyRooms.clear();
     socketsByRoom.clear();
-    try { wss.close(); } catch {}
+    try { wss?.close(); } catch {}
   }
 
   return {
@@ -453,6 +576,6 @@ if (isMain) {
   server.listen(port, host, () => {
     console.log(`[spatial-relay-v1] listening on http://${host}:${port}${service.socketPath}`);
   });
-  process.on('SIGINT', () => server.close(() => process.exit(0)));
-  process.on('SIGTERM', () => server.close(() => process.exit(0)));
+  process.on('SIGINT', () => { service.close(); server.closeAllConnections?.(); server.close(() => process.exit(0)); });
+  process.on('SIGTERM', () => { service.close(); server.closeAllConnections?.(); server.close(() => process.exit(0)); });
 }

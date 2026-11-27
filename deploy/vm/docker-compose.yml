@@ -29,9 +29,25 @@ services:
       PLAYHUB_FORGE_UPSTREAM: http://127.0.0.1:8190
       PLAYHUB_FORGE_REMOTE_VERIFY: "1"
       PLAYHUB_FORGE_INTERNAL_SECRET: ${PLAYHUB_FORGE_INTERNAL_SECRET:?set PLAYHUB_FORGE_INTERNAL_SECRET in .env}
+      PLAYHUB_RELAY_TICKET_SECRET: ${PLAYHUB_RELAY_TICKET_SECRET:?set PLAYHUB_RELAY_TICKET_SECRET in .env}
+      PLAYHUB_REQUIRE_WS_TICKET: "1"
     volumes:
       - /var/lib/playhub/hub:/data/hub
       - /var/lib/playhub/forge:/data/forge
+
+  relay:
+    image: ${HUB_IMAGE:?set HUB_IMAGE in .env}
+    command: ["node", "hub/server/spatial-relay-service.mjs"]
+    restart: unless-stopped
+    network_mode: host
+    mem_limit: 96m
+    environment:
+      HOST: 127.0.0.1
+      RELAY_PORT: "8095"
+      PLAYHUB_ALLOWED_ORIGINS: ${PLAYHUB_PUBLIC_ORIGIN}
+      PLAYHUB_RELAY_TICKET_SECRET: ${PLAYHUB_RELAY_TICKET_SECRET}
+    depends_on:
+      - hub
 
   forge:
     image: ${FORGE_IMAGE:?set FORGE_IMAGE in .env}

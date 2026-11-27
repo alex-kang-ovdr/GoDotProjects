@@ -6,6 +6,12 @@
 	@internal path /internal /internal/*
 	respond @internal 404
 
+	# Type 1 Generic Spatial Relay runs isolated from Hub web/API (blast-radius isolation).
+	@relay path /ws/relay-spatial /api/relay/*
+	reverse_proxy @relay 127.0.0.1:8095 {
+		flush_interval -1
+	}
+
 	# Hub and Forge already send pre-compressed (br/gzip) assets; no re-encoding here
 	# keeps CPU free on an e2-micro.
 	reverse_proxy 127.0.0.1:8080 {
