@@ -483,6 +483,14 @@
       "priority": 70,
       "kind": "imported",
       "displayName": "Voxel Frontier (Forge)"
+    },
+    {
+      "id": "forge-ftl",
+      "path": "forge-ftl",
+      "enabled": true,
+      "priority": 70,
+      "kind": "imported",
+      "displayName": "FTL: Faster Than Light (Godot 4 Restoration) (Forge)"
     }
   ]
 }

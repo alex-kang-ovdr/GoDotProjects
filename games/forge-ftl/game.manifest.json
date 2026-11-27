@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": "forge-ftl",
+  "slug": "forge-ftl",
+  "deployMode": "singleplay",
+  "title": {
+    "ko": "FTL: 패스터 댄 라이트 (Godot 복원)",
+    "en": "FTL: Faster Than Light (Godot 4)",
+    "ja": "FTL: Faster Than Light (Godot 4)",
+    "zh-CN": "FTL: Faster Than Light (Godot 4)",
+    "fr": "FTL: Faster Than Light (Godot 4)",
+    "es": "FTL: Faster Than Light (Godot 4)",
+    "pt-BR": "FTL: Faster Than Light (Godot 4)",
+    "hi": "FTL: Faster Than Light (Godot 4)"
+  },
+  "summary": {
+    "ko": "FTL 1.6 바이너리 역공학 1~7차 로직 복원(핵심 시뮬레이션 67 vtable·28 규칙 테이블)을 반영한 Godot 4.7.2 전략 로그라이크입니다. 전술 일시정지 전투, 전력 배분, 산소/화재/에어락, 승무원·드론·해킹·증강, 8섹터 성도 항해 및 반란군 기함 3페이즈 보스전을 지원합니다.",
+    "en": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "ja": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "zh-CN": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "fr": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "es": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "pt-BR": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "hi": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship."
+  },
+  "instructions": {
+    "ko": "Space/PAUSE로 전술 일시정지, 시스템 탭(전력+)·전력- 모드/우클릭(전력-), 무기 탭 후 적 선실 탭으로 조준하세요. 승무원 선택 후 아군 선실 탭/우클릭으로 이동, Z/X로 문과 에어락 개폐, JUMP로 성도 지도를 엽니다.",
+    "en": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map.",
+    "ja": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map.",
+    "zh-CN": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map.",
+    "fr": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map.",
+    "es": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map.",
+    "pt-BR": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map.",
+    "hi": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map."
+  },
+  "rules": {
+    "ko": "FTL 1.6 바이너리 역공학 1~7차 로직 복원(핵심 시뮬레이션 67 vtable·28 규칙 테이블)을 반영한 Godot 4.7.2 전략 로그라이크입니다. 전술 일시정지 전투, 전력 배분, 산소/화재/에어락, 승무원·드론·해킹·증강, 8섹터 성도 항해 및 반란군 기함 3페이즈 보스전을 지원합니다.",
+    "en": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "ja": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "zh-CN": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "fr": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "es": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "pt-BR": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship.",
+    "hi": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship."
+  },
+  "entry": "index.html",
+  "version": "1.0.0",
+  "publishedOn": "2026-11-27",
+  "updatedOn": "2026-11-27",
+  "tags": [
+    "forge",
+    "strategy",
+    "roguelike",
+    "space",
+    "tactical"
+  ],
+  "controls": [
+    "keyboard",
+    "mouse",
+    "touch"
+  ],
+  "viewport": {
+    "width": 1280,
+    "height": 720,
+    "orientation": "landscape",
+    "resize": "responsive"
+  },
+  "capabilities": {
+    "webgl": true,
+    "wasm": true,
+    "workers": false,
+    "fullscreen": true,
+    "pointerLock": false,
+    "externalNetwork": []
+  },
+  "save": {
+    "enabled": true,
+    "schemaVersion": 1,
+    "maxSlots": 1
+  },
+  "media": {
+    "cover": "assets/cover.svg",
+    "screenshots": []
+  },
+  "integration": "native-sdk",
+  "referenceGame": "PlayForge Template (ftl)",
+  "supportedLocales": [
+    "ko",
+    "en",
+    "ja",
+    "zh-CN",
+    "fr",
+    "es",
+    "pt-BR",
+    "hi"
+  ]
+}

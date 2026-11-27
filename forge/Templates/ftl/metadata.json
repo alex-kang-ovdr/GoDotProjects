@@ -1,0 +1,51 @@
+{
+  "id": "ftl",
+  "name": "FTL: Faster Than Light (Godot 4 Restoration)",
+  "description": "추출된 원본 FTL 데이터(180종 XML/레이아웃·1,228종 PNG 스프라이트/함선/아이콘·137종 SFX)를 100% 내재화하여 데스크톱·웹·안드로이드에서 외부 파일 의존 없이 구동하는 Godot 4.7.2 FTL 전략 로그라이크 복원 프로젝트.",
+  "dimension": "2d",
+  "assetPaths": [
+    "assets/icon.svg",
+    "assets/fonts/ftl-ui.txt",
+    "assets/fonts/OFL.txt"
+  ],
+  "guideOrder": [
+    "scripts/ftl_standalone_assets.gd",
+    "scripts/ftl_pkg.gd",
+    "scripts/ftl_profile.gd",
+    "scripts/ftl_database.gd",
+    "scripts/ftl_audio.gd",
+    "scripts/ftl_ship.gd",
+    "scripts/ftl_sector_map.gd",
+    "scripts/ftl_battle_view.gd",
+    "scripts/ftl_map_canvas.gd",
+    "scripts/main.gd",
+    "scenes/main.tscn",
+    "project.godot"
+  ],
+  "publishDefaults": {
+    "deployProfile": {
+      "deployMode": "singleplay",
+      "serverRuntime": "none",
+      "specTier": "free-nano",
+      "lobbyMode": "stateless_ui"
+    },
+    "gameMetadata": {
+      "slug": "ftl",
+      "title": {
+        "ko": "FTL: 패스터 댄 라이트 (Godot 복원)",
+        "en": "FTL: Faster Than Light (Godot 4)"
+      },
+      "summary": {
+        "ko": "FTL 1.6 바이너리 역공학 1~7차 로직 복원(핵심 시뮬레이션 67 vtable·28 규칙 테이블)을 반영한 Godot 4.7.2 전략 로그라이크입니다. 전술 일시정지 전투, 전력 배분, 산소/화재/에어락, 승무원·드론·해킹·증강, 8섹터 성도 항해 및 반란군 기함 3페이즈 보스전을 지원합니다.",
+        "en": "Godot 4.7.2 FTL restoration incorporating Waves 1-7 binary reverse-engineered logic (67 core simulation vtables, 28 rule tables), featuring tactical pause combat, reactor routing, O2/fire/airlock, crew/drones/hacking/augments, 8-sector star map, and 3-phase Rebel Flagship."
+      },
+      "instructions": {
+        "ko": "Space/PAUSE로 전술 일시정지, 시스템 탭(전력+)·전력- 모드/우클릭(전력-), 무기 탭 후 적 선실 탭으로 조준하세요. 승무원 선택 후 아군 선실 탭/우클릭으로 이동, Z/X로 문과 에어락 개폐, JUMP로 성도 지도를 엽니다.",
+        "en": "Tap PAUSE or Space for tactical pause, tap systems to power (or Power- mode / right-click to depower), tap weapons then enemy rooms to target. Select crew then tap/right-click a room to move, Z/X for doors, JUMP for Star Map."
+      },
+      "tags": ["strategy", "roguelike", "space", "tactical"],
+      "controls": ["keyboard", "mouse", "touch"],
+      "viewport": { "width": 1280, "height": 720, "orientation": "landscape", "resize": "fit" }
+    }
+  }
+}
