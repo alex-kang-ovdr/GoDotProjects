@@ -134,7 +134,7 @@ func spawn_shot(shot: Dictionary) -> void:
 			"max_life": 0.75,
 		})
 		for rid in hit_rooms:
-			var res := to_ship.apply_projectile_impact(bp, rid)
+			var res := to_ship.apply_projectile_impact(bp, rid, from_ship != null and from_ship.has_augment("ZOLTAN_BYPASS"))
 			if res == "shield":
 				shield_hits.append({"pos": ship_local_to_world(to_ship, to_ship.get_room_center_local(rid)), "life": 0.35, "max_life": 0.35})
 		return
@@ -252,7 +252,7 @@ func step_fx(delta: float) -> void:
 			if u >= 1.0:
 				var to_ship: FTLShip = p.to_ship
 				if to_ship != null and to_ship.hull > 0:
-					var res := to_ship.apply_projectile_impact(p.bp, int(p.target_room))
+					var res := to_ship.apply_projectile_impact(p.bp, int(p.target_room), p.from_ship != null and p.from_ship.has_augment("ZOLTAN_BYPASS"))
 					if res in ["shield", "shield_ion", "zoltan_shield"]:
 						shield_hits.append({"pos": p.pos, "life": 0.35, "max_life": 0.35})
 			else:

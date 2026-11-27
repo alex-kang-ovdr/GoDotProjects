@@ -411,6 +411,110 @@ func _run() -> void:
 	hull_tgt.apply_projectile_impact(st_db.weapons["LASER_HULL_1"], empty_rid)
 	_check(empty_rid >= 0 and (h_before - hull_tgt.hull) == 2, "Hull Weapon deals 2x hull damage to empty rooms", "dmg=%d" % (h_before - hull_tgt.hull))
 
+	# 8p. Binary Reverse-Engineered FTL 1.6 Logic Spec & Exact Formula Verification
+	var spec_raw := FileAccess.get_file_as_string("res://data/ftl_logic_spec.json")
+	var spec_json = JSON.parse_string(spec_raw)
+	_check(spec_json is Dictionary and (spec_json.get("vtables", {}) as Dictionary).size() >= 20,
+		"Binary reverse-engineered data/ftl_logic_spec.json loads with >=20 C++ vtables")
+
+	# 8q. Exact Engine Lv8 (35%) + 2-Star Pilot/Engines (+10%/+10%) + Cloak (+60%, capped 100%)
+	var ev_ship := FTLShip.new()
+	ev_ship.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	ev_ship.reactor_max = 20
+	ev_ship.systems.engines.level = 8
+	ev_ship.systems.engines.power = 8
+	ev_ship.systems.pilot.level = 1
+	ev_ship.crew.clear()
+	var ace_pilot := ev_ship.add_crew("human", int(ev_ship.systems.pilot.room), true, "AcePilot")
+	ace_pilot.skills.pilot = 27 # Human learns 10% faster -> 2★ at 27 XP (30 * 0.9)
+	var ace_eng := ev_ship.add_crew("engi", int(ev_ship.systems.engines.room), true, "AceEng")
+	ace_eng.skills.engines = 30 # Non-human 2★ at 30 XP
+	ev_ship.step(0.05, null, false)
+	var ev_base := ev_ship.get_evasion() # 35 + 10 + 10 = 55%
+	ev_ship.install_system("cloaking")
+	ev_ship.add_system_power("cloaking")
+	ev_ship.activate_cloaking()
+	var ev_cloak := ev_ship.get_evasion() # min(100, 55 + 60) = 100%
+	_check(ev_ship.get_crew_skill_tier(ace_pilot, "pilot") == 2 and ev_base == 55 and ev_cloak == 100,
+		"Binary FTL 1.6 Evasion: Human 27 XP 2★, Engines Lv8=35%, 2★+10%/+10% (=55%), Cloak=100%",
+		"base=%d cloak=%d" % [ev_base, ev_cloak])
+
+	# 8r. Zoltan Ion-Immunity (0x63b773) + Ion 25s Cap + Reverse Ion Field (ION_ARMOR)
+	var ion_ship := FTLShip.new()
+	ion_ship.init_from_blueprint(st_db, "PLAYER_SHIP_ENERGY", true, 0)
+	ion_ship.crew.clear()
+	ion_ship.add_crew("energy", int(ion_ship.systems.shields.room), true, "Zoltan1")
+	ion_ship.add_crew("energy", int(ion_ship.systems.shields.room), true, "Zoltan2")
+	ion_ship.apply_ion_damage("shields", 8)
+	var ion_capped := absf(float(ion_ship.systems.shields.ion_timer) - 25.0) < 0.01
+	var zoltan_shield_pwr := ion_ship.get_effective_system_power("shields") # 2 Zoltans keep 2 power (1 shield) immune to ion!
+	ion_ship.augments.append("ION_ARMOR")
+	ion_ship.augments.append("ION_ARMOR") # 2x Reverse Ion Field = 100% resist
+	ion_ship.apply_ion_damage("weapons", 3)
+	var ion_resisted := int(ion_ship.systems.weapons.ion_level) == 0
+	_check(ion_capped and zoltan_shield_pwr >= 2 and ion_resisted,
+		"Binary FTL 1.6 Ion: 25s max lock cap, Zoltan power ion-immunity, & Reverse Ion Field resist",
+		"timer=%.1f zpwr=%d resist=%s" % [float(ion_ship.systems.shields.ion_timer), zoltan_shield_pwr, str(ion_resisted)])
+
+	# 8s. Mind Control exact binary tables (Lv1:+0HP/1.0x, Lv2:+15HP/1.25x, Lv3:+30HP/2.0x) + Slug Immunity
+	var mc_src := FTLShip.new()
+	mc_src.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	mc_src.reactor_max = 16
+	mc_src.install_system("mind")
+	mc_src.systems.mind.level = 3
+	mc_src.systems.mind.power = 3
+	var mc_tgt := FTLShip.new()
+	mc_tgt.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", false, 0)
+	mc_tgt.crew.clear()
+	var slug_c := mc_tgt.add_crew("slug", int(mc_tgt.rooms[0].id), false, "Slock")
+	var slug_blocked := not mc_src.activate_mind_control(mc_tgt, int(mc_tgt.rooms[0].id))
+	var hum_c := mc_tgt.add_crew("human", int(mc_tgt.rooms[1].id), false, "Target")
+	var mc3_ok := mc_src.activate_mind_control(mc_tgt, int(mc_tgt.rooms[1].id))
+	_check(slug_blocked and mc3_ok and absf(float(hum_c.hp) - 130.0) < 0.1 and absf(float(hum_c.mind_combat_mult) - 2.0) < 0.01 and absf(float(hum_c.mind_timer) - 28.0) < 0.1,
+		"Binary FTL 1.6 Mind Control: Slug immune & Lv3=+30HP/2.0x/28s",
+		"hp=%.1f mult=%.2f dur=%.1f" % [float(hum_c.hp), float(hum_c.mind_combat_mult), float(hum_c.mind_timer)])
+
+	# 8t. Clonebay Lv3 +25 HP Jump Heal & Backup DNA Bank protection + Medbay Lv2 9.6 HP/s
+	var cb3 := FTLShip.new()
+	cb3.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	cb3.install_system("clonebay")
+	cb3.systems.clonebay.level = 3
+	cb3.crew[0].hp = 50.0
+	cb3.on_ftl_jump()
+	var cb3_healed := absf(float(cb3.crew[0].hp) - 75.0) < 0.1 # 50 + 25 = 75 HP!
+	cb3.augments.append("BACKUP_DNA")
+	cb3.systems.clonebay.power = 0
+	cb3.crew[0].hp = 0.0
+	cb3.step(0.1, null, false)
+	for _dna_i in range(45):
+		cb3.step(0.1, null, false) # 4.5s unpowered (>3.0s death timer)
+	var dna_saved := cb3.clone_queue.size() == 1 and cb3.has_living_crew()
+	_check(cb3_healed and dna_saved, "Binary FTL 1.6 Clonebay: Lv3 +25HP jump heal & Backup DNA Bank prevents unpowered loss")
+
+	# 8u. Zoltan Death Blast (-15 HP), Zoltan Shield blocks Bombs unless ZOLTAN_BYPASS, & Hacking O2 ship-wide -6%/s
+	var z_ship := FTLShip.new()
+	z_ship.init_from_blueprint(st_db, "PLAYER_SHIP_ENERGY", true, 0)
+	z_ship.crew.clear()
+	var z_hero := z_ship.add_crew("energy", int(z_ship.rooms[0].id), true, "Volt")
+	var z_foe := z_ship.add_crew("human", int(z_ship.rooms[0].id), false, "Intruder")
+	z_hero.hp = 0.0
+	z_ship.step(0.05, null, false)
+	var z_blast_ok := absf(float(z_foe.hp) - 85.0) < 0.5
+	z_ship.zoltan_shield = 5
+	z_ship.systems.engines.power = 0
+	var bomb_bp := {"id": "BOMB_1", "type": "BOMB", "damage": 0, "sysDamage": 2, "persDamage": 2, "ion": 0, "sp": 5}
+	var bomb_blocked := z_ship.apply_projectile_impact(bomb_bp, int(z_ship.rooms[0].id), false) == "zoltan_shield"
+	var bomb_bypassed := z_ship.apply_projectile_impact(bomb_bp, int(z_ship.rooms[0].id), true) == "hit"
+	z_ship.hacked_room = int(z_ship.systems.oxygen.room)
+	z_ship.hacked_active = true
+	var other_rid := int(z_ship.rooms[0].id) if int(z_ship.rooms[0].id) != z_ship.hacked_room else int(z_ship.rooms[1].id)
+	z_ship.room_by_id[other_rid].oxygen = 100.0
+	z_ship.step(1.0, null, false)
+	var hack_o2_shipwide := float(z_ship.room_by_id[other_rid].oxygen) <= 94.5
+	_check(z_blast_ok and bomb_blocked and bomb_bypassed and hack_o2_shipwide,
+		"Binary FTL 1.6 Combat: Zoltan -15 blast, Bomb blocked by Zoltan Shield (unless Bypass), Hacked O2 drains ship-wide -6%/s",
+		"foe_hp=%.1f o2=%.1f" % [float(z_foe.hp), float(z_ship.room_by_id[other_rid].oxygen)])
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())
