@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBinary": "FTLGame_orig.exe",
-  "extractedAt": "2026-11-27T08:54:23.433730+00:00",
+  "extractedAt": "2026-11-27T09:21:22.904050+00:00",
   "simulationTickHz": 16,
   "simulationTickDt": 0.0625,
   "vtables": {
@@ -75,10 +75,65 @@
       "slot_count": 45,
       "on_loop_va": "0x639a50"
     },
+    "10SpaceDrone": {
+      "vtable_va": "0x90986c",
+      "slot_count": 57,
+      "on_loop_va": "0x756b30"
+    },
     "12DefenseDrone": {
       "vtable_va": "0x90a930",
       "slot_count": 57,
       "on_loop_va": "0x4210d0"
+    },
+    "11CombatDrone": {
+      "vtable_va": "0x909de8",
+      "slot_count": 57,
+      "on_loop_va": "0x421fa0"
+    },
+    "12BoarderDrone": {
+      "vtable_va": "0x90a58c",
+      "slot_count": 70,
+      "on_loop_va": "0x775c00"
+    },
+    "11RepairDrone": {
+      "vtable_va": "0x90a254",
+      "slot_count": 70,
+      "on_loop_va": "0x775c00"
+    },
+    "16SuperShieldDrone": {
+      "vtable_va": "0x90c308",
+      "slot_count": 57,
+      "on_loop_va": "0x4203b0"
+    },
+    "9CrewDrone": {
+      "vtable_va": "0x90d330",
+      "slot_count": 70,
+      "on_loop_va": "0x775c00"
+    },
+    "10BeamWeapon": {
+      "vtable_va": "0x909200",
+      "slot_count": 33,
+      "on_loop_va": null
+    },
+    "14BombProjectile": {
+      "vtable_va": "0x90b700",
+      "slot_count": 33,
+      "on_loop_va": null
+    },
+    "10LaserBlast": {
+      "vtable_va": "0x9093dc",
+      "slot_count": 33,
+      "on_loop_va": null
+    },
+    "7Missile": {
+      "vtable_va": "0x90cb54",
+      "slot_count": 33,
+      "on_loop_va": null
+    },
+    "17ProjectileFactory": {
+      "vtable_va": "0x90c540",
+      "slot_count": 2,
+      "on_loop_va": null
     },
     "10CrewMember": {
       "vtable_va": "0x9092ec",
@@ -90,9 +145,19 @@
       "slot_count": 21,
       "on_loop_va": null
     },
+    "12CompleteShip": {
+      "vtable_va": "0x90a72c",
+      "slot_count": 7,
+      "on_loop_va": null
+    },
     "8BossShip": {
       "vtable_va": "0x90cef4",
       "slot_count": 7,
+      "on_loop_va": null
+    },
+    "7StarMap": {
+      "vtable_va": "0x90cdd0",
+      "slot_count": 17,
       "on_loop_va": null
     },
     "4Door": {
@@ -379,5 +444,115 @@
       4
     ],
     "resaleValueRatio": 0.5
+  },
+  "ftlDrive": {
+    "sourceVa": "0x63f5a9..0x63f738 (0x885fbc..0x885fcc)",
+    "baseRatePerSec": 1.25,
+    "perEngineLevelRate": 0.35,
+    "chargeTarget": 50.0,
+    "engineManningMultiplierByMastery": [
+      1.1,
+      1.17,
+      1.25
+    ],
+    "ftlBoosterBonusPerStack": 0.25,
+    "ftlJammerEnemyMultiplier": 0.5
+  },
+  "teleporter": {
+    "sourceVa": "0x648640..0x648758 (0x88634c..0x886364)",
+    "lockOnRateByLevel": [
+      0.2,
+      0.35,
+      0.5
+    ],
+    "chargeCap": 100.0,
+    "cooldownSecByLevel": [
+      20.0,
+      15.0,
+      10.0
+    ]
+  },
+  "suffocation": {
+    "sourceVa": "0x47c380..0x47c4b0 (0x8791a0/0x8791b0/0x879120)",
+    "oxygenThresholdPercent": 5.0,
+    "damagePerTick": -0.4,
+    "damagePerSec": 6.4,
+    "o2MasksMultiplier": 0.5,
+    "crystalMultiplier": 0.5,
+    "slugGelBreachRate": -7.0
+  },
+  "sensors": {
+    "mannedLevelBonus": 1,
+    "maxEffectiveLevel": 4,
+    "levels": {
+      "1": "ownShipInterior",
+      "2": "enemyInteriorAndCrew",
+      "3": "enemyWeaponCharge",
+      "4": "enemySystemPower"
+    }
+  },
+  "augments": {
+    "ROCK_ARMOR": {
+      "proofVa": "0x4a632c",
+      "hullResistChance": 0.15
+    },
+    "SYSTEM_CASING": {
+      "proofVa": "0x4a642f",
+      "systemDamageResistChance": 0.15
+    },
+    "DEFENSE_SCRAMBLER": {
+      "proofVa": "0x4a2c69",
+      "disablesEnemyDefenseDrones": true
+    },
+    "CRYSTAL_SHARDS": {
+      "proofVa": "0x4a5e10",
+      "retaliateChance": 0.1,
+      "shardDamage": 1,
+      "shardShieldPierce": 1
+    },
+    "CREW_STIMS": {
+      "proofVa": "0x47b47c",
+      "crewSpeedBonusPerStack": 0.25
+    },
+    "DRONE_SPEED": {
+      "proofVa": "0x47b4cf",
+      "droneSpeedBonusPerStack": 0.25
+    },
+    "LIFE_SCANNER": {
+      "proofVa": "0x4a416c",
+      "revealsEnemyCrew": true
+    },
+    "ADV_SCANNERS": {
+      "proofVa": "0x5ee394",
+      "revealsAdjacentHazardsAndShips": true
+    },
+    "FTL_JUMPER": {
+      "proofVa": "0x5fb106",
+      "jumpToAnyVisitedBeacon": true
+    },
+    "NANO_MEDBAY": {
+      "proofVa": "0x63f804",
+      "shipwideMedbayHealRatio": 0.25
+    },
+    "BATTERY_BOOSTER": {
+      "cooldownMultiplier": 0.5
+    },
+    "SCRAP_COLLECTOR": {
+      "proofVa": "0x49bac7",
+      "scrapBonusPerStack": 0.1
+    },
+    "REPAIR_ARM": {
+      "proofVa": "0x49bb13",
+      "scrapMultiplier": 0.85,
+      "hullRepairOnScrap": 2
+    },
+    "SLUG_GEL": {
+      "proofVa": "0x63f34a",
+      "autoSealRate": -7.0
+    },
+    "O2_MASKS": {
+      "proofVa": "0x47c3b6",
+      "suffocationMultiplier": 0.5
+    }
   }
 }

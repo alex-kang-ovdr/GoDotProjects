@@ -134,7 +134,7 @@ func spawn_shot(shot: Dictionary) -> void:
 			"max_life": 0.75,
 		})
 		for rid in hit_rooms:
-			var res := to_ship.apply_projectile_impact(bp, rid, from_ship != null and from_ship.has_augment("ZOLTAN_BYPASS"))
+			var res := to_ship.apply_projectile_impact(bp, rid, from_ship != null and from_ship.has_augment("ZOLTAN_BYPASS"), from_ship)
 			if res == "shield":
 				shield_hits.append({"pos": ship_local_to_world(to_ship, to_ship.get_room_center_local(rid)), "life": 0.35, "max_life": 0.35})
 		return
@@ -243,16 +243,16 @@ func step_fx(delta: float) -> void:
 				continue
 			var u := clampf(float(p.t) / maxf(0.05, float(p.dur)), 0.0, 1.0)
 			p.pos = (p.start_pos as Vector2).lerp(p.end_pos as Vector2, u)
-			# Defense Drone I (missiles/asteroids) & Defense Drone II (lasers/flak/ion/missiles) interception!
+			# Defense Drone I (missiles/asteroids) & Defense Drone II (lasers/flak/ion/missiles) interception (disabled by DEFENSE_SCRAMBLER @ 0x4a2c69)!
 			var ptype := str(p.bp.get("type", ""))
-			if u >= 0.60 and u <= 0.78 and not bool(p.get("is_bomb", false)) and _try_defense_drone_intercept(p.to_ship, p.pos, ptype):
+			if u >= 0.60 and u <= 0.78 and not bool(p.get("is_bomb", false)) and _try_defense_drone_intercept(p.to_ship, p.pos, ptype, p.from_ship):
 				explosions.append({"pos": p.pos, "life": 0.25, "max_life": 0.25, "radius": 18.0})
 				popups.append({"pos": p.pos, "text": "INTERCEPT!", "color": Color("65e8ff"), "life": 0.85, "max_life": 0.85})
 				continue
 			if u >= 1.0:
 				var to_ship: FTLShip = p.to_ship
 				if to_ship != null and to_ship.hull > 0:
-					var res := to_ship.apply_projectile_impact(p.bp, int(p.target_room), p.from_ship != null and p.from_ship.has_augment("ZOLTAN_BYPASS"))
+					var res := to_ship.apply_projectile_impact(p.bp, int(p.target_room), p.from_ship != null and p.from_ship.has_augment("ZOLTAN_BYPASS"), p.from_ship)
 					if res in ["shield", "shield_ion", "zoltan_shield"]:
 						shield_hits.append({"pos": p.pos, "life": 0.35, "max_life": 0.35})
 			else:
@@ -299,8 +299,10 @@ func step_fx(delta: float) -> void:
 	queue_redraw()
 
 
-func _try_defense_drone_intercept(target_ship: FTLShip, world_pos: Vector2, proj_type: String = "MISSILES") -> bool:
+func _try_defense_drone_intercept(target_ship: FTLShip, world_pos: Vector2, proj_type: String = "MISSILES", attacker_ship: FTLShip = null) -> bool:
 	if target_ship == null:
+		return false
+	if attacker_ship != null and attacker_ship.has_augment("DEFENSE_SCRAMBLER"):
 		return false
 	for d in target_ship.drones:
 		if not bool(d.powered) or str(d.bp.get("type", "")) != "DEFENSE" or float(d.cooldown) > 0.0:
@@ -567,8 +569,8 @@ func _draw_enemy_panel() -> void:
 			draw_circle(ENEMY_BOX.position + Vector2(22 + s * 22, 54), 7.5, c)
 		if enemy_ship.zoltan_shield > 0:
 			draw_string(font, ENEMY_BOX.position + Vector2(130, 59), "ZOLTAN %d" % enemy_ship.zoltan_shield, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("7eff8b"))
-		# Sensor Lv3 (outside Nebula): display enemy weapon charge bars!
-		var sens_lvl := 0 if (is_nebula or player_ship == null) else player_ship.get_effective_system_power("sensors")
+		# Sensor Lv3 (outside Nebula; includes +1 manned bonus!): display enemy weapon charge bars; Lv4 displays enemy system power bars!
+		var sens_lvl := 0 if player_ship == null else player_ship.get_effective_sensor_level(is_nebula)
 		if sens_lvl >= 3 and not enemy_ship.weapons.is_empty():
 			var wx := ENEMY_BOX.position.x + 12.0
 			var wy := ENEMY_BOX.position.y + 68.0
@@ -580,6 +582,13 @@ func _draw_enemy_panel() -> void:
 					var ecd := enemy_ship.get_weapon_effective_cooldown(ew)
 					var eratio := clampf(float(ew.charge) / maxf(0.1, ecd), 0.0, 1.0)
 					draw_rect(Rect2(wr.position, Vector2(wr.size.x * eratio, wr.size.y)), Color("ff9e42") if eratio < 1.0 else Color("ff4444"), true)
+		if sens_lvl >= 4:
+			var pwr_parts: Array[String] = []
+			for sk in ["shields", "weapons", "engines", "cloaking", "drones"]:
+				if enemy_ship.systems.has(sk):
+					pwr_parts.append("%s:%d/%d" % [sk.left(3).to_upper(), enemy_ship.get_effective_system_power(sk), int(enemy_ship.systems[sk].level)])
+			if not pwr_parts.is_empty():
+				draw_string(font, ENEMY_BOX.position + Vector2(12, 92), "PWR " + "  ".join(PackedStringArray(pwr_parts)), HORIZONTAL_ALIGNMENT_LEFT, ENEMY_BOX.size.x - 24, 11, Color("7eff8b"))
 		if enemy_ship.fleeing:
 			draw_string(font, ENEMY_BOX.position + Vector2(220, 59), "FTL ESCAPE %d%%" % int(enemy_ship.flee_ftl_charge * 100.0), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("ffd54f"))
 
@@ -638,9 +647,9 @@ func _draw_ship(ship: FTLShip, origin: Vector2, sc: float, is_player_side: bool)
 		var fl_pos := img_rect.position + floor_off
 		draw_texture(floor_tex, fl_pos, Color(1, 1, 1, 0.92))
 
-	# 5. Rooms (deck grid, oxygen tint, room interior PNG, system icons, fire & breach, Sensor Fog-of-War)
-	var sens_lvl := 0 if (is_nebula or player_ship == null) else player_ship.get_effective_system_power("sensors")
-	var has_slug := (player_ship != null and player_ship.has_slug_crew())
+	# 5. Rooms (deck grid, oxygen tint, room interior PNG, system icons, fire & breach, Sensor Fog-of-War + Manned +1 + LIFE_SCANNER @ 0x4a416c)
+	var sens_lvl := 0 if player_ship == null else player_ship.get_effective_sensor_level(is_nebula)
+	var has_slug := (player_ship != null and (player_ship.has_slug_crew() or player_ship.has_augment("LIFE_SCANNER")))
 	var show_interior := is_player_side or (sens_lvl >= 2)
 	for r in ship.rooms:
 		var rr := ship.get_room_rect_local(r)

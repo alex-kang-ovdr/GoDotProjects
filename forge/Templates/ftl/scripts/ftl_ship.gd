@@ -42,6 +42,12 @@ const DOOR_HP_BY_LEVEL := [30.0, 60.0, 120.0, 240.0]            # 4Door (0x90c61
 const BOSS_PHASE_HULL := [20, 22, 20]                           # 8BossShip (0x90cef4): Phase 1/2/3
 const BOSS_SURGE_MIN_SEC := 20.0                                # 0x4062a0 (20000 ms)
 const BOSS_SURGE_MAX_SEC := 30.0                                # 0x406296 (30000 ms)
+const FTL_BASE_RATE := 1.25                                     # 0x885fc0 (Lv1 unmanned = 50/1.25 = 40.0s)
+const FTL_PER_ENGINE_RATE := 0.35                               # 0x885fbc (+0.35 per engine level above 1)
+const FTL_CHARGE_TARGET := 50.0                                 # 0x63f5a9..0x63f738 charge scale
+const FTL_ENG_MANNING_MULT := [1.10, 1.17, 1.25]                # 0x885fc8 / 0x885fcc / 0x885fc0 (0★/1★/2★)
+const SUFFOCATION_O2_THRESHOLD := 5.0                           # 0x8791a0
+const SUFFOCATION_DPS := 6.4                                    # 0x8791b0 (-0.4/tick * 16Hz)
 const CREW_NAMES := [
 	"Charlie", "Kestrel", "Vance", "Sora", "Kael", "Nora", "Marek", "Talia",
 	"Dax", "Elena", "Orin", "Lyra", "Bram", "Zara", "Juno", "Cyrus"
@@ -532,10 +538,40 @@ func activate_battery() -> bool:
 		return false
 	battery_bonus = 4 if lvl >= 2 else 2
 	battery_timer = 30.0
-	battery_cooldown = 20.0
+	battery_cooldown = 10.0 if has_augment("BATTERY_BOOSTER") else 20.0
 	pending_popups.append({"ship": self, "pos_local": get_room_center_local(int(systems.battery.room)), "text": "+%d BATTERY!" % battery_bonus, "color": Color("ffd54f")})
 	pending_sfx.append("powerUpSystem")
 	return true
+
+
+func get_effective_sensor_level(in_nebula: bool = false) -> int:
+	if in_nebula:
+		return 0
+	var slvl := get_effective_system_power("sensors")
+	if slvl <= 0:
+		return 0
+	var manned := systems.has("sensors") and int(systems.sensors.manned_by) != -1
+	return clampi(slvl + (1 if manned else 0), 0, 4)
+
+
+func get_ftl_charge_rate(enemy_has_jammer: bool = false) -> float:
+	# Authentic FTL 1.6 FTL Drive Charge (0x63f5a9..0x63f738):
+	# rate = (1.25 + 0.35 * (eng - 1)) * eng_manning[1.10/1.17/1.25] * (1 + 0.25 * FTL_BOOSTER) / 50.0
+	var pilot_ok := get_effective_system_power("pilot") > 0 and (int(systems.pilot.manned_by) != -1 or get_effective_system_power("pilot") >= 2)
+	var eng := get_effective_system_power("engines")
+	if not pilot_ok or eng <= 0:
+		return 0.0
+	var raw_rate := FTL_BASE_RATE + FTL_PER_ENGINE_RATE * float(maxi(0, eng - 1))
+	if systems.has("engines") and int(systems.engines.manned_by) != -1:
+		var ec := _get_crew_by_id(int(systems.engines.manned_by))
+		var etier := get_crew_skill_tier(ec, "engines")
+		raw_rate *= float(FTL_ENG_MANNING_MULT[etier])
+	var boost_cnt := count_augment("FTL_BOOSTER")
+	if boost_cnt > 0:
+		raw_rate *= (1.0 + 0.25 * float(boost_cnt))
+	if enemy_has_jammer:
+		raw_rate *= 0.50
+	return raw_rate / FTL_CHARGE_TARGET
 
 
 func get_weapon_effective_cooldown(w: Dictionary) -> float:
@@ -867,13 +903,14 @@ func launch_hacking(target_ship: FTLShip, target_room_id: int) -> bool:
 		pending_sfx.append("powerUpFail")
 		return false
 	drone_parts -= 1
-	# Authentic FTL 1.6: Powered Defense Drone on target ship intercepts incoming Hacking Drone pod!
-	for d in target_ship.drones:
-		if bool(d.powered) and str(d.bp.get("type", "")) == "DEFENSE" and float(d.cooldown) <= 0.0:
-			d.cooldown = 1.15
-			pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "text": "HACK POD INTERCEPTED!", "color": Color("65e8ff")})
-			pending_sfx.append("hitShield1")
-			return false
+	# Authentic FTL 1.6: Powered Defense Drone on target ship intercepts incoming Hacking Drone pod (unless DEFENSE_SCRAMBLER @ 0x4a2c69!)
+	if not has_augment("DEFENSE_SCRAMBLER"):
+		for d in target_ship.drones:
+			if bool(d.powered) and str(d.bp.get("type", "")) == "DEFENSE" and float(d.cooldown) <= 0.0:
+				d.cooldown = 1.15
+				pending_popups.append({"ship": target_ship, "pos_local": target_ship.get_room_center_local(target_room_id), "text": "HACK POD INTERCEPTED!", "color": Color("65e8ff")})
+				pending_sfx.append("hitShield1")
+				return false
 	hacking_target_room = target_room_id
 	target_ship.hacked_room = target_room_id
 	target_ship.hacked_active = false
@@ -1472,13 +1509,12 @@ func step(delta: float, enemy_ship: FTLShip, in_combat: bool) -> void:
 
 	_clamp_reactor_power()
 
-	# 3. FTL Drive charge (charges when pilot + engines operational and not hacked)
+	# 3. FTL Drive charge (Authentic FTL 1.6 binary formula 0x63f5a9..0x63f738; halted when pilot/engines hacked)
 	var ftl_hacked := hacked_active and hacked_room >= 0 and room_by_id.has(hacked_room) and str(room_by_id[hacked_room].system) in ["pilot", "engines"]
 	if ftl_charge < 1.0 and not ftl_hacked:
-		var pilot_ok := get_effective_system_power("pilot") > 0 and (int(systems.pilot.manned_by) != -1 or get_effective_system_power("pilot") >= 2)
-		var eng := get_effective_system_power("engines")
-		if pilot_ok and eng > 0:
-			var rate := (0.04 + float(eng) * 0.015) * (1.25 if has_augment("FTL_BOOSTER") else 1.0)
+		var enemy_jam := (enemy_ship != null and in_combat and enemy_ship.has_augment("FTL_JAMMER"))
+		var rate := get_ftl_charge_rate(enemy_jam)
+		if rate > 0.0:
 			ftl_charge = minf(1.0, ftl_charge + rate * delta)
 
 	# 4. Shields recharge (Authentic FTL 1.6: 0x6346e7 layer rate = 1 + max(0, layers-1)/6, 0x884814 manning 1.1/1.2/1.3)
@@ -1684,10 +1720,10 @@ func _step_crew(delta: float) -> void:
 		var eff_player := _crew_effective_player(c)
 		var belongs_to_ship := (eff_player == is_player)
 		var r: Dictionary = room_by_id.get(int(c.room_id), {})
-		# Suffocation & fire damage (Crystal 50% suffocation, Emergency Respirators O2_MASKS 50%, Medbay 6.4/9.6/19.2 HP/s, Engi Med-bot Dispersal)
+		# Suffocation & fire damage (0x47c380..0x47c4b0: <5% O2 = 6.4 HP/s, Crystal/O2_MASKS 50%, Medbay 6.4/9.6/19.2 HP/s, NANO_MEDBAY 25% of Medbay rate)
 		if not r.is_empty():
-			if float(r.oxygen) < 5.0 and not bool(c.no_o2):
-				var suff_dps := 6.4
+			if float(r.oxygen) < SUFFOCATION_O2_THRESHOLD and not bool(c.no_o2):
+				var suff_dps := SUFFOCATION_DPS
 				if str(c.species) == "crystal":
 					suff_dps *= 0.5
 				if belongs_to_ship and has_augment("O2_MASKS"):
@@ -1695,17 +1731,18 @@ func _step_crew(delta: float) -> void:
 				c.hp -= suff_dps * delta
 			if int(r.fires) > 0 and not bool(c.fire_immune):
 				c.hp -= 4.5 * float(r.fires) * delta
-			# Medbay healing (Lv1: 6.4, Lv2: 9.6, Lv3: 19.2 HP/s; blocked if medbay is actively hacked!)
+			# Medbay healing (Lv1: 6.4, Lv2: 9.6, Lv3: 19.2 HP/s; NANO_MEDBAY heals 25% of active Medbay rate ship-wide!)
 			var med_hacked := hacked_active and systems.has("medbay") and hacked_room == int(systems.medbay.room)
 			var med_p := get_effective_system_power("medbay")
 			if belongs_to_ship and med_p > 0 and not med_hacked:
+				var med_rate := float(MEDBAY_HEAL_PER_SEC[clampi(med_p - 1, 0, MEDBAY_HEAL_PER_SEC.size() - 1)])
 				if str(r.system) == "medbay":
-					var med_rate := float(MEDBAY_HEAL_PER_SEC[clampi(med_p - 1, 0, MEDBAY_HEAL_PER_SEC.size() - 1)])
 					c.hp = minf(float(c.max_hp), float(c.hp) + med_rate * delta)
 				elif has_augment("NANO_MEDBAY"):
-					c.hp = minf(float(c.max_hp), float(c.hp) + 1.6 * delta)
+					c.hp = minf(float(c.max_hp), float(c.hp) + med_rate * 0.25 * delta)
 
-		# Movement along path (blocked by Crystal Lockdown OR closed Blast Doors for hostile intruders!)
+		# Movement along path (blocked by Crystal Lockdown OR closed Blast Doors; boosted +25%/stack by CREW_STIMS @ 0x47b47c)
+		var eff_move_speed := float(c.move_speed) * (1.0 + 0.25 * float(count_augment("CREW_STIMS")) if belongs_to_ship else 1.0)
 		if not c.path.is_empty():
 			var next_rid := int(c.path[0])
 			var cur_locked := float(r.get("lockdown_timer", 0.0)) > 0.0 if not r.is_empty() else false
@@ -1724,14 +1761,14 @@ func _step_crew(delta: float) -> void:
 			if not cur_locked and not nxt_locked and not door_blocked:
 				var dest := get_room_center_local(next_rid)
 				var delta_v: Vector2 = dest - c.pos
-				if delta_v.length() <= float(c.move_speed) * delta + 2.0:
+				if delta_v.length() <= eff_move_speed * delta + 2.0:
 					c.pos = dest
 					c.room_id = next_rid
 					c.path.pop_front()
 					_assign_room_tiles(next_rid)
 				else:
 					c.facing = delta_v.normalized()
-					c.pos += c.facing * float(c.move_speed) * delta
+					c.pos += c.facing * eff_move_speed * delta
 				c.state = "walk"
 				continue
 		else:
@@ -1740,7 +1777,7 @@ func _step_crew(delta: float) -> void:
 			var dv: Vector2 = tile_pos - c.pos
 			if dv.length() > 2.5:
 				c.facing = dv.normalized()
-				c.pos += c.facing * minf(dv.length(), float(c.move_speed) * delta)
+				c.pos += c.facing * minf(dv.length(), eff_move_speed * delta)
 				c.state = "walk"
 				continue
 
@@ -2035,11 +2072,13 @@ func _step_artillery(delta: float, enemy_ship: FTLShip) -> void:
 
 
 func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
+	# Authentic FTL 1.6 DRONE_SPEED (0x47b4cf): +25% drone orbit & fire rate per stack
+	var d_spd_mult := 1.0 + 0.25 * float(count_augment("DRONE_SPEED"))
 	for d in drones:
 		if not bool(d.powered):
 			continue
-		d.angle = fmod(float(d.angle) + delta * 1.4, TAU)
-		d.cooldown = float(d.cooldown) - delta
+		d.angle = fmod(float(d.angle) + delta * 1.4 * d_spd_mult, TAU)
+		d.cooldown = float(d.cooldown) - delta * d_spd_mult
 		var dtype := str(d.bp.get("type", "COMBAT"))
 		var did_str := str(d.id).to_upper()
 		if dtype == "COMBAT" and float(d.cooldown) <= 0.0 and enemy_ship.cloak_timer <= 0.0:
@@ -2107,12 +2146,12 @@ func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
 
 
 func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
-	# Enemy FTL escape charging (if fleeing and Pilot+Engines operational)
+	# Enemy FTL escape charging (Authentic FTL 1.6 binary rate + FTL_JAMMER halves charge rate!)
 	if fleeing and not is_boss:
-		var pilot_ok := get_effective_system_power("pilot") > 0 and (int(systems.pilot.manned_by) != -1 or get_effective_system_power("pilot") >= 2)
-		var eng_ok := get_effective_system_power("engines") > 0
-		if pilot_ok and eng_ok:
-			flee_ftl_charge = minf(1.0, flee_ftl_charge + (0.032 + float(get_effective_system_power("engines")) * 0.008) * delta)
+		var jammed := (player_ship != null and player_ship.has_augment("FTL_JAMMER"))
+		var flee_rate := get_ftl_charge_rate(jammed)
+		if flee_rate > 0.0:
+			flee_ftl_charge = minf(1.0, flee_ftl_charge + flee_rate * delta)
 
 	ai_decision_timer -= delta
 	if ai_decision_timer > 0.0:
@@ -2257,7 +2296,7 @@ func _step_enemy_ai(delta: float, player_ship: FTLShip) -> void:
 
 
 # ==================== DAMAGE RESOLUTION ====================
-func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacker_has_zoltan_bypass: bool = false) -> String:
+func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacker_has_zoltan_bypass: bool = false, attacker_ship: FTLShip = null) -> String:
 	var wtype := str(weapon_bp.get("type", "LASER"))
 	var dmg := int(weapon_bp.get("damage", 1))
 	var sys_dmg := int(weapon_bp.get("sysDamage", 0))
@@ -2324,6 +2363,23 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacke
 		hull = maxi(0, hull - dmg)
 		pending_popups.append({"ship": self, "pos_local": room_center, "text": "-%d" % dmg, "color": Color("ff5c5c")})
 		pending_explosions.append({"ship": self, "pos_local": room_center, "big": dmg >= 2})
+		# Authentic FTL 1.6 Crystal Vengeance (CRYSTAL_SHARDS @ 0x4a5e10): 10% chance per stack on hull hit to fire 1-dmg shard (sp=1)
+		var shard_cnt := count_augment("CRYSTAL_SHARDS")
+		if shard_cnt > 0 and attacker_ship != null and attacker_ship.hull > 0 and not attacker_ship.rooms.is_empty():
+			if randf() < minf(1.0, 0.10 * float(shard_cnt)):
+				var shard_bp := {
+					"id": "CRYSTAL_VENGEANCE_SHARD", "type": "LASER", "damage": 1, "sysDamage": 0, "persDamage": 0,
+					"ion": 0, "shots": 1, "sp": 1, "fireChance": 0, "breachChance": 0, "stunChance": 0,
+					"speed": 55.0, "image": "crystal_shot1", "color": Color("65e8ff"),
+					"hitShieldSounds": ["hitShield1"], "hitShipSounds": ["hitHull2"], "missSounds": ["miss"],
+				}
+				var tr := int(attacker_ship.rooms[randi() % attacker_ship.rooms.size()].id)
+				pending_shots.append({
+					"from_ship": self, "to_ship": attacker_ship,
+					"weapon": {"id": "CRYSTAL_VENGEANCE_SHARD", "bp": shard_bp, "mount_idx": 0},
+					"weapon_idx": -1, "target_room": tr,
+				})
+				pending_popups.append({"ship": self, "pos_local": room_center + Vector2(0, -18), "text": "CRYSTAL VENGEANCE!", "color": Color("65e8ff")})
 
 	if room_by_id.has(target_room_id):
 		var r: Dictionary = room_by_id[target_room_id]
@@ -2362,6 +2418,12 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacke
 
 func apply_system_damage(sname: String, amount: int) -> void:
 	if not systems.has(sname) or amount <= 0:
+		return
+	# Authentic FTL 1.6 Titanium System Casing (SYSTEM_CASING @ 0x4a642f): 15% chance per stack to negate system damage!
+	var casing_cnt := count_augment("SYSTEM_CASING")
+	if casing_cnt > 0 and randf() < minf(1.0, 0.15 * float(casing_cnt)):
+		var r_id := int(systems[sname].room)
+		pending_popups.append({"ship": self, "pos_local": get_room_center_local(r_id), "text": "SYS RESIST", "color": Color("ffd54f")})
 		return
 	var s: Dictionary = systems[sname]
 	s.damage = mini(int(s.level), int(s.damage) + amount)

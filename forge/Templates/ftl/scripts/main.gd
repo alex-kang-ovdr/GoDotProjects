@@ -1731,7 +1731,7 @@ func _open_star_map() -> void:
 	var mc := FTLMapCanvas.new()
 	mc.sector_map = sector_map
 	mc.pkg = pkg
-	mc.has_long_scanners = player_ship.has_augment("LONG_RANGED_SCANNERS")
+	mc.has_long_scanners = player_ship.has_augment("ADV_SCANNERS") or player_ship.has_augment("LONG_RANGED_SCANNERS")
 	mc.has_adv_ftl_nav = player_ship.has_augment("FTL_JUMPER")
 	mc.beacon_clicked.connect(_on_beacon_jump_requested)
 	modal_box.add_child(mc)

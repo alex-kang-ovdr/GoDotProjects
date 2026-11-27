@@ -554,6 +554,75 @@ func _run() -> void:
 		"Binary FTL 1.6 Doors/Store/PDS: Manned Lv3 Door=240HP, 50% Weapon Sell, ASB deals 3 hull + breach through shields",
 		"door=%.0f sold=%d pds_dmg=%d" % [door_lv4_hp, sold_w, hull_pre_pds - d4_ship.hull])
 
+	# 8w. Wave 3 Binary Logic: 37 Vtables, Exact FTL Charge (40s Lv1 / 32s Lv1+2★ / Booster / Jammer), Augments & Manned Sensors
+	_check((spec_json.get("vtables", {}) as Dictionary).size() >= 37 and spec_json.has("ftlDrive") and spec_json.has("teleporter") and spec_json.has("suffocation") and spec_json.has("augments"),
+		"Wave 3 ftl_logic_spec.json includes 37 C++ vtables + ftlDrive/teleporter/suffocation/sensors/augments tables")
+
+	var ftl_s := FTLShip.new()
+	ftl_s.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	ftl_s.crew.clear()
+	ftl_s.systems.pilot.level = 2 # autopilot active so engines unmanned can charge
+	ftl_s.systems.engines.level = 1
+	ftl_s.systems.engines.power = 1
+	var ftl_lv1_sec := 1.0 / maxf(0.0001, ftl_s.get_ftl_charge_rate(false)) # 50 / 1.25 = 40.0s!
+	var eng_ace := ftl_s.add_crew("human", int(ftl_s.systems.engines.room), true, "Scotty")
+	eng_ace.skills.engines = 30 # 2★ -> 1.25x
+	ftl_s.step(0.05, null, false)
+	var ftl_lv1_2star_sec := 1.0 / maxf(0.0001, ftl_s.get_ftl_charge_rate(false)) # 50 / (1.25 * 1.25) = 32.0s!
+	var ftl_jammed_sec := 1.0 / maxf(0.0001, ftl_s.get_ftl_charge_rate(true)) # 64.0s!
+	ftl_s.augments.append("FTL_BOOSTER")
+	var ftl_boosted_sec := 1.0 / maxf(0.0001, ftl_s.get_ftl_charge_rate(false)) # 25.6s!
+	_check(absf(ftl_lv1_sec - 40.0) < 0.05 and absf(ftl_lv1_2star_sec - 32.0) < 0.05 and absf(ftl_jammed_sec - 64.0) < 0.1 and absf(ftl_boosted_sec - 25.6) < 0.1,
+		"Binary FTL 1.6 Drive Charge (0x63f5a9): Lv1=40s, Lv1+2★=32s, Jammed=64s, Booster=25.6s",
+		"lv1=%.2f 2s=%.2f jam=%.2f bst=%.2f" % [ftl_lv1_sec, ftl_lv1_2star_sec, ftl_jammed_sec, ftl_boosted_sec])
+
+	var aug_ship := FTLShip.new()
+	aug_ship.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	aug_ship.install_system("battery")
+	aug_ship.augments.append("BATTERY_BOOSTER")
+	aug_ship.activate_battery()
+	var bat_boost_ok := absf(aug_ship.battery_cooldown - 10.0) < 0.1
+	# SYSTEM_CASING (7 stacks -> 100% resist for deterministic check)
+	for _sc in range(7):
+		aug_ship.augments.append("SYSTEM_CASING")
+	aug_ship.apply_system_damage("weapons", 2)
+	var casing_ok := int(aug_ship.systems.weapons.damage) == 0
+	# CRYSTAL_SHARDS (10 stacks -> 100% retaliation for deterministic check)
+	for _cs in range(10):
+		aug_ship.augments.append("CRYSTAL_SHARDS")
+	aug_ship.shield_layers = 0
+	aug_ship.systems.engines.power = 0
+	aug_ship.pending_shots.clear()
+	aug_ship.apply_projectile_impact({"id": "TEST_LASER", "type": "LASER", "damage": 1, "sp": 0}, int(aug_ship.rooms[0].id), false, ftl_s)
+	var shard_ok := not aug_ship.pending_shots.is_empty() and str(aug_ship.pending_shots[0].weapon.id) == "CRYSTAL_VENGEANCE_SHARD"
+	# Manned Sensors (+1 level: Lv3 + manned = Lv4, Nebula = 0)
+	aug_ship.systems.sensors.level = 3
+	aug_ship.add_crew("human", int(aug_ship.systems.sensors.room), true, "Scanner")
+	aug_ship.step(0.05, null, false)
+	var sens_lv4_ok := aug_ship.get_effective_sensor_level(false) == 4 and aug_ship.get_effective_sensor_level(true) == 0
+	# DEFENSE_SCRAMBLER bypasses enemy Defense Drone during Hacking Pod launch
+	var def_tgt := FTLShip.new()
+	def_tgt.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", false, 0)
+	def_tgt.drones.append({"id": "DEFENSE_1", "bp": {"type": "DEFENSE", "power": 2}, "powered": true, "active": true, "angle": 0.0, "cooldown": 0.0, "hp": 1})
+	aug_ship.install_system("hacking")
+	aug_ship.reactor_max += 4
+	aug_ship.add_system_power("hacking")
+	aug_ship.drone_parts = 5
+	aug_ship.augments.append("DEFENSE_SCRAMBLER")
+	var scrambler_ok := aug_ship.launch_hacking(def_tgt, int(def_tgt.rooms[0].id))
+	# NANO_MEDBAY scales with Medbay Lv3 (19.2 * 0.25 = 4.8 HP/s)
+	aug_ship.systems.medbay.level = 3
+	aug_ship.systems.medbay.power = 3
+	aug_ship.augments.append("NANO_MEDBAY")
+	var non_med_rid := int(aug_ship.systems.pilot.room)
+	var nano_c := aug_ship.add_crew("human", non_med_rid, true, "MedBot")
+	nano_c.hp = 50.0
+	aug_ship.step(1.0, null, false)
+	var nano3_ok := absf(float(nano_c.hp) - 54.8) < 0.25
+	_check(bat_boost_ok and casing_ok and shard_ok and sens_lv4_ok and scrambler_ok and nano3_ok,
+		"Binary FTL 1.6 Augments & Sensors: BatteryBooster(10s), SystemCasing, CrystalVengeance, MannedSensors(Lv4), DefenseScrambler & NanoMedbay(Lv3=4.8/s)",
+		"bat=%s cas=%s shd=%s s4=%s scr=%s nano=%.2f" % [str(bat_boost_ok), str(casing_ok), str(shard_ok), str(sens_lv4_ok), str(scrambler_ok), float(nano_c.hp)])
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

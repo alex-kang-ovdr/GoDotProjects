@@ -98,8 +98,11 @@ def main():
         b"10ShipSystem", b"7Shields", b"12EngineSystem", b"12OxygenSystem",
         b"12MedbaySystem", b"11CloneSystem", b"13BatterySystem", b"13HackingSystem",
         b"10MindSystem", b"14CloakingSystem", b"14TeleportSystem", b"15ArtillerySystem",
-        b"12WeaponSystem", b"11DroneSystem", b"12DefenseDrone", b"10CrewMember",
-        b"11ShipManager", b"8BossShip", b"4Door", b"4Room", b"4Fire",
+        b"12WeaponSystem", b"11DroneSystem", b"10SpaceDrone", b"12DefenseDrone",
+        b"11CombatDrone", b"12BoarderDrone", b"11RepairDrone", b"16SuperShieldDrone",
+        b"9CrewDrone", b"10BeamWeapon", b"14BombProjectile", b"10LaserBlast",
+        b"7Missile", b"17ProjectileFactory", b"10CrewMember", b"11ShipManager",
+        b"12CompleteShip", b"8BossShip", b"7StarMap", b"4Door", b"4Room", b"4Fire",
         b"7PDSFire", b"8Asteroid", b"5Store",
     ]
     vtables = {}
@@ -153,6 +156,27 @@ def main():
     artillery_base_factor = read_f32_array(0x885404, 1)[0]   # 1.5
     artillery_power_step = read_f32_array(0x885400, 1)[0]    # 0.25
     shield_layer_divisor = read_f32_array(0x8853C8, 1)[0]    # 6.0
+
+    # Wave 3 exact binary constants: FTL Drive Charge, Teleporter Lock-On, Suffocation, Slug Gel
+    ftl_base_rate = read_f32_array(0x885FC0, 1)[0]           # 1.25
+    ftl_per_engine_rate = read_f32_array(0x885FBC, 1)[0]     # 0.35
+    ftl_eng_manning_mult = [
+        read_f32_array(0x885FC8, 1)[0],                      # 1.10 (0★)
+        read_f32_array(0x885FCC, 1)[0],                      # 1.17 (1★)
+        read_f32_array(0x885FC0, 1)[0],                      # 1.25 (2★)
+    ]
+    assert ftl_base_rate == 1.25 and ftl_per_engine_rate == 0.35
+    assert ftl_eng_manning_mult == [1.1, 1.17, 1.25], f"Unexpected ftl_eng_manning_mult: {ftl_eng_manning_mult}"
+
+    teleport_lock_rates = read_f32_array(0x88634C, 3)        # [0.2, 0.35, 0.5]
+    teleport_charge_cap = read_f32_array(0x886364, 1)[0]     # 100.0
+    assert teleport_lock_rates == [0.2, 0.35, 0.5] and teleport_charge_cap == 100.0
+
+    suffocation_o2_threshold = read_f32_array(0x8791A0, 1)[0]  # 5.0%
+    suffocation_dmg_tick = read_f32_array(0x8791B0, 1)[0]      # -0.4/tick -> -6.4 HP/s
+    o2_masks_mult = read_f32_array(0x879120, 1)[0]             # 0.5
+    slug_gel_rate = read_f32_array(0x885FB4, 1)[0]             # -7.0
+    assert suffocation_o2_threshold == 5.0 and suffocation_dmg_tick == -0.4 and o2_masks_mult == 0.5 and slug_gel_rate == -7.0
 
     spec = {
         "schemaVersion": 1,
@@ -303,6 +327,57 @@ def main():
             "repairCostBySector": [2, 2, 3, 3, 3, 4, 4, 4],
             "resaleValueRatio": 0.50,
         },
+        "ftlDrive": {
+            "sourceVa": "0x63f5a9..0x63f738 (0x885fbc..0x885fcc)",
+            "baseRatePerSec": ftl_base_rate,
+            "perEngineLevelRate": ftl_per_engine_rate,
+            "chargeTarget": 50.0,
+            "engineManningMultiplierByMastery": ftl_eng_manning_mult,
+            "ftlBoosterBonusPerStack": 0.25,
+            "ftlJammerEnemyMultiplier": 0.50,
+        },
+        "teleporter": {
+            "sourceVa": "0x648640..0x648758 (0x88634c..0x886364)",
+            "lockOnRateByLevel": teleport_lock_rates,
+            "chargeCap": teleport_charge_cap,
+            "cooldownSecByLevel": [20.0, 15.0, 10.0],
+        },
+        "suffocation": {
+            "sourceVa": "0x47c380..0x47c4b0 (0x8791a0/0x8791b0/0x879120)",
+            "oxygenThresholdPercent": suffocation_o2_threshold,
+            "damagePerTick": suffocation_dmg_tick,
+            "damagePerSec": round(abs(suffocation_dmg_tick) * ticks_per_sec, 4),
+            "o2MasksMultiplier": o2_masks_mult,
+            "crystalMultiplier": o2_masks_mult,
+            "slugGelBreachRate": slug_gel_rate,
+        },
+        "sensors": {
+            "mannedLevelBonus": 1,
+            "maxEffectiveLevel": 4,
+            "levels": {
+                "1": "ownShipInterior",
+                "2": "enemyInteriorAndCrew",
+                "3": "enemyWeaponCharge",
+                "4": "enemySystemPower",
+            },
+        },
+        "augments": {
+            "ROCK_ARMOR": {"proofVa": "0x4a632c", "hullResistChance": 0.15},
+            "SYSTEM_CASING": {"proofVa": "0x4a642f", "systemDamageResistChance": 0.15},
+            "DEFENSE_SCRAMBLER": {"proofVa": "0x4a2c69", "disablesEnemyDefenseDrones": True},
+            "CRYSTAL_SHARDS": {"proofVa": "0x4a5e10", "retaliateChance": 0.10, "shardDamage": 1, "shardShieldPierce": 1},
+            "CREW_STIMS": {"proofVa": "0x47b47c", "crewSpeedBonusPerStack": 0.25},
+            "DRONE_SPEED": {"proofVa": "0x47b4cf", "droneSpeedBonusPerStack": 0.25},
+            "LIFE_SCANNER": {"proofVa": "0x4a416c", "revealsEnemyCrew": True},
+            "ADV_SCANNERS": {"proofVa": "0x5ee394", "revealsAdjacentHazardsAndShips": True},
+            "FTL_JUMPER": {"proofVa": "0x5fb106", "jumpToAnyVisitedBeacon": True},
+            "NANO_MEDBAY": {"proofVa": "0x63f804", "shipwideMedbayHealRatio": 0.25},
+            "BATTERY_BOOSTER": {"cooldownMultiplier": 0.50},
+            "SCRAP_COLLECTOR": {"proofVa": "0x49bac7", "scrapBonusPerStack": 0.10},
+            "REPAIR_ARM": {"proofVa": "0x49bb13", "scrapMultiplier": 0.85, "hullRepairOnScrap": 2},
+            "SLUG_GEL": {"proofVa": "0x63f34a", "autoSealRate": slug_gel_rate},
+            "O2_MASKS": {"proofVa": "0x47c3b6", "suffocationMultiplier": o2_masks_mult},
+        },
     }
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
@@ -310,7 +385,7 @@ def main():
         json.dump(spec, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 14 system rule tables -> {args.out}")
+    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 19 system rule tables -> {args.out}")
 
 
 if __name__ == "__main__":
