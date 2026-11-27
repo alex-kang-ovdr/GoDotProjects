@@ -745,7 +745,7 @@ function createServer(options = {}) {
     validateBuild: (id, projectId, revision) => {
       const b = builds.get(id);
       return b?.status === 'succeeded' && b.projectId === projectId && b.revision === revision
-        && b.buildProfile !== 'standard-godot' && b.avatarIncluded !== false ? b : null;
+        && b.buildProfile !== 'standard-godot' ? b : null;
     },
   });
   const accountPlatforms = new Map();
@@ -1203,8 +1203,9 @@ function createServer(options = {}) {
           if (!buildExecutionAllowed(auth?.accountKey)) return json(403, { ok: false, error: EXECUTION_NOT_ALLOWED });
           if (body.revision !== snapshot.revision) return json(409, { ok: false, error: 'revision_conflict' });
           const buildProfile = resolveBuildProfile(body.buildProfile);
-          if (accountBuilds) return json(202, { ok: true, build: accountBuilds.enqueueJob(auth.accountKey, snapshot.id, snapshot.revision, { buildProfile }) });
-          return json(202, { ok: true, build: builds.enqueue({ id: platformBuild[1], revision: snapshot.revision, buildProfile, files: Object.entries(snapshot.files).map(([filePath, content]) => ({ path: filePath, content })) }) });
+          const includePlatformAvatar = body.includePlatformAvatar === true;
+          if (accountBuilds) return json(202, { ok: true, build: accountBuilds.enqueueJob(auth.accountKey, snapshot.id, snapshot.revision, { buildProfile, includePlatformAvatar }) });
+          return json(202, { ok: true, build: builds.enqueue({ id: platformBuild[1], revision: snapshot.revision, buildProfile, includePlatformAvatar, files: Object.entries(snapshot.files).map(([filePath, content]) => ({ path: filePath, content })) }) });
         }
         if (routePath === '/api/editor/source' && req.method === 'PUT') {
           if (typeof body.source !== 'string' || Buffer.byteLength(body.source) > 256000 || !Number.isSafeInteger(body.baseRevision)) return json(400, { ok: false, error: 'Source and baseRevision required' });

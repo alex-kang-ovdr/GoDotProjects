@@ -61,7 +61,7 @@
       if (saved === 'off') return false;
       if (saved === 'on') return true;
     } catch {}
-    return true;
+    return false;
   })();
   const pieBuildProfile = () => (pieAvatarEnabled ? 'playhub-publish' : 'standard-godot');
   function syncPieAvatarToggleUi() {
@@ -89,8 +89,8 @@
     }
     if (notifyUser) {
       showNotice(pieAvatarEnabled
-        ? 'PIE 허브 ON (PlayHub 배포용): 에디터 게임 실행 시 필수 아바타와 좌상단 허브 플랫폼 바 HUD가 적용됩니다.'
-        : 'PIE 허브 OFF (미배포용 · 표준 Godot): 에디터 게임 실행 시 아바타와 좌상단 허브 플랫폼 바 HUD가 적용되지 않습니다.', 4500);
+        ? 'PIE 허브 ON (실험기능): 에디터 게임 실행 시 플랫폼 아바타와 좌상단 기본 UI(HUD)가 적용됩니다.'
+        : 'PIE 허브 OFF (기본값 · 실험기능 비활성): 에디터 게임 실행 시 플랫폼 아바타와 좌상단 기본 UI(HUD)가 적용되지 않습니다.', 4500);
     }
     if (nativeGameVisible && !showcaseGame) {
       nativeGameGeneration += 1;
@@ -636,7 +636,7 @@
     const token = await ensureCsrfToken();
     const response = await fetch(forgePath(`/api/platform-builds/${encodeURIComponent(projectId)}`), {
       method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', ...(token ? { 'X-CSRF-Token': token } : {}) },
-      body: JSON.stringify({ revision: latest.revision, buildProfile: requestedProfile }),
+      body: JSON.stringify({ revision: latest.revision, buildProfile: requestedProfile, includePlatformAvatar: pieAvatarEnabled }),
     });
     const payload = await response.json().catch(() => null);
     if (!response.ok || !payload?.build?.id) throw new Error(payload?.error || `Game build request failed (${response.status}).`);

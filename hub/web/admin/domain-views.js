@@ -253,7 +253,7 @@ export function renderSystemConfig(container, data, ctx = {}) {
   pExp.dataset.testid = 'admin-experimental-panel';
   pExp.append(el(
     'p',
-    '사용자 화면(PlayHub · PlayForge)에는 데모 토글을 노출하지 않으며, 관리자 콘솔에서만 실험기능 보기(테스트 워크스페이스·샌드박스 결제·데모 로그인 등)를 제어합니다. 운영(prod/release) 빌드에서는 항상 비활성화됩니다.',
+    '사용자 화면(PlayHub · PlayForge)에는 데모 토글을 노출하지 않으며, 관리자 콘솔에서만 실험기능 보기(플랫폼 아바타·좌상단 기본 UI(HUD)·테스트 워크스페이스·샌드박스 결제·데모 로그인 등)를 제어합니다. 운영(prod/release) 빌드에서는 항상 비활성화됩니다.',
     'muted'
   ));
   const expActions = el('div', '', 'inline-actions');

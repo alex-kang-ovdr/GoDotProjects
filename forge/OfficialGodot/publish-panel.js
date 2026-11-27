@@ -143,6 +143,7 @@
       viewportWidth: 1280,
       viewportHeight: 720,
       building: false,
+      includePlatformAvatar: false,
       build: ctx.lastBuild && ctx.lastBuild.projectId === project.id ? ctx.lastBuild : null,
       buildError: "",
       showBuildLog: false,
@@ -214,7 +215,11 @@
       try {
         await ctx.refresh();
         const latest = ctx.getSelected ? ctx.getSelected() : ctx.selected;
-        const start = await ctx.api("/api/platform-builds/" + latest.project.id, { revision: latest.revision });
+        const start = await ctx.api("/api/platform-builds/" + latest.project.id, {
+          revision: latest.revision,
+          buildProfile: "playhub-publish",
+          includePlatformAvatar: state.includePlatformAvatar === true
+        });
         let job = start.build;
         state.build = job;
         render();
@@ -591,12 +596,21 @@
         el("h4", { text: `PlayHub 퍼블리시 Web 빌드 · 현재 리비전 r${latestRev}` }),
         el("div", { style: "font-size:12px;color:#aebed2;" },
           b
-            ? `상태: ${b.status} · 빌드 ID: ${b.id} · 리비전 r${b.revision} · 필수 PlayHub 아바타 포함`
-            : "PlayHub 배포용 빌드에는 게임 모드에 맞는 필수 PlayHub 아바타 런타임과 SDK 브리지가 자동 포함됩니다."
+            ? `상태: ${b.status} · 빌드 ID: ${b.id} · 리비전 r${b.revision} · ${b.avatarIncluded ? "플랫폼 아바타·기본 UI 포함 (실험기능 ON)" : "플랫폼 아바타·기본 UI OFF (기본값)"}`
+            : "PlayHub 배포용 Web 빌드는 SDK 브리지를 자동 포함합니다. 플랫폼 아바타 및 좌상단 기본 UI(HUD)는 실험기능으로 기본값 OFF이며 필요 시 아래에서 켤 수 있습니다."
+        ),
+        el("label", { style: "display:inline-flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#d6e3f3;cursor:pointer;" },
+          el("input", {
+            type: "checkbox",
+            id: "pf-pub-include-avatar",
+            checked: state.includePlatformAvatar === true,
+            onChange: e => { state.includePlatformAvatar = Boolean(e.target.checked); render(); }
+          }),
+          el("span", { text: "실험기능: 플랫폼 아바타 및 좌상단 기본 UI(HUD) 포함 (기본값 OFF)" })
         ),
         b && b.status === "succeeded"
           ? el("div", { className: "pf-pub-ok" },
-              `ZIP 검증 통과 · 크기 ${formatBytes(b.bytes)} (전개 ${formatBytes(b.expandedBytes)}) · PlayHub 아바타 포함 · SDK 브리지(${b.sdkBridgeVersion || "web"}) · SHA-256 ${String(b.artifactSha256 || "").slice(0, 14)}…`
+              `ZIP 검증 통과 · 크기 ${formatBytes(b.bytes)} (전개 ${formatBytes(b.expandedBytes)}) · ${b.avatarIncluded ? "플랫폼 아바타·HUD ON" : "플랫폼 아바타·HUD OFF"} · SDK 브리지(${b.sdkBridgeVersion || "web"}) · SHA-256 ${String(b.artifactSha256 || "").slice(0, 14)}…`
             )
           : null,
         state.buildError ? el("div", { className: "pf-pub-err", text: state.buildError }) : null,

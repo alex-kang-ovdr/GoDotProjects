@@ -142,11 +142,13 @@ class BuildQueue {
   enqueue(snapshot) {
     if (this.closed) throw new Error('Build queue is closed');
     const buildProfile = resolveBuildProfile(snapshot.buildProfile);
+    const includePlatformAvatar = buildProfile === 'playhub-publish' && snapshot.includePlatformAvatar === true;
     const sourceHash = crypto.createHash('sha256').update(snapshot.source || JSON.stringify(snapshot.files)).digest('hex');
     if (snapshot.id) {
       for (const job of this.jobs.values()) {
         if (job.projectId === snapshot.id && job.revision === snapshot.revision && job.sourceHash === sourceHash &&
             (job.buildProfile || 'playhub-publish') === buildProfile &&
+            Boolean(job.avatarIncluded) === includePlatformAvatar &&
             (job.ownerKey || null) === (snapshot.ownerKey || null) &&
             (['queued', 'running'].includes(job.status) || (job.status === 'succeeded' && (fs.existsSync(path.join(this.directory, job.id, 'output', 'index.html')) || fs.existsSync(path.join(this.directory, job.id, 'output', 'PlayForge-Web.zip')))))) return this.get(job.id);
       }
@@ -154,9 +156,9 @@ class BuildQueue {
     if (this.pending.length >= 3) throw Object.assign(new Error('Build queue limit reached'), { status: 429 });
     if (this.jobs.size >= 20) { for (const [key,value] of this.jobs) { if (['succeeded','failed'].includes(value.status)) { this.jobs.delete(key); break; } } }
     const id = crypto.randomBytes(8).toString('hex');
-    const job = { id, target: 'web', buildProfile, avatarIncluded: buildProfile === 'playhub-publish', revision: snapshot.revision, sourceHash,
+    const job = { id, target: 'web', buildProfile, avatarIncluded: includePlatformAvatar, revision: snapshot.revision, sourceHash,
       projectId: snapshot.id || null, ...(snapshot.ownerKey ? { ownerKey: snapshot.ownerKey } : {}), status: 'queued', createdAt: new Date().toISOString(), log: '', files: [] };
-    this.jobs.set(id, job); this.pending.push({ job, snapshot: { ...structuredClone(snapshot), buildProfile } });
+    this.jobs.set(id, job); this.pending.push({ job, snapshot: { ...structuredClone(snapshot), buildProfile, includePlatformAvatar } });
     setImmediate(() => this.pump());
     return this.get(id);
   }
@@ -191,6 +193,7 @@ class BuildQueue {
     fs.mkdirSync(project, { recursive: true }); fs.mkdirSync(output, { recursive: true });
     const buildProfile = resolveBuildProfile(snapshot.buildProfile);
     const isStandardGodot = buildProfile === 'standard-godot';
+    const includePlatformAvatar = !isStandardGodot && snapshot.includePlatformAvatar === true;
     const rawEntries = snapshot.files ? snapshot.files.map(file => [file.path, file.content]) : projectEntries(this.root, snapshot);
 
     if (snapshot.packaging === 'modular-thin-ugc') {
@@ -201,7 +204,7 @@ class BuildQueue {
       job.files = ['ugc.pck', 'ugc.manifest.json'];
       job.packaging = 'modular-thin-ugc';
       job.buildProfile = buildProfile;
-      job.avatarIncluded = true;
+      job.avatarIncluded = includePlatformAvatar;
       job.artifactSha256 = thin.ugc.sha256;
       job.bytes = thin.ugc.bytes;
       job.entryCount = thin.ugc.fileCount;
@@ -209,11 +212,11 @@ class BuildQueue {
       return;
     }
 
-    const entries = isStandardGodot ? sanitizeProjectForStandardGodot(rawEntries).entries : rawEntries;
+    const entries = (!includePlatformAvatar) ? sanitizeProjectForStandardGodot(rawEntries).entries : rawEntries;
     for (const [relative, data] of entries) {
       if (isSealedAvatarPath(relative)) continue;
       let fileData = data;
-      if (!isStandardGodot && relative === 'project.godot' && snapshot.files) {
+      if (includePlatformAvatar && relative === 'project.godot' && snapshot.files) {
         const text = Buffer.isBuffer(data) ? data.toString('utf8') : String(data);
         fileData = injectPlayHubAvatarAutoload(text);
       }
@@ -222,7 +225,7 @@ class BuildQueue {
       fs.writeFileSync(file, fileData);
     }
 
-    if (!isStandardGodot && snapshot.files) {
+    if (includePlatformAvatar && snapshot.files) {
       const includeAssets = snapshot.modularAssets === true
         ? false
         : (snapshot.includeAllAvatarAssets === true ? 'all' : 'starter');
@@ -240,7 +243,7 @@ class BuildQueue {
     }
     fs.writeFileSync(path.join(game, 'project.json'), JSON.stringify(manifest, null, 2));
     }
-    fs.writeFileSync(path.join(project, 'export_presets.cfg'), isStandardGodot ? standardGodotPreset : preset);
+    fs.writeFileSync(path.join(project, 'export_presets.cfg'), includePlatformAvatar ? preset : standardGodotPreset);
     await this.run(job, ['--headless', '--path', project, '--editor', '--import', '--quit']);
     await this.run(job, ['--headless', '--path', project, '--export-release', 'Web', path.join(output, 'index.html')]);
     if (!fs.existsSync(path.join(output, 'index.html')) || !fs.existsSync(path.join(output, 'index.wasm')) || !fs.existsSync(path.join(output, 'index.pck'))) throw new Error('Godot did not produce the required Web files');
@@ -251,7 +254,7 @@ class BuildQueue {
     const zipValidation = validateDeploymentZip(zipBuffer);
     fs.writeFileSync(path.join(output, zipFilename), zipBuffer);
     job.buildProfile = buildProfile;
-    job.avatarIncluded = !isStandardGodot && Boolean(snapshot.files);
+    job.avatarIncluded = includePlatformAvatar && Boolean(snapshot.files);
     job.files = [...names, zipFilename];
     job.downloadUrl = '/api/builds/' + job.id + '/files/' + zipFilename;
     job.previewUrl = '/api/builds/' + job.id + '/files/index.html';

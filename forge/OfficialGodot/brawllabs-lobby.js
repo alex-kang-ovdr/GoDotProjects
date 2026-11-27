@@ -53,7 +53,7 @@
         const project=await api('/api/platform/projects/'+encodeURIComponent(projectId));
         const requested=buildId?await api('/api/builds/'+encodeURIComponent(buildId)):null;
         let build=requested?.build;
-        if(!build){const buildProfile=query.get('buildProfile')==='standard-godot'?'standard-godot':'playhub-publish';build=(await api('/api/platform-builds/'+encodeURIComponent(projectId),{revision:project.revision,buildProfile})).build;}
+        if(!build){const buildProfile=query.get('buildProfile')==='playhub-publish'?'playhub-publish':'standard-godot';build=(await api('/api/platform-builds/'+encodeURIComponent(projectId),{revision:project.revision,buildProfile,includePlatformAvatar:buildProfile==='playhub-publish'})).build;}
         const deadline=Date.now()+240000;
         while(['queued','running'].includes(build.status)){if(Date.now()>deadline)throw Error('게임 준비 시간이 초과되었습니다.');await new Promise(r=>setTimeout(r,600));build=(await api('/api/builds/'+encodeURIComponent(build.id))).build;}
         if(build.status!=='succeeded')throw Error(build.error||'게임 준비 실패');

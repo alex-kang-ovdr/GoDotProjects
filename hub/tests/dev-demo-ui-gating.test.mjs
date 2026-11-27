@@ -276,7 +276,8 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
         mode: window.PlayHubDevDemoUI?.getBuildMode?.(),
         enabled: window.PlayHubDevDemoUI?.isEnabled?.(),
         hasNavToggle: Boolean(document.getElementById('dev-demo-nav-toggle')),
-        hasCard: Boolean(document.getElementById('dev-demo-settings-card'))
+        hasCard: Boolean(document.getElementById('dev-demo-settings-card')),
+        avatarNavHidden: Boolean(document.querySelector('a[data-nav-view="avatar"]')?.hidden)
       };
     })()`;
     const initial = await evalJs(waitDevApi);
@@ -284,6 +285,7 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     assert.equal(initial.enabled, false, 'Debug build must default to OFF');
     assert.equal(initial.hasNavToggle, false, 'PlayHub user header must NOT render 데모 OFF button (Admin owns 실험기능 보기)');
     assert.equal(initial.hasCard, false, 'PlayHub user account page must NOT render 데모 UI card');
+    assert.equal(initial.avatarNavHidden, true, 'Avatar nav link must be hidden by default when experimental features are OFF');
 
     // Enable via Admin launch/API -> F5 reload -> verify ON persists without rendering user-facing 데모 buttons
     await evalJs(`window.PlayHubDevDemoUI.setEnabled(true);`);
@@ -293,6 +295,7 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     assert.equal(afterF5On.enabled, true, 'Admin-enabled experimental setting ON must persist after F5 reload');
     assert.equal(afterF5On.hasNavToggle, false);
     assert.equal(afterF5On.hasCard, false);
+    assert.equal(afterF5On.avatarNavHidden, false, 'Avatar nav link must be visible when experimental features are ON');
 
     // Disable -> F5 reload -> verify OFF persists
     await evalJs(`window.PlayHubDevDemoUI.setEnabled(false);`);
@@ -300,6 +303,7 @@ test('PlayHub prod build exposes zero Test/Demo UI even if localStorage is manua
     await reloadAndWait();
     const afterF5Off = await evalJs(waitDevApi);
     assert.equal(afterF5Off.enabled, false, 'Setting OFF must persist after F5 reload');
+    assert.equal(afterF5Off.avatarNavHidden, true, 'Avatar nav link must hide again when experimental features are OFF');
   });
 });
 

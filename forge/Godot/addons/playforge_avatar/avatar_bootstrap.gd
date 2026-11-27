@@ -57,10 +57,10 @@ func _ready() -> void:
 
 
 func _is_pie_preview_disabled() -> bool:
-	# Security invariant: PIE ON/OFF preview toggle is ONLY allowed in debug PIE runs
-	# (never in published PlayHub release builds where OS.is_debug_build() is false).
+	# Release PlayHub builds where PlayForgeAvatarRuntime was explicitly injected always run it.
 	if not OS.is_debug_build():
 		return false
+	# Experimental feature default: OFF in debug PIE runs unless explicitly enabled via flag or pref.
 	for arg in OS.get_cmdline_user_args():
 		var cleaned := arg.strip_edges().to_lower()
 		if cleaned == "--playforge-pie-avatar=off" or cleaned == "--playforge-pie-avatar=0":
@@ -69,8 +69,8 @@ func _is_pie_preview_disabled() -> bool:
 			return false
 	var cfg := ConfigFile.new()
 	if cfg.load(PIE_PREF_PATH) == OK:
-		return not bool(cfg.get_value("pie", "avatar_and_hud_enabled", true))
-	return false
+		return not bool(cfg.get_value("pie", "avatar_and_hud_enabled", false))
+	return true
 
 
 func _is_embedded_in_playhub_host() -> bool:

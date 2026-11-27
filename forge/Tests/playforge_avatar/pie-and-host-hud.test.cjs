@@ -61,27 +61,40 @@ test('1. PlayForge Web Editor PIE ON/OFF toggle persists & switches buildProfile
 
   const toggle = page.locator('#pie-avatar-toggle');
   await toggle.waitFor({ state: 'visible', timeout: 30000 });
-  assert.equal(await toggle.getAttribute('data-pie-avatar'), 'on');
-  assert.equal(await page.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled()), true);
-  await page.screenshot({ path: path.join(evidenceDir, 'editor-pie-toggle-ON.png'), clip: { x: 0, y: 0, width: 1280, height: 96 } });
-
-  await toggle.click();
-  await new Promise((r) => setTimeout(r, 250));
+  // Experimental feature default: OFF
   assert.equal(await toggle.getAttribute('data-pie-avatar'), 'off');
   assert.equal(await page.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled()), false);
   await page.screenshot({ path: path.join(evidenceDir, 'editor-pie-toggle-OFF.png'), clip: { x: 0, y: 0, width: 1280, height: 96 } });
 
-  // Reloading preserves per-project PIE OFF state via sessionStorage
+  await toggle.click();
+  await new Promise((r) => setTimeout(r, 250));
+  assert.equal(await toggle.getAttribute('data-pie-avatar'), 'on');
+  assert.equal(await page.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled()), true);
+  await page.screenshot({ path: path.join(evidenceDir, 'editor-pie-toggle-ON.png'), clip: { x: 0, y: 0, width: 1280, height: 96 } });
+
+  // Reloading preserves per-project PIE ON state via sessionStorage
   await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+  await toggle.waitFor({ state: 'visible', timeout: 30000 });
+  assert.equal(await toggle.getAttribute('data-pie-avatar'), 'on');
+  assert.equal(await page.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled()), true);
+
+  // Explicit query ?pieAvatar=off overrides cleanly
+  await page.goto(`${base}/OfficialGodot/editor.html?project=${pid}&pieAvatar=off`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await toggle.waitFor({ state: 'visible', timeout: 30000 });
   assert.equal(await toggle.getAttribute('data-pie-avatar'), 'off');
   assert.equal(await page.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled()), false);
 
-  // Explicit query ?pieAvatar=on overrides cleanly
-  await page.goto(`${base}/OfficialGodot/editor.html?project=${pid}&pieAvatar=on`, { waitUntil: 'domcontentloaded', timeout: 60000 });
-  await toggle.waitFor({ state: 'visible', timeout: 30000 });
-  assert.equal(await toggle.getAttribute('data-pie-avatar'), 'on');
-  assert.equal(await page.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled()), true);
+  // Default POST /api/platform-builds/:id (omitting includePlatformAvatar) must default avatarIncluded=false (experimental OFF)
+  const { BuildQueue } = require('../../Tools/build-queue.cjs');
+  const q = new BuildQueue(forgeRoot, path.join(tmp, 'q-check'));
+  q.pump = async () => {};
+  const defaultJob = q.enqueue({ id: pid, revision: 1, files: [{ path: 'project.godot', content: '[application]\n' }] });
+  const optInJob = q.enqueue({ id: pid, revision: 1, includePlatformAvatar: true, files: [{ path: 'project.godot', content: '[application]\n' }] });
+  assert.equal(defaultJob.buildProfile, 'playhub-publish');
+  assert.equal(defaultJob.avatarIncluded, false, 'Default PlayHub build must have avatarIncluded=false (experimental OFF)');
+  assert.equal(optInJob.avatarIncluded, true, 'Explicit includePlatformAvatar=true must set avatarIncluded=true');
+  assert.notEqual(defaultJob.id, optInJob.id, 'OFF and ON jobs for same revision must not collide in BuildQueue cache');
+  q.close();
 
   assert.deepEqual(errs, [], `Editor PIE toggle errors: ${errs.join('\n')}`);
 });
@@ -188,7 +201,17 @@ test('2. PlayHub Outer Host Top-Left .platform-core-bar enforces max 30s tempora
     args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'],
   });
   const page = await browser.newPage({ viewport: { width: 1280, height: 760 } });
+  // 0. Default (experimental OFF): top-left .platform-core-bar and Avatar nav link must NOT be shown
   await page.goto(`http://127.0.0.1:${userPort}/?game=hud-bridge-demo`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  assert.equal(await page.locator('a[data-nav-view="avatar"]').isHidden(), true, 'Avatar nav link must be hidden by default (experimental OFF)');
+  const playBtnDefault = page.locator('#play-button, [data-testid="launch-game"]').first();
+  await playBtnDefault.waitFor({ state: 'visible', timeout: 15000 });
+  await playBtnDefault.click();
+  await page.frameLocator('iframe').first().locator('#ready').waitFor({ state: 'visible', timeout: 15000 });
+  assert.equal(await page.locator('[data-testid="platform-core-bar"]').count(), 0, 'Top-left .platform-core-bar must NOT mount by default when experimental UI is OFF');
+
+  // 1. Experimental ON (?platformUi=on): top-left .platform-core-bar mounts and enforces 30s hide / auto-restore / 0.2s/s recharge
+  await page.goto(`http://127.0.0.1:${userPort}/?game=hud-bridge-demo&platformUi=on`, { waitUntil: 'domcontentloaded', timeout: 30000 });
   const playBtn = page.locator('#play-button, [data-testid="launch-game"]').first();
   await playBtn.waitFor({ state: 'visible', timeout: 15000 });
   await playBtn.click();

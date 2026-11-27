@@ -75,8 +75,8 @@
       } else {
         if (!projectId) projectId = (await api('/api/platform/projects',{name:'Fortress War Multiplayer',template:'fortress-war',mode:'ready'})).project.id;
         const project = await api('/api/platform/projects/' + encodeURIComponent(projectId));
-        const buildProfile = query.get('buildProfile') === 'standard-godot' ? 'standard-godot' : 'playhub-publish';
-        let build = buildId ? (await api('/api/builds/' + encodeURIComponent(buildId))).build : (await api('/api/platform-builds/' + encodeURIComponent(projectId),{revision:project.revision,buildProfile})).build;
+        const buildProfile = query.get('buildProfile') === 'playhub-publish' ? 'playhub-publish' : 'standard-godot';
+        let build = buildId ? (await api('/api/builds/' + encodeURIComponent(buildId))).build : (await api('/api/platform-builds/' + encodeURIComponent(projectId),{revision:project.revision,buildProfile,includePlatformAvatar:buildProfile==='playhub-publish'})).build;
         const deadline = Date.now() + 240000;
         while (['queued','running'].includes(build.status)) {
           if (Date.now() > deadline) throw Error('게임 준비 시간이 초과되었습니다.');

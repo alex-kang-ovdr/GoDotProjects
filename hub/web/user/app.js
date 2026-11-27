@@ -803,6 +803,15 @@
     try{return await api('/api/avatar/loadout');}
     catch(_){return {ok:false,offline:true,loadout:null};}
   }
+  function isPlatformAvatarUiEnabled(){
+    try{
+      const p=new URLSearchParams(location.search);
+      const q=String(p.get('platformUi')||p.get('avatarUi')||'').trim().toLowerCase();
+      if(q==='on'||q==='1'||q==='true')return true;
+      if(q==='off'||q==='0'||q==='false')return false;
+    }catch(_){}
+    return window.PlayHubDevDemoUI?.isEnabled?.()===true;
+  }
   function buildHostPlatformOverlay(activeRun){
     const bar=document.createElement('div');
     bar.className='platform-core-bar';
@@ -1032,8 +1041,13 @@
       }
       iframe.src=`${rawEntryUrl}${sep}lang=${encodeURIComponent(state.locale)}${cpQ}${mpQuery}#nonce=${nonce}`;
       const a={id:play.id,game,iframe,nonce,local,epoch:state.sessionEpoch,cacheScope:local?localScope():state.cacheScope,port:null,ready:false,failed:false,paused:true,ratio:0,lastPulse:0,lastTick:performance.now(),activeMs:0,sequence:0,revision:0,etag:null,saveBlocked:false,dirty:false,resolving:false,saveChain:Promise.resolve(),hostPending:new Map(),closed:false,requestWindow:performance.now(),requestCount:0,inFlight:0};state.active=a;
-      const overlay=buildHostPlatformOverlay(a);
-      $('player-panel').replaceChildren(iframe,overlay.bar,overlay.menu);$('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
+      if(isPlatformAvatarUiEnabled()){
+        const overlay=buildHostPlatformOverlay(a);
+        $('player-panel').replaceChildren(iframe,overlay.bar,overlay.menu);
+      }else{
+        $('player-panel').replaceChildren(iframe);
+      }
+      $('close-game').hidden=false;saveStatus(local?'로컬 모드 · 서버 저장·통계 없음':'게임을 준비하고 있어요.',local);rememberGame(game.id);
       if(!local)void window.PlayHubSocial?.reportPresence(api,{status:'in_game',gameId:game.id,gameTitle:game.title,roomCode:state.crossplay?.roomCode||null});
       a.observer=new IntersectionObserver(entries=>{if(state.active!==a)return;accumulate(a);a.ratio=entries[0]?.intersectionRatio||0;if(a.ready&&!a.paused&&a.ratio<.5)a.port?.postMessage({type:'host_pause'});},{threshold:[0,.5,1]});a.observer.observe(iframe);
       a.timer=setTimeout(()=>{if(!a.ready&&state.active===a){saveStatus('게임 준비가 지연됩니다. 게임을 닫고 다시 시도해 주세요.',true);playEvent(a,'runtime_error',{code:'READY_TIMEOUT',message:'Game ready timeout'});}},14000);

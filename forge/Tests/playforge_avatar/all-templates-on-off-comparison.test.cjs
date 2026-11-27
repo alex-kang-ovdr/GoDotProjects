@@ -310,11 +310,11 @@ test('All 18 default templates ON (배포용: Avatar + Top-Left Hub HUD) vs OFF 
     const pid = created.project.id;
     if (!firstProjectId) firstProjectId = pid;
 
-    // 1. Build ON (playhub-publish) and OFF (standard-godot)
+    // 1. Build ON (playhub-publish + experimental includePlatformAvatar: true) and OFF (standard-godot)
     const onEnq = await fetch(`${base}/api/platform-builds/${pid}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ revision: created.revision, buildProfile: 'playhub-publish' }),
+      body: JSON.stringify({ revision: created.revision, buildProfile: 'playhub-publish', includePlatformAvatar: true }),
     });
     assert.equal(onEnq.status, 202, `${tpl.id} ON enqueue failed`);
     const onJob = await waitForBuild(base, (await onEnq.json()).build.id);
@@ -399,21 +399,21 @@ test('All 18 default templates ON (배포용: Avatar + Top-Left Hub HUD) vs OFF 
   await toggleBtn.waitFor({ state: 'visible', timeout: 30000 });
   const initAttr = await toggleBtn.getAttribute('data-pie-avatar');
   const initFn = await editorPage.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled());
-  assert.equal(initAttr, 'on', 'PIE toggle must default to ON');
-  assert.equal(initFn, true, '__playforgeGetPieAvatarEnabled must default to true');
-  await editorPage.screenshot({ path: path.join(evidenceDir, 'editor-pie-toggle-ON.png'), clip: { x: 0, y: 0, width: 1280, height: 110 } });
-
-  await toggleBtn.click();
-  await new Promise((r) => setTimeout(r, 300));
-  const offAttr = await toggleBtn.getAttribute('data-pie-avatar');
-  const offFn = await editorPage.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled());
-  assert.equal(offAttr, 'off', 'Clicking PIE toggle must switch to OFF');
-  assert.equal(offFn, false, '__playforgeGetPieAvatarEnabled must be false after toggle');
+  assert.equal(initAttr, 'off', 'PIE toggle must default to OFF (experimental feature)');
+  assert.equal(initFn, false, '__playforgeGetPieAvatarEnabled must default to false');
   await editorPage.screenshot({ path: path.join(evidenceDir, 'editor-pie-toggle-OFF.png'), clip: { x: 0, y: 0, width: 1280, height: 110 } });
 
   await toggleBtn.click();
   await new Promise((r) => setTimeout(r, 300));
-  assert.equal(await toggleBtn.getAttribute('data-pie-avatar'), 'on', 'Clicking PIE toggle again must return to ON');
+  const onAttr = await toggleBtn.getAttribute('data-pie-avatar');
+  const onFn = await editorPage.evaluate(() => window.__playforgeGetPieAvatarEnabled && window.__playforgeGetPieAvatarEnabled());
+  assert.equal(onAttr, 'on', 'Clicking PIE toggle must switch to ON');
+  assert.equal(onFn, true, '__playforgeGetPieAvatarEnabled must be true after toggle');
+  await editorPage.screenshot({ path: path.join(evidenceDir, 'editor-pie-toggle-ON.png'), clip: { x: 0, y: 0, width: 1280, height: 110 } });
+
+  await toggleBtn.click();
+  await new Promise((r) => setTimeout(r, 300));
+  assert.equal(await toggleBtn.getAttribute('data-pie-avatar'), 'off', 'Clicking PIE toggle again must return to OFF');
   assert.deepEqual(editorErrs, [], `Editor PIE toggle errors: ${editorErrs.join('\n')}`);
   await editorPage.close();
 

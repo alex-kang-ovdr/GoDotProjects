@@ -23,7 +23,7 @@
   let roomId = query.get('room');
   let projectId = query.get('project');
   let buildId = query.get('build');
-  const buildProfile = query.get('buildProfile') === 'standard-godot' ? 'standard-godot' : 'playhub-publish';
+  const buildProfile = query.get('buildProfile') === 'playhub-publish' ? 'playhub-publish' : 'standard-godot';
   let revision = null;
   let previewUrl = null;
   let state = null;
@@ -114,7 +114,7 @@
         const requested = buildId ? await api('/api/builds/' + encodeURIComponent(buildId)) : null;
         let build = requested?.build;
         if (!build) {
-          build = (await api('/api/platform-builds/' + encodeURIComponent(projectId), { revision: project.revision, buildProfile })).build;
+          build = (await api('/api/platform-builds/' + encodeURIComponent(projectId), { revision: project.revision, buildProfile, includePlatformAvatar: buildProfile === 'playhub-publish' })).build;
         }
         const deadline = Date.now() + 240000;
         while (['queued', 'running'].includes(build.status)) {

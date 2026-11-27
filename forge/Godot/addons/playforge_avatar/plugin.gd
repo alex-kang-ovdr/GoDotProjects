@@ -112,19 +112,19 @@ func _refresh_mode_summary() -> void:
 
 func _load_pie_enabled() -> bool:
 	if OS.has_feature("web") and Engine.has_singleton("JavaScriptBridge"):
-		var web_val: Variant = JavaScriptBridge.eval("typeof window.__playforgeGetPieAvatarEnabled === 'function' ? window.__playforgeGetPieAvatarEnabled() : true", true)
+		var web_val: Variant = JavaScriptBridge.eval("typeof window.__playforgeGetPieAvatarEnabled === 'function' ? window.__playforgeGetPieAvatarEnabled() : false", true)
 		if web_val is bool:
 			return web_val
 	var cfg := ConfigFile.new()
 	if cfg.load(PIE_PREF_PATH) == OK:
-		return bool(cfg.get_value("pie", "avatar_and_hud_enabled", true))
-	return true
+		return bool(cfg.get_value("pie", "avatar_and_hud_enabled", false))
+	return false
 
 
 func _update_pie_toggle_label(enabled: bool) -> void:
 	if _pie_toggle == null:
 		return
-	_pie_toggle.text = "PIE 실행 미리보기: ON (PlayHub 배포용 · 아바타+좌상단 HUD 적용)" if enabled else "PIE 실행 미리보기: OFF (미배포용 · 표준 Godot 아바타/HUD 미적용)"
+	_pie_toggle.text = "PIE 실행 미리보기: ON (실험기능 · 플랫폼 아바타+좌상단 HUD 적용)" if enabled else "PIE 실행 미리보기: OFF (기본값 · 실험기능 비활성)"
 
 
 func _on_pie_toggle_changed(enabled: bool) -> void:

@@ -333,11 +333,11 @@ test('3. PlayHub Publish Web Build includes mandatory avatar while Standard Godo
     }).then((r) => r.json());
     const pid = created.project.id;
 
-    // 3A. PlayHub Publish Build (default / explicit playhub-publish)
+    // 3A. PlayHub Publish Build with experimental Platform Avatar opt-in ON
     const hubEnq = await fetch(`${base}/api/platform-builds/${pid}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ revision: created.revision, buildProfile: 'playhub-publish' }),
+      body: JSON.stringify({ revision: created.revision, buildProfile: 'playhub-publish', includePlatformAvatar: true }),
     });
     assert.equal(hubEnq.status, 202);
     const hubJob = await waitForBuild(base, (await hubEnq.json()).build.id);

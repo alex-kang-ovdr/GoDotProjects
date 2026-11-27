@@ -478,7 +478,7 @@ func _run() -> void:
   assert.ifError(imp.error);
   assert.equal(imp.status, 0, imp.stdout + imp.stderr);
 
-  const run = spawnSync(officialGodot.executable, ['--headless', '--path', projDir], {
+  const run = spawnSync(officialGodot.executable, ['--headless', '--path', projDir, '--', '--playforge-pie-avatar=on'], {
     env, encoding: 'utf8', timeout: 45000, windowsHide: true,
   });
   const output = (run.stdout || '') + '\n' + (run.stderr || '');
@@ -509,7 +509,7 @@ func _run() -> void:
   assert.equal(out.afterPausedExpiry.portraitVisible, true);
   assert.equal(out.afterPausedExpiry.hudVisible, true);
 
-  // 5. Verify PIE OFF (--playforge-pie-avatar=off) disables BOTH Avatar AND Top-Left PlayForgeCoreHUD in Debug PIE!
+  // 5. Verify default Debug PIE (no flag -> experimental OFF) AND explicit --playforge-pie-avatar=off disable BOTH Avatar AND Top-Left PlayForgeCoreHUD!
   const pieProbe = `extends Node
 func _ready() -> void:
 \tcall_deferred("_check")
@@ -526,16 +526,18 @@ func _check() -> void:
 \tget_tree().quit(0)
 `;
   fs.writeFileSync(path.join(projDir, 'gd_hide_probe.gd'), pieProbe, 'utf8');
-  const pieOffRun = spawnSync(officialGodot.executable, ['--headless', '--path', projDir, '--', '--playforge-pie-avatar=off'], {
-    env, encoding: 'utf8', timeout: 30000, windowsHide: true,
-  });
-  const pieOffOut = (pieOffRun.stdout || '') + '\n' + (pieOffRun.stderr || '');
-  assert.ifError(pieOffRun.error);
-  assert.equal(pieOffRun.status, 0, pieOffOut);
-  const pieOffMatch = /PIE_OFF_AUDIT=(\{[^\r\n]+\})/.exec(pieOffOut);
-  assert.ok(pieOffMatch, `Missing PIE_OFF_AUDIT:\n${pieOffOut}`);
-  const pieOff = JSON.parse(pieOffMatch[1]);
-  assert.equal(pieOff.pieDisabled, true, 'PIE OFF must set pieDisabled=true');
-  assert.equal(pieOff.hasPortrait, false, 'PIE OFF must NOT mount PlayForgePortraitLayer');
-  assert.equal(pieOff.hasCoreHud, false, 'PIE OFF must NOT mount PlayForgeCoreHUD');
+  for (const args of [['--headless', '--path', projDir], ['--headless', '--path', projDir, '--', '--playforge-pie-avatar=off']]) {
+    const pieOffRun = spawnSync(officialGodot.executable, args, {
+      env, encoding: 'utf8', timeout: 30000, windowsHide: true,
+    });
+    const pieOffOut = (pieOffRun.stdout || '') + '\n' + (pieOffRun.stderr || '');
+    assert.ifError(pieOffRun.error);
+    assert.equal(pieOffRun.status, 0, pieOffOut);
+    const pieOffMatch = /PIE_OFF_AUDIT=(\{[^\r\n]+\})/.exec(pieOffOut);
+    assert.ok(pieOffMatch, `Missing PIE_OFF_AUDIT:\n${pieOffOut}`);
+    const pieOff = JSON.parse(pieOffMatch[1]);
+    assert.equal(pieOff.pieDisabled, true, `PIE default/OFF must set pieDisabled=true (${args.join(' ')})`);
+    assert.equal(pieOff.hasPortrait, false, 'PIE default/OFF must NOT mount PlayForgePortraitLayer');
+    assert.equal(pieOff.hasCoreHud, false, 'PIE default/OFF must NOT mount PlayForgeCoreHUD');
+  }
 });
