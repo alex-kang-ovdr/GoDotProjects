@@ -349,19 +349,19 @@ func _build_hud() -> void:
 
 	# 주기 보고서·저장/불러오기·로직 자가검증 팝업 (O)
 	_report_panel = PanelContainer.new()
-	_report_panel.position = Vector2(205, 56)
-	_report_panel.custom_minimum_size = Vector2(710, 568)
+	_report_panel.position = Vector2(196, 46)
+	_report_panel.custom_minimum_size = Vector2(732, 646)
 	_report_panel.visible = false
 	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
 	_ui_root.add_child(_report_panel)
 
 	var rep_scroll := ScrollContainer.new()
-	rep_scroll.custom_minimum_size = Vector2(690, 554)
+	rep_scroll.custom_minimum_size = Vector2(712, 634)
 	_report_panel.add_child(rep_scroll)
 
 	_report_vbox = VBoxContainer.new()
 	_report_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_report_vbox.add_theme_constant_override("separation", 2)
+	_report_vbox.add_theme_constant_override("separation", 1)
 	rep_scroll.add_child(_report_vbox)
 
 	# 연구 패널 팝업 (R) - 스크롤 가능한 원작 97개 기술 트리
@@ -874,7 +874,8 @@ func _refresh_report_panel() -> void:
 	title.add_theme_color_override("font_color", Color(0.55, 0.94, 1.0))
 	_report_vbox.add_child(title)
 	var body := Label.new()
-	body.add_theme_font_size_override("font_size", 11)
+	body.add_theme_font_size_override("font_size", 10)
+	body.add_theme_constant_override("line_spacing", 0)
 	var ov_txt := " [과부하!]" if world.circuit_overloaded else ""
 	body.text = "\n".join([
 		"행성: %s (시드 %d) · 스케줄: %s · 태양광: %.0f%% · 간헐천: %s · 로켓연료 %.0fkg(%dkm)" % [world.get_world_preset_label(), world.seed_value, world.get_schedule_phase_ko(), world.get_solar_factor() * 100.0, world.get_geyser_phase_ko(), world.rocket_fuel_kg, world.get_rocket_max_range_km()],
@@ -888,7 +889,7 @@ func _refresh_report_panel() -> void:
 	if not _last_self_test.is_empty():
 		var st_lbl := Label.new()
 		st_lbl.add_theme_font_size_override("font_size", 9)
-		st_lbl.add_theme_constant_override("line_spacing", 1)
+		st_lbl.add_theme_constant_override("line_spacing", -1)
 		var ok_all := int(_last_self_test.get("failed", 0)) == 0
 		st_lbl.add_theme_color_override("font_color", Color(0.55, 0.98, 0.68) if ok_all else Color(1.0, 0.52, 0.48))
 		var st_lines: Array[String] = ["--- 핵심 로직 자가검증 결과: PASS %d / %d ---" % [int(_last_self_test.get("passed", 0)), int(_last_self_test.get("total", 0))]]
@@ -1206,7 +1207,22 @@ func _unhandled_input(event: InputEvent) -> void:
 									audio.play_toggle()
 									_status_lbl.text = "작물 품종 전환: %s" % next_crop
 								else:
-									audio.play_click()
+									var next_door := world.cycle_door_state(cell.x, cell.y)
+									if not next_door.is_empty():
+										audio.play_toggle()
+										_status_lbl.text = "에어록 상태 전환: %s" % next_door
+									else:
+										var next_flt := world.cycle_filter_target(cell.x, cell.y)
+										if not next_flt.is_empty():
+											audio.play_toggle()
+											_status_lbl.text = "필터 분리 원소: %s (우측 출력)" % next_flt
+										else:
+											var next_sns := world.cycle_sensor_preset(cell.x, cell.y)
+											if not next_sns.is_empty():
+												audio.play_toggle()
+												_status_lbl.text = "센서 임계값: %s" % next_sns
+											else:
+												audio.play_click()
 					else:
 						renderer.drag_active = true
 						renderer.drag_start = cell
@@ -1463,6 +1479,12 @@ func _refresh_hud() -> void:
 				var rm := float(info.get("reservoir_mass", 0.0))
 				var re := String(info.get("reservoir_el", ""))
 				extra = " (%s %.1f kg)" % [OniElements.get_element_name(re) if not re.is_empty() else "비어 있음", rm]
+			elif b_id == "door" or b_id == "mech_door":
+				extra = " (%s · 클릭 전환)" % String(info.get("door_state_ko", "자동(기밀)"))
+			elif b_id == "gas_filter" or b_id == "liquid_filter":
+				extra = " (분리: %s → 우측)" % OniElements.get_element_name(String(info.get("filter_target", "")))
+			elif b_id == "atmo_sensor" or b_id == "thermo_sensor":
+				extra = " (%s)" % String(info.get("sensor_desc", ""))
 			elif b_id == "ration_box":
 				extra = " (신선도 %.0f%% · %s)" % [float(info.get("food_freshness", 100.0)), String(info.get("food_preservation_ko", ""))]
 			elif b_id in ["geyser_steam", "geyser_water", "geyser_hydrogen"]:
@@ -1497,7 +1519,9 @@ func _refresh_hud() -> void:
 			var gp_dmg_s := " [파손HP%.0f%%]" % gphp if gphp < 99.0 else ""
 			lines.append("기체관: %s %.0f g (%.1f°C)%s" % [OniElements.get_element_name(gpe), gpm, gpt, gp_dmg_s])
 		if bool(info["has_wire"]):
-			lines.append("배선: %s" % ("전선 과부하!" if bool(info.get("overloaded", false)) else "전선 연결됨"))
+			var wmax := float(info.get("wire_max_w", 1000.0))
+			var wt_s := "고전력(20kW)" if wmax >= 10000.0 else ("전도성(2kW)" if wmax >= 2000.0 else "일반(1kW)")
+			lines.append("배선: %s%s" % [wt_s, " [과부하!]" if bool(info.get("overloaded", false)) else ""])
 		var tp := int(info.get("tile_priority", 5))
 		if bool(info.get("dig_order", false)):
 			lines.append("지시: 채굴 (우선 %d)" % tp)

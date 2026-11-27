@@ -829,6 +829,39 @@ def main():
         "cs_skill_ids": cs_skill_ids,
     }
 
+    # 17) Extract core thermodynamic/automation/airlock/hardness/wire mechanics directly from CIL
+    aq_lits = get_type_method_lits("LiquidConditionerConfig", "ConfigureBuildingTemplate")
+    st_ctor = get_type_method_lits("SteamTurbine", ".ctor")
+    st_cfg = get_type_method_lits("SteamTurbineConfig2", "DoPostConfigureComplete")
+    st_cctor = get_type_method_lits("SteamTurbineConfig2", ".cctor")
+    wire_lits = get_type_method_lits("Wire", "GetMaxWattageAsFloat")
+    hardness_raw = extract_type_data("GameUtil.Hardness", (".cctor",))
+    door_states_raw = extract_type_data("Door.ControlState", (".cctor",))
+
+    mechanics_cs = {
+        "aquatuner": {
+            "delta_c": float(aq_lits[0]) if aq_lits and isinstance(aq_lits[0], (int, float)) else -14.0,
+            "power_w": float(buildings_cs.get("thermo_aquatuner", {}).get("energy_w", 1200.0)),
+            "overheat_c": float(buildings_cs.get("thermo_aquatuner", {}).get("overheat_c", 125.0)),
+        },
+        "steam_turbine": {
+            "min_steam_c": round(float(st_ctor[1]) - 273.15, 2) if len(st_ctor) > 1 and isinstance(st_ctor[1], (int, float)) else 125.0,
+            "ideal_steam_c": round(float(st_ctor[2]) - 273.15, 2) if len(st_ctor) > 2 and isinstance(st_ctor[2], (int, float)) else 200.0,
+            "max_body_c": round(float(st_ctor[3]) - 273.15, 2) if len(st_ctor) > 3 and isinstance(st_ctor[3], (int, float)) else 100.0,
+            "out_water_c": round(float(st_ctor[4]) - 273.15, 2) if len(st_ctor) > 4 and isinstance(st_ctor[4], (int, float)) else 95.0,
+            "max_wattage_w": float(st_cctor[0]) if st_cctor and isinstance(st_cctor[0], (int, float)) else 850.0,
+            "max_steam_kg_s": float(st_cfg[7]) if len(st_cfg) > 7 and isinstance(st_cfg[7], (int, float)) else 2.0,
+            "heat_transfer_frac": float(st_cfg[9]) if len(st_cfg) > 9 and isinstance(st_cfg[9], (int, float)) else 0.1,
+            "self_heat_kw": 4.0,
+        },
+        "door_states": {k: int(v) for k, v in door_states_raw.items() if isinstance(v, int) and k != "NumStates"},
+        "hardness": {k: int(v) for k, v in hardness_raw.items() if isinstance(v, int)},
+        "wire_ratings_w": [float(v) for v in wire_lits[:5] if isinstance(v, (int, float))] or [500.0, 1000.0, 2000.0, 20000.0, 50000.0],
+        "sublimate_max_pressure_kg": 1.8,
+        "gas_filter_elements": ["Hydrogen", "Oxygen", "CarbonDioxide", "Steam", "Methane", "ChlorineGas"],
+        "liquid_filter_elements": ["DirtyWater", "Water", "CrudeOil", "Petroleum"],
+    }
+
     out_doc = {
         "extracted_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_dll": DLL_PATH,
@@ -847,6 +880,7 @@ def main():
             "rooms_extracted": len(room_type_ids),
             "recipes_extracted": sum(len(v) for v in recipes_cs["stations"].values()),
             "skills_extracted": len(cs_skill_ids),
+            "hardness_tiers_extracted": len(mechanics_cs["hardness"]),
             "shader_materials_extracted": len(visual_shaders_cs),
         },
         "duplicant_physiology": dupe_physiology,
@@ -857,6 +891,7 @@ def main():
         "rocketry": rocketry_cs,
         "ranching": ranching_cs,
         "environment": environment_cs,
+        "mechanics": mechanics_cs,
         "foods": foods_cs,
         "geysers": geysers_cs,
         "diseases": diseases_cs,

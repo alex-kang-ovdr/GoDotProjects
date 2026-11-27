@@ -744,9 +744,12 @@ func _draw_overlay_front() -> void:
 				var cx := float(x * ts) + float(ts) * 0.5
 				var cy := float(y * ts) + float(ts) * 0.5
 				var is_ov := world.overloaded_cells[i] == 1
-				var wc := Color(1.0, 0.22, 0.22, ov_pulse) if is_ov else Color(1.0, 0.84, 0.22, 0.96)
+				var wtier := int(world.wire_tier[i])
+				var base_wc := Color(1.0, 0.45, 0.16, 0.98) if wtier >= 3 else (Color(0.32, 0.94, 1.0, 0.96) if wtier == 2 else Color(1.0, 0.84, 0.22, 0.96))
+				var wc := Color(1.0, 0.22, 0.22, ov_pulse) if is_ov else base_wc
+				var ww := 6.6 if wtier >= 3 else (5.0 if wtier == 2 else 4.2)
 				if is_pw:
-					_conduit_fg_node.draw_circle(Vector2(cx, cy), 3.6, wc)
+					_conduit_fg_node.draw_circle(Vector2(cx, cy), 4.8 if wtier >= 3 else 3.6, wc)
 					for d: Vector2i in pdirs:
 						var nx: int = x + d.x
 						var ny: int = y + d.y
@@ -755,7 +758,7 @@ func _draw_overlay_front() -> void:
 							if world._is_power_node(ni):
 								var p1 := Vector2(cx, cy)
 								var p2 := Vector2(cx + float(d.x) * float(ts) * 0.5, cy + float(d.y) * float(ts) * 0.5)
-								_conduit_fg_node.draw_line(p1, p2, wc, 4.2)
+								_conduit_fg_node.draw_line(p1, p2, wc, ww)
 								if world.power_produced_w > 1.0 and (d.x > 0 or d.y > 0):
 									var efrac := fmod(_anim_time * 1.8 + float(x + y) * 0.23, 1.0)
 									_conduit_fg_node.draw_circle(p1.lerp(p2, efrac), 2.3, Color(1.0, 0.98, 0.72, 0.96))
@@ -1162,6 +1165,13 @@ func _draw_building_on(c: Node2D, x: int, y: int, i: int, b: String, ts: int) ->
 			c.draw_rect(shield_r, Color(0.32, 0.38, 0.46, 0.95), true)
 			c.draw_rect(shield_r, Color(1.0, 0.72, 0.22, 0.95), false, 1.5)
 			c.draw_circle(Vector2(p.x + float(ts) * 0.5, p.y + 1.0), 3.0, Color(1.0, 0.76, 0.22, 1.0))
+		elif b == "door" or b == "mech_door":
+			var d_open := world.is_door_open_for_fluid(x, y)
+			var d_lock := (world.door_state[i] == 2) or (b == "mech_door" and world.door_logic_driven[i] == 1 and world.logic_signal[i] == 0)
+			var d_col := Color(0.28, 0.96, 0.52, 0.92) if d_open else (Color(1.0, 0.26, 0.24, 0.96) if d_lock else Color(0.42, 0.80, 1.0, 0.85))
+			c.draw_rect(Rect2(p.x + float(ts) * 0.5 - 3.0, p.y + 2.0, 6.0, 4.0), d_col, true)
+			if d_lock:
+				c.draw_line(Vector2(p.x + 6.0, p.y + 8.0), Vector2(p.x + float(ts) - 6.0, p.y + float(ts) - 8.0), Color(1.0, 0.28, 0.24, 0.85), 2.0)
 		elif b == "jukebot" and not dim:
 			var jp := 0.65 + 0.35 * sin(_anim_time * 5.2)
 			c.draw_circle(p + Vector2(float(ts) * 0.5, float(ts) * 0.4), 20.0, Color(0.76, 0.38, 1.0, 0.10 * jp))

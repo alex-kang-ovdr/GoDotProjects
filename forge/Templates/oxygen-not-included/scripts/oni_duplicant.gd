@@ -70,6 +70,16 @@ func upgrade_skill() -> bool:
 func get_morale_expectation() -> int:
 	return OniElements.get_morale_expectation(skill_level)
 
+func can_dig_element(el: String) -> bool:
+	if el.is_empty():
+		return false
+	var req := OniElements.get_required_mining_tier(el)
+	if req >= 99:
+		return false
+	if req >= 2:
+		return skill_level >= req
+	return true
+
 func _gain_xp(amount: float) -> void:
 	var xm := float(OniElements.get_trait_effect(trait_ko).get("xp_mult", 1.0))
 	xp = minf(400.0, xp + amount * xm)
@@ -408,7 +418,7 @@ func _step_dig(world: OniWorld, dt: float) -> void:
 		_clear_job()
 		return
 	var ti := world.idx(target_cell.x, target_cell.y)
-	if world.dig_order[ti] == 0 or world.solid_el[ti].is_empty():
+	if world.dig_order[ti] == 0 or world.solid_el[ti].is_empty() or not can_dig_element(world.solid_el[ti]):
 		_clear_job()
 		return
 	if abs(target_cell.x - cell.x) + abs(target_cell.y - cell.y) > 2:
@@ -417,7 +427,9 @@ func _step_dig(world: OniWorld, dt: float) -> void:
 	var el_info := OniElements.get_element(world.solid_el[ti])
 	var dig_time := maxf(0.4, float(el_info.get("dig_time", 2.0)))
 	var dig_m := float(OniElements.get_trait_effect(trait_ko).get("dig_mult", 1.0))
-	world.dig_progress[ti] += (dt * work_speed_mult() * dig_m) / dig_time
+	var req_t := OniElements.get_required_mining_tier(world.solid_el[ti])
+	var hard_m := 0.45 if (req_t == 1 and skill_level < 1) else 1.0
+	world.dig_progress[ti] += (dt * work_speed_mult() * dig_m * hard_m) / dig_time
 	_gain_xp(6.0 * dt)
 	if world.dig_progress[ti] >= 1.0:
 		world.complete_dig(target_cell.x, target_cell.y)
@@ -711,7 +723,7 @@ func _assign_next_job(world: OniWorld) -> void:
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
-				var is_dig := prio_dig and world.dig_order[i] == 1 and not world.solid_el[i].is_empty()
+				var is_dig := prio_dig and world.dig_order[i] == 1 and not world.solid_el[i].is_empty() and can_dig_element(world.solid_el[i])
 				var b_id := world.build_order[i]
 				var is_build := prio_build and not b_id.is_empty() and world.has_materials_for(b_id)
 				var is_dec := prio_deconstruct and world.deconstruct_order[i] == 1

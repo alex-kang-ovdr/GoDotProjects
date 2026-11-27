@@ -76,6 +76,7 @@ static var csharp_botany: Dictionary = {}
 static var csharp_rocketry: Dictionary = {}
 static var csharp_ranching: Dictionary = {}
 static var csharp_env: Dictionary = {}
+static var csharp_mechanics: Dictionary = {}
 static var csharp_foods: Dictionary = {}
 static var csharp_geysers: Dictionary = {}
 static var csharp_diseases: Dictionary = {}
@@ -306,6 +307,8 @@ static func ensure_loaded() -> void:
 			csharp_ranching = raw_cs["ranching"]
 		if raw_cs.get("environment", {}) is Dictionary:
 			csharp_env = raw_cs["environment"]
+		if raw_cs.get("mechanics", {}) is Dictionary:
+			csharp_mechanics = raw_cs["mechanics"]
 		if raw_cs.get("foods", {}) is Dictionary:
 			csharp_foods = raw_cs["foods"]
 		if raw_cs.get("geysers", {}) is Dictionary:
@@ -474,6 +477,47 @@ static func get_decor_morale_bonus(avg_decor: float) -> int:
 			if avg_decor >= float((t_v as Array)[0]):
 				res = int((t_v as Array)[1])
 	return res
+
+static func get_aquatuner_spec() -> Dictionary:
+	ensure_loaded()
+	return csharp_mechanics.get("aquatuner", {"delta_c": -14.0, "power_w": 1200.0, "overheat_c": 125.0})
+
+static func get_turbine_spec() -> Dictionary:
+	ensure_loaded()
+	return csharp_mechanics.get("steam_turbine", {"min_steam_c": 125.0, "ideal_steam_c": 200.0, "max_body_c": 100.0, "out_water_c": 95.0, "max_wattage_w": 850.0, "max_steam_kg_s": 2.0, "heat_transfer_frac": 0.1, "self_heat_kw": 4.0})
+
+static func get_element_hardness(el: String) -> int:
+	var e := get_element(el)
+	if e.is_empty():
+		return 10
+	return int(e.get("hardness", 10))
+
+static func get_required_mining_tier(el: String) -> int:
+	ensure_loaded()
+	var h := get_element_hardness(el)
+	var hmap: Dictionary = csharp_mechanics.get("hardness", {}) as Dictionary
+	var imp := int(hmap.get("IMPENETRABLE", 255))
+	var sup := int(hmap.get("SUPER_DUPER_HARD", 200))
+	var near := int(hmap.get("NEARLY_IMPENETRABLE", 150))
+	var vfirm := int(hmap.get("VERY_FIRM", 50))
+	if h >= imp:
+		return 99
+	if h >= sup:
+		return 3
+	if h >= near:
+		return 2
+	if h >= vfirm:
+		return 1
+	return 0
+
+static func get_wire_max_w(tier: int) -> float:
+	ensure_loaded()
+	var ratings: Array = csharp_mechanics.get("wire_ratings_w", [500.0, 1000.0, 2000.0, 20000.0, 50000.0])
+	if tier >= 3 and ratings.size() > 3:
+		return float(ratings[3]) # 20000W Heavi-Watt
+	if tier == 2 and ratings.size() > 2:
+		return float(ratings[2]) # 2000W Conductive
+	return float(ratings[1]) if ratings.size() > 1 else 1000.0
 
 static func get_counts_summary() -> String:
 	ensure_loaded()

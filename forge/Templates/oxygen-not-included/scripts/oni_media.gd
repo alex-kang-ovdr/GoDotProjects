@@ -494,6 +494,14 @@ static func get_codex_tab_lines(tab_id: String) -> Array[String]:
 			int(OniElements.csharp_env.get("auto_sweeper_range", 4))
 		])
 		lines.append("• 환경 디버프/장식: 장식사기(-1~+12, 상한120) · 고막파열(>4.0kg) · 젖은발(>15kg) · 흠뻑젖음(>300kg) · 질식/기아 HP손실")
+		var st_m := OniElements.get_turbine_spec()
+		var aq_m := OniElements.get_aquatuner_spec()
+		lines.append("• 열역학/에어록/필터: 아쿠아튜너(%.0f°C/%.0fW 에너지보존) · 증기터빈(%.0f~%.0f°C→%.0fW/응축%.0f°C/상한%.0f°C) · 에어록 기밀(자동/개방/잠금)" % [
+			float(aq_m.get("delta_c", -14.0)), float(aq_m.get("power_w", 1200.0)),
+			float(st_m.get("min_steam_c", 125.0)), float(st_m.get("ideal_steam_c", 200.0)),
+			float(st_m.get("max_wattage_w", 850.0)), float(st_m.get("out_water_c", 95.0)), float(st_m.get("max_body_c", 100.0))
+		])
+		lines.append("• 경도/전선/센서: 채굴경도(화강암50/심연석150/흑요석200/중성자255) · 전선등급(1kW/2kW/20kW) · 원소필터(우측분리/하단우회) · 가변센서")
 		lines.append("• 열생리학/스트레스: 화상 %.0f°C · 저체온 %.0f°C · 침수 %.0fkg · 붕괴 %.0f%%(복귀%.0f%%) · 초생산성+%d · 연구실+%.0f%%" % [
 			OniElements.get_scalding_c(), OniElements.get_hypothermia_c(), OniElements.get_flood_threshold_kg(),
 			float(OniElements.csharp_traits.get("stress_breakdown_threshold", 100.0)),
