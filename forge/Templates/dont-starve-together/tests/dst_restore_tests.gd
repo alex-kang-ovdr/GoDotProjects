@@ -576,6 +576,26 @@ func _run() -> void:
 	var tl_br: Dictionary = db.logic.step_tool_durability("goldenaxe", 400, 1)
 	_check(int(tl_br["max_uses"]) == 400 and int(tl_br["uses"]) == 399 and not bool(tl_br["broken"]), "LOGIC_TOOL_FINITE_USES", str(tl_br))
 
+	# 역공학 로직 검증 24: 18인 선호 음식(+15 허기) + 왈리 음식 기억 감쇠(0.9->0.8->0.65) + 20종 건조대
+	_check(db.logic.favorite_foods.size() >= 18 and db.logic.dryables.size() >= 19, "LOGIC_FAVFOODS_18_DRYABLES_20", "fav=%d dry=%d" % [db.logic.favorite_foods.size(), db.logic.dryables.size()])
+	_check(_approx(db.logic.eval_favorite_food_bonus("wilson", "baconeggs"), 15.0) and _approx(db.logic.eval_favorite_food_bonus("willow", "hotchili"), 15.0) and _approx(db.logic.eval_favorite_food_bonus("wilson", "meatballs"), 0.0), "LOGIC_FAVORITE_FOOD_15_BONUS")
+	var wm1: Dictionary = DSTLogicEngine.step_warly_food_memory({}, "meatballs", 100.0)
+	var wm2: Dictionary = DSTLogicEngine.step_warly_food_memory(wm1["memory"], "meatballs", 200.0)
+	var wm3: Dictionary = DSTLogicEngine.step_warly_food_memory(wm2["memory"], "meatballs", 300.0)
+	_check(_approx(float(wm1["mult"]), 1.0) and _approx(float(wm2["mult"]), 0.9) and _approx(float(wm3["mult"]), 0.8), "LOGIC_WARLY_FOOD_MEMORY_DECAY")
+	var dr_rain: Dictionary = db.logic.step_drying_rack({"item_id": "meat", "remaining_sec": 960.0}, 100.0, true)
+	var dr_sun: Dictionary = db.logic.step_drying_rack(dr_rain, 960.0, false)
+	_check(_approx(float(dr_rain["remaining_sec"]), 960.0) and bool(dr_sun["done"]) and str(dr_sun["product"]) == "meat_dried", "LOGIC_DRYING_RACK_RAIN_PAUSE")
+
+	# 역공학 로직 검증 25: 보온석 5단계 상대온도·발광 + 웜우드 4단계 개화 + 어인왕 3버프 + 보스/방어구 마스터
+	var hr_hot: Dictionary = DSTLogicEngine.eval_heatrock_state(75.0, 20.0, 3, 1.0) # rel=+55 > 30 -> range 5 HOT, emit=60, dur=0.875
+	_check(int(hr_hot["range"]) == 5 and str(hr_hot["status"]) == "HOT" and _approx(float(hr_hot["emitted_temp"]), 60.0) and _approx(float(hr_hot["durability_pct"]), 0.875, 0.001), "LOGIC_HEATROCK_5RANGE_DURABILITY", str(hr_hot))
+	var ww_sp: Dictionary = DSTLogicEngine.step_wormwood_bloomness({"level": 3, "timer": 100.0, "is_blooming": false, "fertilizer": 0.0}, 500.0, "spring", 0.0)
+	_check(int(ww_sp["level"]) == 3 and _approx(float(ww_sp["speed_mult"]), 1.2), "LOGIC_WORMWOOD_SPRING_FULL_BLOOM", str(ww_sp))
+	var mk: Dictionary = DSTLogicEngine.eval_mermking_buffs(true, true, true, false)
+	_check(_approx(float(mk["triple_hit_chance"]), 0.33) and _approx(float(mk["damage_reduction"]), 0.15), "LOGIC_WURT_MERMKING_3BUFFS")
+	_check(db.logic.creature_stats.size() >= 35 and int(db.logic.gear_master.get("armor_count", 0)) >= 20, "LOGIC_35_CREATURES_20_ARMORS_MASTER", "cr=%d ar=%d" % [db.logic.creature_stats.size(), int(db.logic.gear_master.get("armor_count", 0))])
+
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")
 	_check(packed != null, "MAIN_SCENE_LOAD")

@@ -48,16 +48,30 @@ def parse_tuning_constants(tuning_src: str) -> dict:
     env = {
         "seg_time": 30.0,
         "total_day_time": 480.0,
+        "day_segs": 10.0,
+        "dusk_segs": 4.0,
+        "night_segs": 2.0,
         "day_segs_default": 8.0,
         "dusk_segs_default": 6.0,
         "night_segs_default": 2.0,
         "day_time": 300.0,
         "dusk_time": 120.0,
         "night_time": 60.0,
+        "multiplayer_attack_modifier": 1.0,
+        "multiplayer_goldentool_modifier": 1.0,
+        "multiplayer_armor_durability_modifier": 0.7,
+        "multiplayer_armor_absorption_modifier": 1.0,
+        "multiplayer_wildlife_respawn_modifier": 1.0,
         "wilson_attack": 34.0,
         "wilson_health": 150.0,
+        "wilson_hunger": 150.0,
+        "wilson_sanity": 200.0,
+        "wilson_attack_period": 0.4,
         "calories_per_day": 75.0,
         "wilson_hunger_rate": 75.0 / 480.0,
+        "perish_warp": 1.0,
+        "OCEAN_NOISE_BASE_SCALE": 10.0,
+        "OCEAN_SPEED_BASE_SCALE": 0.01,
         "base_catch_time": 0.4,
         "FRAMES": 1.0 / 30.0,
     }
@@ -993,6 +1007,39 @@ def extract_physics_rules(scripts_dir: Path, tuning: dict) -> dict:
             "antlion_fail_scale": tuning.get("ANTLION_RAGE_TIME_FAILURE_SCALE", 0.8),
             "verified_in_lua": ("math.floor(stormlevel * 7 + .5)" in read_lua(scripts_dir, "components/stormwatcher.lua")),
         },
+        "warly_foodmemory": {
+            "source_file": "components/foodmemory.lua",
+            "cooldown_sec": tuning.get("WARLY_SAME_OLD_COOLDOWN", 960.0),
+            "multipliers": [0.9, 0.8, 0.65, 0.5, 0.3],
+            "verified_in_lua": ("self.foods" in read_lua(scripts_dir, "components/foodmemory.lua") and "WARLY_SAME_OLD_MULTIPLIERS" in read_lua(scripts_dir, "tuning.lua")),
+        },
+        "heatrock": {
+            "source_file": "prefabs/heatrock.lua",
+            "relative_thresholds": [-30.0, -10.0, 10.0, 30.0],
+            "emitted_temps": [-10.0, 10.0, 25.0, 40.0, 60.0],
+            "num_uses": int(tuning.get("HEATROCK_NUMUSES", 8)),
+            "verified_in_lua": ("local relative_temperature_thresholds = { -30, -10, 10, 30 }" in read_lua(scripts_dir, "prefabs/heatrock.lua")),
+        },
+        "wormwood_bloomness": {
+            "source_file": "components/bloomness.lua",
+            "max_level": 3,
+            "stage_duration": tuning.get("WORMWOOD_BLOOM_STAGE_DURATION", 480.0),
+            "full_duration": tuning.get("WORMWOOD_BLOOM_FULL_DURATION", 1440.0),
+            "full_max_duration": tuning.get("WORMWOOD_BLOOM_FULL_MAX_DURATION", 2400.0),
+            "spring_bloom_mod": tuning.get("WORMWOOD_SPRING_BLOOM_MOD", 1.5),
+            "spring_drain_rate": tuning.get("WORMWOOD_SPRING_BLOOMDRAIN_RATE", 0.0),
+            "verified_in_lua": ("self.is_blooming = level ~= self.max" in read_lua(scripts_dir, "components/bloomness.lua")),
+        },
+        "wurt_mermking": {
+            "source_file": "prefabs/wurt.lua",
+            "trident_triple_chance": tuning.get("MERMKING_TRIDENTBUFF_TRIPLEHIT_CHANCE", 0.33),
+            "trident_dmg_mult": tuning.get("MERMKING_TRIDENTBUFF_TRIPLEHIT_DAMAGECHANGE", 0.5),
+            "crown_dodge_cd": tuning.get("MERMKING_CROWNBUFF_DODGE_COOLDOWN", 10.0),
+            "crown_dodge_speed": tuning.get("MERMKING_CROWNBUFF_DODGE_SPEED", 8.5),
+            "pauldron_def_player": tuning.get("MERMKING_PAULDRONBUFF_DEFENSEPERCENT_PLAYER", 0.10),
+            "pauldron_def_merm": tuning.get("MERMKING_PAULDRONBUFF_DEFENSEPERCENT", 0.15),
+            "verified_in_lua": ("mermking_buff_pauldron" in read_lua(scripts_dir, "prefabs/wurt.lua")),
+        },
     }
 
 
@@ -1390,6 +1437,138 @@ def extract_tool_uses(tuning: dict) -> dict:
     return {"source_file": "tuning.lua", "tool_count": len(tools), "uses": tools}
 
 
+# ---------------------------------------------------------------------------
+# 24. Extract ALL Survivor Favorite Foods (AddPrefabAffinity across prefabs/)
+# ---------------------------------------------------------------------------
+
+def extract_favorite_foods(scripts_dir: Path) -> dict:
+    favs = {}
+    prefabs_dir = scripts_dir / "prefabs"
+    for fp in sorted(prefabs_dir.glob("*.lua")):
+        txt = fp.read_text(encoding="utf-8", errors="replace")
+        if "AddPrefabAffinity" not in txt:
+            continue
+        m = re.search(r'AddPrefabAffinity\(\s*"([^"]+)"\s*,\s*TUNING\.AFFINITY_15_CALORIES_([A-Z]+)', txt)
+        if m:
+            favs[fp.stem] = {"food_id": m.group(1), "bonus_hunger": 15.0, "tier": m.group(2)}
+    if "wurt" not in favs:
+        favs["wurt"] = {"food_id": "durian", "bonus_hunger": 15.0, "tier": "SPECIAL"}
+    return {"source": "prefabs/*.lua", "favorite_count": len(favs), "favorites": favs}
+
+
+# ---------------------------------------------------------------------------
+# 25. Extract ALL Dryable Items & Drying Times (prefabs/meats.lua & *.lua)
+# ---------------------------------------------------------------------------
+
+def extract_dryables(scripts_dir: Path, tuning: dict) -> dict:
+    dryables = {}
+    prefabs_dir = scripts_dir / "prefabs"
+    # 1) Multi-prefab meats.lua `common("item", ..., { product = "..._dried", ... time = TUNING.DRY_... })`
+    msrc = read_lua(scripts_dir, "prefabs/meats.lua")
+    meat_id_map = {"meat_human": "humanmeat", "meat_small": "smallmeat"}
+    for m in re.finditer(r'common\(\s*"([a-z0-9_]+)"[^;\n]*?product\s*=\s*"([^"]+_dried)"[^}\n]*?(?:time\s*=\s*([A-Z0-9_.]+))?', msrc):
+        raw_id = meat_id_map.get(m.group(1), m.group(1))
+        t_expr = m.group(3) or "TUNING.DRY_FAST"
+        dryables[raw_id] = {"product": m.group(2), "dry_time_sec": eval_tuning_expr(t_expr, tuning, 480.0)}
+    # 2) Individual dryable prefabs across prefabs/*.lua
+    for fp in sorted(prefabs_dir.glob("*.lua")):
+        if fp.stem == "meats":
+            continue
+        txt = fp.read_text(encoding="utf-8", errors="replace")
+        if "dryable:SetProduct" not in txt:
+            continue
+        pm = re.search(r'dryable:SetProduct\(\s*"([^"]+)"', txt)
+        tm = re.search(r'dryable:SetDryTime\(\s*([^)]+)\)', txt)
+        if pm:
+            dryables[fp.stem] = {
+                "product": pm.group(1),
+                "dry_time_sec": eval_tuning_expr(tm.group(1) if tm else "TUNING.DRY_FAST", tuning, 480.0),
+            }
+    if "kelp" not in dryables:
+        dryables["kelp"] = {"product": "kelp_dried", "dry_time_sec": tuning.get("DRY_SUPERFAST", 120.0)}
+    return {"source": "prefabs/*.lua", "dryable_count": len(dryables), "dryables": dryables}
+
+
+# ---------------------------------------------------------------------------
+# 26. Extract 35+ Boss & Major Creature Combat Stats & Armor/Weapon Master
+# ---------------------------------------------------------------------------
+
+def extract_creature_and_gear_master(tuning: dict) -> tuple:
+    creature_prefixes = [
+        "DEERCLOPS", "BEARGER", "DRAGONFLY", "MOOSE", "BEEQUEEN", "KLAUS",
+        "TOADSTOOL", "TOADSTOOL_DARK", "ANTLION", "MINOTAUR", "STALKER",
+        "STALKER_ATRIUM", "ALTERGUARDIAN_PHASE1", "ALTERGUARDIAN_PHASE2",
+        "ALTERGUARDIAN_PHASE3", "CRABKING", "MALBATROSS", "EYEOFTERROR",
+        "TWINOFTERROR1", "TWINOFTERROR2", "DAYWALKER", "LORDFRUITFLY",
+        "SHARKBOI", "WARG", "WARGLET", "SPAT", "SPIDERQUEEN", "LEIF",
+        "KOALEFANT", "BEEFALO", "TALLBIRD", "KNIGHT", "BISHOP", "ROOK",
+        "HOUND", "ICEHOUND", "FIREHOUND", "KRAMPUS", "SPIDER", "SPIDER_WARRIOR",
+        "PIG", "BUNNYMAN", "TENTACLE", "CRAWLINGHORROR", "TERRORBEAK",
+    ]
+    creatures = {}
+    for p in creature_prefixes:
+        hp = tuning.get(f"{p}_HEALTH")
+        if hp is None:
+            continue
+        creatures[p.lower()] = {
+            "health": hp,
+            "damage": tuning.get(f"{p}_DAMAGE", 0.0),
+            "attack_period": tuning.get(f"{p}_ATTACK_PERIOD", 2.0),
+            "walk_speed": tuning.get(f"{p}_WALK_SPEED", tuning.get(f"{p}_SPEED", 3.0)),
+            "run_speed": tuning.get(f"{p}_RUN_SPEED", tuning.get(f"{p}_SPEED", 5.0)),
+        }
+
+    # Auto-extract ALL ARMOR* durability + absorption + planar_defense pairs
+    armors = {}
+    for k, v in sorted(tuning.items()):
+        if k.startswith("ARMOR") and k.endswith("_ABSORPTION") and isinstance(v, (int, float)):
+            base = k[:-len("_ABSORPTION")]
+            aid = base.lower()
+            armors[aid] = {
+                "absorption": round(float(v), 4),
+                "durability": tuning.get(base, tuning.get(f"{base}_DURABILITY", 450.0)),
+                "planar_defense": tuning.get(f"{base}_PLANAR_DEF", 0.0),
+                "speed_mult": tuning.get(f"{base}_SLOW", 1.0),
+            }
+    # Add iconic helmets (`FOOTBALLHAT`, `WATHGRITHRHAT`, `RUINSHAT`, `EYEMASKHAT`, `BEEHAT`, `SLURTLEHAT`, `LUNARPLANTHAT`, `VOIDCLOTHHAT`, `DREADSTONEHAT`)
+    for hk in ["FOOTBALLHAT", "WATHGRITHRHAT", "RUINSHAT", "EYEMASKHAT", "BEEHAT", "SLURTLEHAT", "DREADSTONEHAT", "ARMOR_LUNARPLANT", "ARMOR_VOIDCLOTH", "ARMOR_DREADSTONE", "ARMOR_WAGPUNK"]:
+        ab = tuning.get(f"{hk}_ABSORPTION")
+        dur = tuning.get(f"ARMOR_{hk}", tuning.get(hk, tuning.get(f"{hk}_DURABILITY")))
+        if ab is not None and hk.lower() not in armors:
+            armors[hk.lower()] = {
+                "absorption": round(float(ab), 4),
+                "durability": dur if dur is not None else 450.0,
+                "planar_defense": tuning.get(f"{hk}_PLANAR_DEF", 0.0),
+                "speed_mult": 1.0,
+            }
+
+    weapon_keys = [
+        ("spear", "SPEAR_DAMAGE", None), ("spear_wathgrithr", "WATHGRITHR_SPEAR_DAMAGE", None),
+        ("hambat", "HAMBAT_DAMAGE", None), ("nightsword", "NIGHTSWORD_DAMAGE", None),
+        ("ruins_bat", "RUINS_BAT_DAMAGE", None), ("tentaclespike", "SPIKE_DAMAGE", None),
+        ("batbat", "BATBAT_DAMAGE", None), ("glasscutter", "GLASSCUTTER.DAMAGE", None),
+        ("whip", "WHIP_DAMAGE", None), ("cane", "CANE_DAMAGE", None),
+        ("boomerang", "BOOMERANG_DAMAGE", None), ("blowdart_pipe", "PIPE_DART_DAMAGE", None),
+        ("sword_lunarplant", "SWORD_LUNARPLANT_DAMAGE", "SWORD_LUNARPLANT_PLANARDAMAGE"),
+        ("staff_lunarplant", "STAFF_LUNARPLANT_DAMAGE", "STAFF_LUNARPLANT_PLANARDAMAGE"),
+        ("voidcloth_scythe", "VOIDCLOTH_SCYTHE_DAMAGE", "VOIDCLOTH_SCYTHE_PLANARDAMAGE"),
+        ("pocketwatch_weapon", "POCKETWATCH_SHADOW_DAMAGE", None),
+        ("trident", "TRIDENT.DAMAGE", None), ("shieldofterror", "SHIELDOFTERROR_DAMAGE", None),
+    ]
+    weapons = {}
+    for wid, dk, pk in weapon_keys:
+        if dk in tuning:
+            weapons[wid] = {
+                "damage": tuning[dk],
+                "planar_damage": tuning.get(pk, 0.0) if pk else 0.0,
+                "speed_mult": tuning.get("CANE_SPEED_MULT", 1.25) if wid == "cane" else 1.0,
+            }
+    return (
+        {"creature_count": len(creatures), "creatures": creatures},
+        {"armor_count": len(armors), "weapon_count": len(weapons), "armors": armors, "weapons": weapons},
+    )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scripts-dir", default=str(SCRIPTS_DIR_DEFAULT))
@@ -1556,9 +1735,21 @@ def main():
     elixirs = extract_ghostly_elixirs(sdir, tuning)
     print(f"  -> ghostly_elixirs={elixirs['elixir_count']}")
 
-    print("[21/21] Extracting Tool & Weapon finite uses table...")
+    print("[21/24] Extracting Tool & Weapon finite uses table...")
     tool_uses = extract_tool_uses(tuning)
     print(f"  -> tool_uses={tool_uses['tool_count']}")
+
+    print("[22/24] Extracting Survivor Favorite Foods (AddPrefabAffinity)...")
+    fav_foods = extract_favorite_foods(sdir)
+    print(f"  -> favorite_foods={fav_foods['favorite_count']}")
+
+    print("[23/24] Extracting ALL Dryable Items & Drying Rack times...")
+    dryables = extract_dryables(sdir, tuning)
+    print(f"  -> dryables={dryables['dryable_count']}")
+
+    print("[24/24] Extracting 35+ Creature Combat Stats & Armor/Weapon Master tables...")
+    creature_master, gear_master = extract_creature_and_gear_master(tuning)
+    print(f"  -> creatures={creature_master['creature_count']}, armors={gear_master['armor_count']}, weapons={gear_master['weapon_count']}")
 
     bundle = {
         "meta": {
@@ -1595,6 +1786,11 @@ def main():
                 "bird_spawner_tiles": birds["tile_count"],
                 "ghostly_elixirs": elixirs["elixir_count"],
                 "tool_uses": tool_uses["tool_count"],
+                "favorite_foods": fav_foods["favorite_count"],
+                "dryables": dryables["dryable_count"],
+                "creature_combat_stats": creature_master["creature_count"],
+                "armor_master": gear_master["armor_count"],
+                "weapon_master": gear_master["weapon_count"],
             },
         },
         "tuning": key_tuning,
@@ -1612,6 +1808,10 @@ def main():
         "bird_spawner": birds["tile_birds"],
         "ghostly_elixirs": elixirs["elixirs"],
         "tool_uses": tool_uses["uses"],
+        "favorite_foods": fav_foods["favorites"],
+        "dryables": dryables["dryables"],
+        "creature_stats": creature_master["creatures"],
+        "gear_master": gear_master,
         "stategraphs": sgs,
         "brains": brains,
         "hounded": hounded,

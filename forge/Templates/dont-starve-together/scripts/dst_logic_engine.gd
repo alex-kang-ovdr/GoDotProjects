@@ -39,6 +39,10 @@ var trinkets_gold: Dictionary = {}
 var bird_spawner: Dictionary = {}
 var ghostly_elixirs: Dictionary = {}
 var tool_uses: Dictionary = {}
+var favorite_foods: Dictionary = {}
+var dryables: Dictionary = {}
+var creature_stats: Dictionary = {}
+var gear_master: Dictionary = {}
 
 
 func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> bool:
@@ -65,6 +69,10 @@ func load_from_path(path: String = "res://data/dst_logic_extracted.json") -> boo
 	bird_spawner = raw.get("bird_spawner", {})
 	ghostly_elixirs = raw.get("ghostly_elixirs", {})
 	tool_uses = raw.get("tool_uses", {})
+	favorite_foods = raw.get("favorite_foods", {})
+	dryables = raw.get("dryables", {})
+	creature_stats = raw.get("creature_stats", {})
+	gear_master = raw.get("gear_master", {})
 	stategraphs = raw.get("stategraphs", {})
 	brains = raw.get("brains", {})
 	hounded = raw.get("hounded", {})
@@ -1405,3 +1413,127 @@ func step_tool_durability(tool_id: String, cur_uses: int, consume: int = 1) -> D
 	var max_u: int = int(tool_uses.get(tool_id, 100))
 	var rem: int = max(0, cur_uses - consume)
 	return {"tool_id": tool_id, "uses": rem, "max_uses": max_u, "percent": float(rem) / float(max(1, max_u)), "broken": rem <= 0}
+
+
+## prefabs/*.lua AddPrefabAffinity — 18인 생존자 선호 음식 +15 허기 보너스
+func eval_favorite_food_bonus(char_id: String, food_id: String) -> float:
+	if not favorite_foods.has(char_id):
+		return 0.0
+	var fav: Dictionary = favorite_foods[char_id]
+	if str(fav.get("food_id", "")) == food_id:
+		return float(fav.get("bonus_hunger", 15.0))
+	return 0.0
+
+
+## components/foodmemory.lua — 왈리 동일 음식 기억 감쇠(2일 윈도우, 0.9/0.8/0.65/0.5/0.3)
+static func step_warly_food_memory(memory: Dictionary, food_id: String, now_sec: float) -> Dictionary:
+	var mults: Array = [0.9, 0.8, 0.65, 0.5, 0.3]
+	var next_mem: Dictionary = {}
+	for k in memory.keys():
+		var rec: Dictionary = memory[k]
+		if now_sec - float(rec.get("last_time", 0.0)) < 960.0:
+			next_mem[k] = rec.duplicate()
+	var prev_cnt: int = int(next_mem.get(food_id, {}).get("count", 0))
+	var eff_mult: float = 1.0 if prev_cnt == 0 else float(mults[min(prev_cnt - 1, mults.size() - 1)])
+	next_mem[food_id] = {"count": prev_cnt + 1, "last_time": now_sec}
+	return {"mult": eff_mult, "eaten_count": prev_cnt + 1, "memory": next_mem}
+
+
+## prefabs/meats.lua + components/dryer.lua — 건조대 비 일시정지 & 건조 완료 시뮬레이터
+func step_drying_rack(st: Dictionary, dt: float, is_raining: bool = false) -> Dictionary:
+	var item_id: String = str(st.get("item_id", ""))
+	if item_id == "" or not dryables.has(item_id):
+		return {"ok": false, "done": false, "product": ""}
+	var ddef: Dictionary = dryables[item_id]
+	var total: float = float(ddef.get("dry_time_sec", 480.0))
+	var rem: float = float(st.get("remaining_sec", total))
+	if not is_raining and dt > 0.0:
+		rem = max(0.0, rem - dt)
+	var done: bool = rem <= 0.0
+	return {
+		"ok": true,
+		"item_id": item_id,
+		"product": str(ddef.get("product", "")),
+		"remaining_sec": rem,
+		"paused_by_rain": is_raining,
+		"done": done,
+	}
+
+
+## prefabs/heatrock.lua:39-109 — 보온석 5단계 상대온도 방열·발광·1/8 내구도 손실
+static func eval_heatrock_state(rock_temp: float, ambient_temp: float, prev_range: int = 3, durability_pct: float = 1.0) -> Dictionary:
+	var thresh: Array = [-30.0, -10.0, 10.0, 30.0]
+	var emit: Array = [-10.0, 10.0, 25.0, 40.0, 60.0]
+	var r: int = 1
+	for th in thresh:
+		if rock_temp > ambient_temp + float(th):
+			r += 1
+	var dur: float = durability_pct
+	if prev_range != r and ((prev_range == 1 or prev_range == 5) or (r == 1 or r == 5)):
+		dur = max(0.0, dur - (1.0 / 8.0))
+	var light_i: float = 0.0
+	if r == 5:
+		var rel: float = rock_temp - ambient_temp
+		light_i = clamp(0.5 * (rel - 30.0) / 50.0, 0.0, 0.5)
+	var labels: Array = ["FROZEN", "COLD", "AMBIENT", "WARM", "HOT"]
+	return {
+		"range": r,
+		"status": str(labels[r - 1]),
+		"emitted_temp": float(emit[r - 1]),
+		"light_intensity": light_i,
+		"durability_pct": dur,
+	}
+
+
+## components/bloomness.lua — 웜우드 4단계 개화 주기(봄 1.5x 가속 · 봄 감쇠 0)
+static func step_wormwood_bloomness(st: Dictionary, dt: float, season: String = "autumn", fert_add: float = 0.0) -> Dictionary:
+	var lvl: int = int(st.get("level", 0))
+	var timer: float = float(st.get("timer", 480.0))
+	var is_blooming: bool = bool(st.get("is_blooming", false))
+	var fert: float = float(st.get("fertilizer", 0.0)) + max(0.0, fert_add)
+	var is_spring: bool = (season == "spring")
+	if is_spring and lvl == 0:
+		lvl = 1
+		is_blooming = true
+		timer = 480.0
+	if fert_add > 0.0 and lvl == 0:
+		lvl = 1
+		is_blooming = true
+		timer = 480.0
+	if lvl > 0 and dt > 0.0:
+		if is_blooming:
+			var rate: float = (1.5 if is_spring else 1.0) + min(2.0, fert * 0.05)
+			timer -= dt * rate
+			if timer <= 0.0:
+				lvl = min(3, lvl + 1)
+				if lvl == 3:
+					is_blooming = false
+					timer = 1440.0
+				else:
+					timer = 480.0
+		else:
+			if not is_spring:
+				timer -= dt
+				if timer <= 0.0:
+					lvl = max(0, lvl - 1)
+					timer = 480.0 if lvl > 0 else 0.0
+	return {
+		"level": lvl,
+		"timer": timer,
+		"is_blooming": is_blooming,
+		"fertilizer": fert,
+		"speed_mult": 1.2 if lvl == 3 else 1.0,
+		"hunger_mult": 2.0 if lvl == 3 else 1.0,
+	}
+
+
+## prefabs/wurt.lua + tuning.lua — 어인왕 3종 왕실 버프(삼지창/왕관/어깨보호대)
+static func eval_mermking_buffs(has_trident: bool, has_crown: bool, has_pauldron: bool, is_player: bool = true) -> Dictionary:
+	return {
+		"triple_hit_chance": 0.33 if has_trident else 0.0,
+		"triple_hit_dmg_mult": 0.5 if has_trident else 0.0,
+		"dodge_cooldown": 10.0 if has_crown else 0.0,
+		"dodge_speed": 8.5 if has_crown else 0.0,
+		"sanity_aura_mod": 0.95 if has_crown else 1.0,
+		"damage_reduction": (0.10 if is_player else 0.15) if has_pauldron else 0.0,
+	}

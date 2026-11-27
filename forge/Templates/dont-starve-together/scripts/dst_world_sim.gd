@@ -1218,8 +1218,9 @@ func eat_food(food_id: String) -> bool:
 	var f: Dictionary = db.foods_by_id[food_id]
 	var fresh: float = float(food_freshness.get(food_id, 1.0))
 	var ed: Dictionary = DSTLogicEngine.eval_edible_with_spoilage(f, fresh, character_id)
+	var fav_bonus: float = db.logic.eval_favorite_food_bonus(character_id, food_id) if (db != null and db.logic != null and db.logic.loaded) else 0.0
 	var eff_hp: float = float(ed["health"])
-	var eff_hu: float = float(ed["hunger"])
+	var eff_hu: float = float(ed["hunger"]) + fav_bonus
 	var sa_val: float = float(ed["sanity"])
 
 	apply_health_delta(eff_hp, "food")
