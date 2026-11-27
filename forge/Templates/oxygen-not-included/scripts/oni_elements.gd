@@ -72,6 +72,12 @@ static var csharp_logic: Dictionary = {}
 static var csharp_buildings: Dictionary = {}
 static var csharp_critters: Dictionary = {}
 static var csharp_crops: Dictionary = {}
+static var csharp_foods: Dictionary = {}
+static var csharp_geysers: Dictionary = {}
+static var csharp_diseases: Dictionary = {}
+static var csharp_rooms: Dictionary = {}
+static var csharp_recipes: Dictionary = {}
+static var csharp_traits: Dictionary = {}
 static var csharp_physiology: Dictionary = {}
 static var csharp_tuning: Dictionary = {}
 
@@ -288,6 +294,18 @@ static func ensure_loaded() -> void:
 			csharp_critters = raw_cs["critters"]
 		if raw_cs.get("crops", {}) is Dictionary:
 			csharp_crops = raw_cs["crops"]
+		if raw_cs.get("foods", {}) is Dictionary:
+			csharp_foods = raw_cs["foods"]
+		if raw_cs.get("geysers", {}) is Dictionary:
+			csharp_geysers = raw_cs["geysers"]
+		if raw_cs.get("diseases", {}) is Dictionary:
+			csharp_diseases = raw_cs["diseases"]
+		if raw_cs.get("rooms", {}) is Dictionary:
+			csharp_rooms = raw_cs["rooms"]
+		if raw_cs.get("recipes", {}) is Dictionary:
+			csharp_recipes = raw_cs["recipes"]
+		if raw_cs.get("traits", {}) is Dictionary:
+			csharp_traits = raw_cs["traits"]
 		if raw_cs.get("duplicant_physiology", {}) is Dictionary:
 			csharp_physiology = raw_cs["duplicant_physiology"]
 		if raw_cs.get("tuning", {}) is Dictionary:
@@ -369,6 +387,45 @@ static func get_flood_threshold_kg() -> float:
 
 static func is_falling_solid(el: String) -> bool:
 	return el == "Sand" or el == "Regolith" or el == "Snow" or el == "CrushedIce"
+
+static func get_station_recipes(b_id: String) -> Array:
+	ensure_loaded()
+	var stations: Dictionary = csharp_recipes.get("stations", {}) as Dictionary
+	var arr: Variant = stations.get(b_id, [])
+	return arr if arr is Array else []
+
+static func get_geyser_cs(b_id: String) -> Dictionary:
+	ensure_loaded()
+	var key := "steam"
+	if b_id == "geyser_water":
+		key = "hot_water"
+	elif b_id == "geyser_hydrogen":
+		key = "hot_hydrogen"
+	return csharp_geysers.get(key, {})
+
+static func get_disease_cs(germ_id: String) -> Dictionary:
+	ensure_loaded()
+	return csharp_diseases.get(germ_id, {})
+
+static func get_trait_effect(trait_ko: String) -> Dictionary:
+	ensure_loaded()
+	var effs: Dictionary = csharp_traits.get("trait_effects", {}) as Dictionary
+	return effs.get(trait_ko, {})
+
+static func get_morale_expectation(skill_lv: int) -> int:
+	ensure_loaded()
+	var arr: Array = csharp_traits.get("morale_expectations", [0, 1, 3, 6, 10])
+	if arr.is_empty():
+		return skill_lv * 2
+	return int(arr[clampi(skill_lv, 0, arr.size() - 1)])
+
+static func get_overjoyed_surplus() -> int:
+	ensure_loaded()
+	return int(csharp_traits.get("overjoyed_morale_surplus", 8))
+
+static func get_lab_research_bonus() -> float:
+	ensure_loaded()
+	return float(csharp_physiology.get("lab_research_bonus", 0.1))
 
 static func get_counts_summary() -> String:
 	ensure_loaded()

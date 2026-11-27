@@ -26,7 +26,11 @@ var bladder := 20.0
 var needs_wash := false
 var morale := 2
 var stress := 0.0
-var disease := "" # "", "FoodPoisoning", "SlimeLung"
+var rad_dose := 0.0
+var overjoyed := false
+var stress_breakdowns := 0
+var _trait_work_mult := 1.0
+var disease := "" # "", "FoodPoisoning", "SlimeLung", "RadiationSickness"
 var disease_timer := 0.0
 var wearing_suit := false
 var wearing_jetsuit := false
@@ -59,24 +63,43 @@ func upgrade_skill() -> bool:
 	skill_name_ko = titles[mini(skill_level, titles.size() - 1)]
 	return true
 
+func get_morale_expectation() -> int:
+	return OniElements.get_morale_expectation(skill_level)
+
+func _gain_xp(amount: float) -> void:
+	var xm := float(OniElements.get_trait_effect(trait_ko).get("xp_mult", 1.0))
+	xp = minf(400.0, xp + amount * xm)
+
 func work_speed_mult() -> float:
-	var sick_m := 0.72 if not disease.is_empty() else 1.0
+	var sick_m := 0.75 if disease == "RadiationSickness" else (0.72 if not disease.is_empty() else 1.0)
 	var stress_m := 0.85 if stress >= 60.0 else 1.0
 	var suit_m := 1.45 if wearing_jetsuit else (1.30 if wearing_suit else 1.0)
-	return (1.0 + float(skill_level) * 0.25 + clampf(float(morale) * 0.03, 0.0, 0.35)) * sick_m * stress_m * suit_m
+	var joy_m := 1.35 if overjoyed else 1.0
+	return (1.0 + float(skill_level) * 0.25 + clampf(float(morale) * 0.03, 0.0, 0.35)) * sick_m * stress_m * suit_m * joy_m * _trait_work_mult
 
 func get_disease_ko() -> String:
 	if disease == "SlimeLung":
 		return "점액폐"
 	if disease == "FoodPoisoning":
 		return "식중독"
+	if disease == "RadiationSickness":
+		return "방사능 병"
 	return "건강"
 
 func step(world: OniWorld, dt: float) -> void:
-	# 1) 호흡 시뮬레이션 (원작: O2 0.1 kg/s 소비, CO2 0.002 kg/s 배출)
+	# 0) Assembly-CSharp.dll 특성(Trait) 시간대별 작업속도/스트레스 효과 갱신
+	var teff := OniElements.get_trait_effect(trait_ko)
+	var cfrac := fmod(world.sim_time, OniElements.CYCLE_SECONDS) / OniElements.CYCLE_SECONDS
+	_trait_work_mult = 1.0
+	if teff.has("morning_work_mult") and cfrac < 0.25:
+		_trait_work_mult *= float(teff["morning_work_mult"])
+	if teff.has("night_work_mult") and cfrac >= 0.75:
+		_trait_work_mult *= float(teff["night_work_mult"])
+
+	# 1) 호흡 시뮬레이션 (원작: O2 0.1 kg/s 소비, 잠수부의 폐 -25%, CO2 0.002 kg/s 배출)
 	_step_breathing(world, dt)
 
-	# 1.5) 환경 특수복(Atmo Suit)·제트복(Jet Suit) 자동 착용/산소 보충 및 스트레스·질병 시뮬레이션
+	# 1.5) 특수복 착용 · 방사선 피폭(RadiationMonitor) · 질병 · 스트레스 · 열생리학
 	var ci := world.idx(cell.x, cell.y)
 	var b_here := world.building[ci]
 	if b_here in ["jetsuit_dock", "jetsuit_checkpoint"]:
@@ -98,20 +121,39 @@ func step(world: OniWorld, dt: float) -> void:
 		else:
 			suit_o2 = maxf(0.0, suit_o2 - 1.2 * dt)
 		breath = 100.0
+
+	# Assembly-CSharp.dll RadiationMonitor: 피폭량 누적 (특수복 66% 차폐) -> 100rad 이상 방사능 병
+	var rad_here := world.rads[ci]
+	if rad_here > 1.0:
+		var rad_shield := 0.34 if wearing_suit else 1.0
+		rad_dose = minf(900.0, rad_dose + (rad_here * rad_shield * dt) / 60.0)
+	else:
+		rad_dose = maxf(0.0, rad_dose - 0.15 * dt)
+	if rad_dose >= 100.0 and disease.is_empty():
+		disease = "RadiationSickness"
+		disease_timer = 180.0
+
 	if not wearing_suit and world.germ_count[ci] > 28000.0 and disease.is_empty():
 		var gt := world.germ_type[ci]
-		if gt == "SlimeLung" or gt == "FoodPoisoning":
+		if gt == "SlimeLung" or (gt == "FoodPoisoning" and not bool(teff.get("food_poison_immune", false))):
 			disease = gt
 			disease_timer = 45.0
 	if not disease.is_empty():
 		disease_timer = maxf(0.0, disease_timer - dt)
-		if disease_timer <= 0.0:
+		if disease_timer <= 0.0 and (disease != "RadiationSickness" or rad_dose < 100.0):
 			disease = ""
-	var stress_delta := -0.35 * float(maxi(0, morale - skill_level * 2))
+
+	# 기대 사기(TUNING.ROLES) 기반 스트레스 변화 & 초생산성(Overjoyed) 판정
+	var exp_morale := get_morale_expectation()
+	overjoyed = morale >= exp_morale + OniElements.get_overjoyed_surplus() and stress < 30.0
+	var morale_diff := morale - exp_morale
+	var stress_delta := (-0.35 * float(morale_diff)) if morale_diff >= 0 else (0.65 * float(-morale_diff))
+	if teff.has("morning_stress_delta") and cfrac < 0.25:
+		stress_delta += float(teff["morning_stress_delta"])
 	if breath < 65.0 and not wearing_suit:
 		stress_delta += 1.6
 	if not disease.is_empty():
-		stress_delta += 0.9
+		stress_delta += 1.2 if disease == "RadiationSickness" else 0.9
 	if world.liquid_mass[ci] > 80.0 and not wearing_suit:
 		stress_delta += 0.7
 	# Assembly-CSharp.dll ScaldingMonitor(>72°C) & HypothermiaMonitor(<0°C) 열생리학
@@ -119,7 +161,7 @@ func step(world: OniWorld, dt: float) -> void:
 	if not wearing_suit and t_here > OniElements.get_scalding_c():
 		thermal_status = "SCALDING"
 		hp = maxf(1.0, hp - 3.5 * dt)
-		stress_delta += 6.8
+		stress_delta += 7.2
 	elif not wearing_suit and t_here < OniElements.get_hypothermia_c():
 		thermal_status = "CHILLY"
 		stress_delta += 1.5
@@ -128,13 +170,34 @@ func step(world: OniWorld, dt: float) -> void:
 		hp = minf(100.0, hp + (6.0 if state == "HEAL" else 0.5) * dt)
 	if state == "HEAL":
 		stress_delta = -8.5
+		# 제약기 제작 알약(MedicinePill / RadPill) 즉효 복용 치료
+		if (disease == "FoodPoisoning" or disease == "SlimeLung") and float(world.inventory.get("MedicinePill", 0.0)) >= 1.0:
+			world.inventory["MedicinePill"] = float(world.inventory["MedicinePill"]) - 1.0
+			disease = ""
+			disease_timer = 0.0
+		elif (disease == "RadiationSickness" or rad_dose >= 60.0) and float(world.inventory.get("RadPill", 0.0)) >= 1.0:
+			world.inventory["RadPill"] = float(world.inventory["RadPill"]) - 1.0
+			rad_dose = maxf(0.0, rad_dose - 100.0)
+			if disease == "RadiationSickness" and rad_dose < 100.0:
+				disease = ""
+				disease_timer = 0.0
 		if not disease.is_empty():
 			disease_timer = maxf(0.0, disease_timer - 9.0 * dt)
-			if disease_timer <= 0.0:
+			if disease_timer <= 0.0 and (disease != "RadiationSickness" or rad_dose < 100.0):
 				disease = ""
 	elif state == "SLEEP":
 		stress_delta = minf(stress_delta, -2.5)
 	stress = clampf(stress + stress_delta * dt, 0.0, 100.0)
+
+	# Assembly-CSharp.dll 스트레스 붕괴(100% -> 울음 발작: 오염수 3kg 배출 후 60% 복귀)
+	var bd_thr := float(OniElements.csharp_traits.get("stress_breakdown_threshold", 100.0))
+	if stress >= bd_thr:
+		stress = float(OniElements.csharp_traits.get("stress_reset_after_breakdown", 60.0))
+		stress_breakdowns += 1
+		if not world.is_solid_cell(cell.x, cell.y) and (world.liquid_mass[ci] < 1.0 or world.liquid_el[ci] == "DirtyWater" or world.liquid_el[ci].is_empty()):
+			world.liquid_el[ci] = "DirtyWater"
+			world.liquid_mass[ci] = minf(1000.0, world.liquid_mass[ci] + 3.0)
+		_clear_job()
 
 	# 2) 칼로리/스태미나/방광 갱신 (원작 주기당 방광 +100%, 100% 도달 시 실수->오염수 6.7kg + 식중독균)
 	kcal = maxf(0.0, kcal - (OniElements.DUPE_KCAL_PER_CYCLE / OniElements.CYCLE_SECONDS) * dt)
@@ -208,7 +271,8 @@ func step(world: OniWorld, dt: float) -> void:
 
 func _step_breathing(world: OniWorld, dt: float) -> void:
 	var ci := world.idx(cell.x, cell.y)
-	var need_o2 := OniElements.DUPE_O2_KG_PER_S * dt
+	var o2_mult := float(OniElements.get_trait_effect(trait_ko).get("o2_mult", 1.0))
+	var need_o2 := OniElements.DUPE_O2_KG_PER_S * o2_mult * dt
 	if world.gas_el[ci] == "Oxygen" and world.gas_mass[ci] >= need_o2 * 0.25:
 		var taken: float = min(world.gas_mass[ci], need_o2)
 		world.gas_mass[ci] -= taken
@@ -326,11 +390,12 @@ func _step_dig(world: OniWorld, dt: float) -> void:
 		return
 	var el_info := OniElements.get_element(world.solid_el[ti])
 	var dig_time := maxf(0.4, float(el_info.get("dig_time", 2.0)))
-	world.dig_progress[ti] += (dt * work_speed_mult()) / dig_time
-	xp = minf(400.0, xp + 6.0 * dt)
+	var dig_m := float(OniElements.get_trait_effect(trait_ko).get("dig_mult", 1.0))
+	world.dig_progress[ti] += (dt * work_speed_mult() * dig_m) / dig_time
+	_gain_xp(6.0 * dt)
 	if world.dig_progress[ti] >= 1.0:
 		world.complete_dig(target_cell.x, target_cell.y)
-		xp = minf(400.0, xp + 18.0)
+		_gain_xp(18.0)
 		_clear_job()
 
 func _step_build(world: OniWorld, dt: float) -> void:
@@ -348,10 +413,10 @@ func _step_build(world: OniWorld, dt: float) -> void:
 	var bdef := OniElements.get_building(b_id)
 	var build_time := maxf(0.4, float(bdef.get("build_time", 1.8)))
 	world.build_progress[ti] += (dt * work_speed_mult()) / build_time
-	xp = minf(400.0, xp + 6.0 * dt)
+	_gain_xp(6.0 * dt)
 	if world.build_progress[ti] >= 1.0:
 		world.complete_build(target_cell.x, target_cell.y)
-		xp = minf(400.0, xp + 18.0)
+		_gain_xp(18.0)
 		_clear_job()
 
 func _step_deconstruct(world: OniWorld, dt: float) -> void:
@@ -366,10 +431,10 @@ func _step_deconstruct(world: OniWorld, dt: float) -> void:
 		_clear_job()
 		return
 	world.deconstruct_progress[ti] += (dt * work_speed_mult()) / 1.4
-	xp = minf(400.0, xp + 6.0 * dt)
+	_gain_xp(6.0 * dt)
 	if world.deconstruct_progress[ti] >= 1.0:
 		world.complete_deconstruct(target_cell.x, target_cell.y)
-		xp = minf(400.0, xp + 14.0)
+		_gain_xp(14.0)
 		_clear_job()
 
 func _step_mop(world: OniWorld, dt: float) -> void:
@@ -386,10 +451,10 @@ func _step_mop(world: OniWorld, dt: float) -> void:
 		_clear_job()
 		return
 	world.mop_progress[ti] += (dt * work_speed_mult()) / 1.5
-	xp = minf(400.0, xp + 5.0 * dt)
+	_gain_xp(5.0 * dt)
 	if world.mop_progress[ti] >= 1.0:
 		world.complete_mop(target_cell.x, target_cell.y)
-		xp = minf(400.0, xp + 12.0)
+		_gain_xp(12.0)
 		_clear_job()
 
 func _step_repair(world: OniWorld, dt: float) -> void:
@@ -397,17 +462,23 @@ func _step_repair(world: OniWorld, dt: float) -> void:
 		_clear_job()
 		return
 	var ti := world.idx(target_cell.x, target_cell.y)
-	if world.building[ti].is_empty() or world.building_hp[ti] >= 99.5:
+	var need_b := not world.building[ti].is_empty() and world.building_hp[ti] < 99.5
+	var need_lp := world.has_liquid_pipe[ti] == 1 and world.lpipe_hp[ti] < 99.5
+	var need_gp := world.has_gas_pipe[ti] == 1 and world.gpipe_hp[ti] < 99.5
+	if not need_b and not need_lp and not need_gp:
 		_clear_job()
 		return
 	if abs(target_cell.x - cell.x) + abs(target_cell.y - cell.y) > 2:
 		_clear_job()
 		return
-	state_ko = "설비 수리"
+	state_ko = "설비·배관 수리"
 	world.repair_building(target_cell.x, target_cell.y, 28.0 * work_speed_mult() * dt)
-	xp = minf(400.0, xp + 6.0 * dt)
-	if world.building_hp[ti] >= 99.5:
-		xp = minf(400.0, xp + 12.0)
+	_gain_xp(6.0 * dt)
+	var still_b := not world.building[ti].is_empty() and world.building_hp[ti] < 99.5
+	var still_lp := world.has_liquid_pipe[ti] == 1 and world.lpipe_hp[ti] < 99.5
+	var still_gp := world.has_gas_pipe[ti] == 1 and world.gpipe_hp[ti] < 99.5
+	if not still_b and not still_lp and not still_gp:
+		_gain_xp(12.0)
 		_clear_job()
 
 func _step_toilet(world: OniWorld, dt: float) -> void:
@@ -424,6 +495,12 @@ func _step_toilet(world: OniWorld, dt: float) -> void:
 	if bladder <= 1.0:
 		bladder = 0.0
 		needs_wash = true
+		# Assembly-CSharp.dll RadiationSickness: 화장실 이용 시 체내 방사선 -100 rad 배출!
+		var flush_r := float(OniElements.get_disease_cs("RadiationSickness").get("toilet_rad_flush", 100.0))
+		rad_dose = maxf(0.0, rad_dose - flush_r)
+		if disease == "RadiationSickness" and rad_dose < 100.0:
+			disease = ""
+			disease_timer = 0.0
 		if b == "flush_toilet" and world.has_liquid_pipe[ti] == 1:
 			if world.lpipe_mass[ti] < 0.05 or world.lpipe_el[ti].is_empty() or world.lpipe_el[ti] == "DirtyWater":
 				world.lpipe_el[ti] = "DirtyWater"
@@ -468,7 +545,7 @@ func _step_operate(world: OniWorld, dt: float) -> void:
 		_clear_job()
 		return
 	world.gen_active[ti] = 1
-	xp = minf(400.0, xp + 4.0 * dt)
+	_gain_xp(4.0 * dt)
 	state_ko = "발전(400W)"
 	# 배터리가 95% 이상 차고 소비기도 없으면 대기 복귀
 	if world.total_battery_cap_j > 0.0 and world.total_battery_j >= world.total_battery_cap_j * 0.96 and world.power_consumed_w <= 0.1:
@@ -487,7 +564,7 @@ func _step_research(world: OniWorld, dt: float) -> void:
 		_clear_job()
 		return
 	world.research_active[ti] = 1
-	xp = minf(400.0, xp + (7.5 if b != "research_station" else 5.0) * dt)
+	_gain_xp((7.5 if b != "research_station" else 5.0) * dt)
 	state_ko = "고급 연구" if b == "super_computer" else ("우주 연구" if b == "planetarium" else "연구 중")
 
 func _assign_next_job(world: OniWorld) -> void:
@@ -534,13 +611,13 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_target = c
 							best_type = "toilet"
 
-	# 0c) 질병 감염, 화상/체력 저하(<75%), 또는 고스트레스(>=30%) 시 병원/휴게 설비 우선 방문
-	if best_type.is_empty() and (not disease.is_empty() or hp < 75.0 or stress >= 30.0):
+	# 0c) 질병 감염, 피폭(>=60rad), 화상/체력 저하(<75%), 또는 고스트레스(>=30%) 시 병원/휴게 설비 우선 방문
+	if best_type.is_empty() and (not disease.is_empty() or rad_dose >= 60.0 or hp < 75.0 or stress >= 30.0):
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
 				var b := world.building[i]
-				var match_med := ((not disease.is_empty() or hp < 75.0) and b in ["medical_cot", "apothecary", "wash_sink"])
+				var match_med := ((not disease.is_empty() or rad_dose >= 60.0 or hp < 75.0) and b in ["medical_cot", "apothecary", "wash_sink"])
 				var match_rel := (stress >= 30.0 and b in ["massage_table", "jukebot", "arcade_cabinet", "water_cooler", "sauna", "hottub", "beach_chair"])
 				if match_med or match_rel:
 					var c := Vector2i(x, y)
@@ -552,13 +629,15 @@ func _assign_next_job(world: OniWorld) -> void:
 							best_target = c
 							best_type = "heal"
 
-	# 0e) 과열·파손 설비(building_hp < 95) 자동 수리 작업 (우선순위 높음)
+	# 0e) 과열·파손 설비(building_hp < 95) 및 상변화 파손 배관(lpipe_hp/gpipe_hp < 95) 자동 수리 작업
 	if best_type.is_empty() and prio_build:
 		var rdirs := [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)]
 		for y in range(OniWorld.HEIGHT):
 			for x in range(OniWorld.WIDTH):
 				var i := world.idx(x, y)
-				if not world.building[i].is_empty() and world.building_hp[i] < 95.0:
+				var dmg_b := not world.building[i].is_empty() and world.building_hp[i] < 95.0
+				var dmg_p := (world.has_liquid_pipe[i] == 1 and world.lpipe_hp[i] < 95.0) or (world.has_gas_pipe[i] == 1 and world.gpipe_hp[i] < 95.0)
+				if dmg_b or dmg_p:
 					var tcell := Vector2i(x, y)
 					for d: Vector2i in rdirs:
 						var stand: Vector2i = tcell + d

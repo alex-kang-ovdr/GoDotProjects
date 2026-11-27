@@ -349,15 +349,20 @@ func _build_hud() -> void:
 
 	# 주기 보고서·저장/불러오기·로직 자가검증 팝업 (O)
 	_report_panel = PanelContainer.new()
-	_report_panel.position = Vector2(230, 88)
-	_report_panel.custom_minimum_size = Vector2(650, 468)
+	_report_panel.position = Vector2(210, 74)
+	_report_panel.custom_minimum_size = Vector2(698, 530)
 	_report_panel.visible = false
 	_style_panel(_report_panel, Color(0.08, 0.12, 0.18, 0.97))
 	_ui_root.add_child(_report_panel)
 
+	var rep_scroll := ScrollContainer.new()
+	rep_scroll.custom_minimum_size = Vector2(678, 514)
+	_report_panel.add_child(rep_scroll)
+
 	_report_vbox = VBoxContainer.new()
-	_report_vbox.add_theme_constant_override("separation", 6)
-	_report_panel.add_child(_report_vbox)
+	_report_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_report_vbox.add_theme_constant_override("separation", 3)
+	rep_scroll.add_child(_report_vbox)
 
 	# 연구 패널 팝업 (R) - 스크롤 가능한 원작 97개 기술 트리
 	_research_panel = PanelContainer.new()
@@ -655,8 +660,9 @@ func _refresh_dupes_panel() -> void:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 4)
 		var lbl := Label.new()
-		lbl.text = "%s[%s] Lv.%d (HP%.0f · 방광%.0f%% · 스트%.0f%% · %s)" % [d.dupe_name, d.trait_ko, d.skill_level, d.hp, d.bladder, d.stress, d.get_disease_ko()]
-		lbl.custom_minimum_size = Vector2(365, 0)
+		var joy_s := "★" if d.overjoyed else ""
+		lbl.text = "%s[%s]%s Lv.%d 사기%d/%d (HP%.0f·방사%.0f·스트%.0f%%·%s)" % [d.dupe_name, d.trait_ko, joy_s, d.skill_level, d.morale, d.get_morale_expectation(), d.hp, d.rad_dose, d.stress, d.get_disease_ko()]
+		lbl.custom_minimum_size = Vector2(395, 0)
 		lbl.add_theme_font_size_override("font_size", 11)
 		row.add_child(lbl)
 		for pr in [
@@ -858,17 +864,18 @@ func _refresh_report_panel() -> void:
 	body.add_theme_font_size_override("font_size", 11)
 	var ov_txt := " [과부하!]" if world.circuit_overloaded else ""
 	body.text = "\n".join([
-		"행성: %s (시드 %d) · 스케줄: %s · 태양광 일조: %.0f%%" % [world.get_world_preset_label(), world.seed_value, world.get_schedule_phase_ko(), world.get_solar_factor() * 100.0],
+		"행성: %s (시드 %d) · 스케줄: %s · 태양광: %.0f%% · 간헐천: %s" % [world.get_world_preset_label(), world.seed_value, world.get_schedule_phase_ko(), world.get_solar_factor() * 100.0, world.get_geyser_phase_ko()],
 		"복제체: %d명 · 방 구획: %d개 (사기 +%d) · 생물: %d마리 · 회로 최대부하: %.0f/1000W%s" % [world.duplicants.size(), world.rooms_list.size(), world.colony_morale_bonus, world.critters.size(), world.max_circuit_load_w, ov_txt],
-		"산소 생산 누적: %.1f kg (평균 O2 %.2f kg/칸) · 전력 누적: %.1f kJ" % [world.report_o2_kg, world.avg_oxygen_kg, world.report_power_kj],
-		"식량 비축: %.0f kcal · 채굴 완료: %d칸 · 건설 완료: %d건 · 운석 방어: %d회" % [world.food_kcal, world.report_digs, world.report_builds, world.meteors_blocked],
-		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks],
+		"산소 생산 누적: %.1f kg (평균 O2 %.2f kg/칸) · 전력 누적: %.1f kJ · 배관 파손: %d회" % [world.report_o2_kg, world.avg_oxygen_kg, world.report_power_kj, world.pipe_burst_count],
+		"식량 비축: %.0f kcal · 신선도 %.0f%% (%s) · 채굴 %d · 건설 %d · 운석 방어 %d" % [world.food_kcal, world.food_freshness, world.food_preservation_ko, world.report_digs, world.report_builds, world.meteors_blocked],
+		"연구 해금: %d / %d 기술 · 로켓 발사: %d회 · 데이터 뱅크: %d개 · 강철 %.0fkg · 알약 %.0f/%.0f" % [world.unlocked_techs.size(), OniElements.techs.size(), world.rockets_launched, world.data_banks, float(world.inventory.get("Steel", 0.0)), float(world.inventory.get("MedicinePill", 0.0)), float(world.inventory.get("RadPill", 0.0))],
 		"저장 상태: %s" % (world.last_save_status if not world.last_save_status.is_empty() else "대기 중 (user://oni_save.json)"),
 	])
 	_report_vbox.add_child(body)
 	if not _last_self_test.is_empty():
 		var st_lbl := Label.new()
-		st_lbl.add_theme_font_size_override("font_size", 10)
+		st_lbl.add_theme_font_size_override("font_size", 9)
+		st_lbl.add_theme_constant_override("line_spacing", 1)
 		var ok_all := int(_last_self_test.get("failed", 0)) == 0
 		st_lbl.add_theme_color_override("font_color", Color(0.55, 0.98, 0.68) if ok_all else Color(1.0, 0.52, 0.48))
 		var st_lines: Array[String] = ["--- 핵심 로직 자가검증 결과: PASS %d / %d ---" % [int(_last_self_test.get("passed", 0)), int(_last_self_test.get("total", 0))]]
@@ -1176,7 +1183,12 @@ func _unhandled_input(event: InputEvent) -> void:
 						elif sw == 0:
 							audio.play_switch_off()
 						else:
-							audio.play_click()
+							var next_rec := world.cycle_station_recipe(cell.x, cell.y)
+							if not next_rec.is_empty():
+								audio.play_toggle()
+								_status_lbl.text = "레시피 전환: %s" % next_rec
+							else:
+								audio.play_click()
 					else:
 						renderer.drag_active = true
 						renderer.drag_start = cell
@@ -1430,9 +1442,16 @@ func _refresh_hud() -> void:
 				var rm := float(info.get("reservoir_mass", 0.0))
 				var re := String(info.get("reservoir_el", ""))
 				extra = " (%s %.1f kg)" % [OniElements.get_element_name(re) if not re.is_empty() else "비어 있음", rm]
-			elif b_id in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "coal_gen", "petrol_gen", "steam_turbine", "solar_panel", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "rock_crusher", "kiln", "oil_refinery", "metal_refinery", "thermo_aquatuner", "space_scanner"]:
+			elif b_id == "ration_box":
+				extra = " (신선도 %.0f%% · %s)" % [float(info.get("food_freshness", 100.0)), String(info.get("food_preservation_ko", ""))]
+			elif b_id in ["geyser_steam", "geyser_water", "geyser_hydrogen"]:
+				extra = " (%s)" % String(info.get("geyser_phase_ko", "분출 중"))
+			elif b_id in ["diffuser", "electrolyzer", "co2_skimmer", "water_sieve", "ceiling_light", "microbe_musher", "electric_grill", "coal_gen", "petrol_gen", "steam_turbine", "solar_panel", "liquid_pump", "gas_pump", "research_station", "super_computer", "planetarium", "rock_crusher", "kiln", "oil_refinery", "metal_refinery", "thermo_aquatuner", "space_scanner", "apothecary", "suit_maker"]:
 				extra = " [가동]" if bool(info["machine_running"]) else " [대기]"
 			lines.append("건물: %s%s" % [bname, extra])
+			var rname_rec := String(info.get("recipe_name", ""))
+			if not rname_rec.is_empty():
+				lines.append("레시피: %s (선택 클릭으로 전환)" % rname_rec)
 			var bhp := float(info.get("building_hp", 100.0))
 			var oh_c := float(info.get("overheat_c", 9999.0))
 			var h_kw := float(info.get("heat_kw", 0.0))
@@ -1445,13 +1464,17 @@ func _refresh_hud() -> void:
 			var lpe := String(info.get("lpipe_el", ""))
 			var lpm := float(info["lpipe_mass"])
 			var lpt := float(info.get("lpipe_temp", 22.0))
+			var lphp := float(info.get("lpipe_hp", 100.0))
 			var lp_name := OniElements.get_element_name(lpe) if (not lpe.is_empty() and lpm > 0.05) else "비어 있음"
-			lines.append("액체관: %s %.1f kg (%.1f°C)" % [lp_name, lpm, lpt])
+			var lp_dmg_s := " [파손HP%.0f%%]" % lphp if lphp < 99.0 else ""
+			lines.append("액체관: %s %.1f kg (%.1f°C)%s" % [lp_name, lpm, lpt, lp_dmg_s])
 		if bool(info["has_gas_pipe"]):
 			var gpe := String(info["gpipe_el"])
 			var gpm := float(info["gpipe_mass"]) * 1000.0
 			var gpt := float(info.get("gpipe_temp", 22.0))
-			lines.append("기체관: %s %.0f g (%.1f°C)" % [OniElements.get_element_name(gpe), gpm, gpt])
+			var gphp := float(info.get("gpipe_hp", 100.0))
+			var gp_dmg_s := " [파손HP%.0f%%]" % gphp if gphp < 99.0 else ""
+			lines.append("기체관: %s %.0f g (%.1f°C)%s" % [OniElements.get_element_name(gpe), gpm, gpt, gp_dmg_s])
 		if bool(info["has_wire"]):
 			lines.append("배선: %s" % ("전선 과부하!" if bool(info.get("overloaded", false)) else "전선 연결됨"))
 		var tp := int(info.get("tile_priority", 5))

@@ -361,13 +361,15 @@ static func get_complete_audit_lines() -> Array[String]:
 	])
 	var cs_stats: Dictionary = OniElements.csharp_logic.get("assembly_stats", {}) as Dictionary
 	if not cs_stats.is_empty():
-		lines.append("[C# DLL 역공학] TypeDef %d · 상수 %d · TUNING %d클래스 · BuildingDef %d · 크리터 %d · 작물 %d" % [
+		lines.append("[C# DLL 역공학] TypeDef %d · 상수 %d · BuildingDef %d · 음식 %d · 간헐천 %d · 질병 %d · 방 %d · 레시피 %d" % [
 			int(cs_stats.get("typedefs_total", 0)),
 			int(cs_stats.get("constants_mapped", 0)),
-			int(cs_stats.get("tuning_classes_extracted", 0)),
 			int(cs_stats.get("buildings_extracted", 0)),
-			int(cs_stats.get("critters_extracted", 0)),
-			int(cs_stats.get("crops_extracted", 0)),
+			int(cs_stats.get("foods_extracted", OniElements.csharp_foods.size())),
+			int(cs_stats.get("geysers_extracted", OniElements.csharp_geysers.size())),
+			int(cs_stats.get("diseases_extracted", OniElements.csharp_diseases.size())),
+			int(cs_stats.get("rooms_extracted", (OniElements.csharp_rooms.get("cs_room_ids", []) as Array).size())),
+			int(cs_stats.get("recipes_extracted", 16)),
 		])
 	lines.append("[FMOD 사운드] 전체 %d뱅크 %d샘플 · STDT 토큰 %d · 실제 PCM16 SFX %d종 재생" % [
 		int(audio_summary.get("total_banks", 0)),
@@ -470,14 +472,42 @@ static func get_codex_tab_lines(tab_id: String) -> Array[String]:
 			lines.append("• " + String(sh_v))
 	elif tab_id == "csharp":
 		var st: Dictionary = OniElements.csharp_logic.get("assembly_stats", {}) as Dictionary
-		lines.append("=== Assembly-CSharp.dll CIL 역공학 추출 (%d TypeDef · %d 상수 · %d TUNING · %d 건물) ===" % [
+		var r_ids: Array = OniElements.csharp_rooms.get("cs_room_ids", [])
+		var rec_st: Dictionary = OniElements.csharp_recipes.get("stations", {}) as Dictionary
+		var rec_cnt := 0
+		for rk_v in rec_st.keys():
+			rec_cnt += (rec_st[rk_v] as Array).size()
+		lines.append("=== Assembly-CSharp.dll CIL 역공학 추출 (%d TypeDef · %d 상수 · %d 건물) ===" % [
 			int(st.get("typedefs_total", 0)), int(st.get("constants_mapped", 0)),
-			int(st.get("tuning_classes_extracted", 0)), int(st.get("buildings_extracted", 0))
+			int(st.get("buildings_extracted", 0))
 		])
-		lines.append("• 복제체 열생리학: 화상 %.0f°C · 저체온 %.0f°C · 침수 기준 %.0fkg · 방사선 %s" % [
+		lines.append("• 심층 카탈로그: 음식 %d종 · 간헐천 %d종 · 질병 %d종 · 방 %d종 · 제작 레시피 %d종 (6스테이션)" % [
+			OniElements.csharp_foods.size(), OniElements.csharp_geysers.size(),
+			OniElements.csharp_diseases.size(), r_ids.size(), rec_cnt
+		])
+		lines.append("• 열생리학/스트레스: 화상 %.0f°C · 저체온 %.0f°C · 침수 %.0fkg · 붕괴 %.0f%%(복귀%.0f%%) · 초생산성+%d · 연구실+%.0f%%" % [
 			OniElements.get_scalding_c(), OniElements.get_hypothermia_c(), OniElements.get_flood_threshold_kg(),
-			str(OniElements.csharp_physiology.get("rad_levels", {}))
+			float(OniElements.csharp_traits.get("stress_breakdown_threshold", 100.0)),
+			float(OniElements.csharp_traits.get("stress_reset_after_breakdown", 60.0)),
+			OniElements.get_overjoyed_surplus(), OniElements.get_lab_research_bonus() * 100.0
 		])
+		lines.append("• 질병/방사선 곡선: 식중독(-25~75°C, 방사살균2.5) · 점액폐(10~100°C, 방사살균2.5) · 방사능병(100rad, 화장실-100rad)")
+		lines.append("• 음식 보존(Rottable): 급속냉동(-18°C 이하 0%) · 멸균기체(CO2/Cl2/H2/진공 0%) · 냉장(4°C 이하 20%) · 상온산소(100%)")
+		lines.append("• 특성 효과: 조기기상(+25%작업) · 야행성(+30%야간) · 빠른학습(+35%XP/+25%연구) · 잠수부의폐(-25%O2) · 두더지손(+35%채굴) · 철의위장(식중독면역)")
+		var gkeys: Array = OniElements.csharp_geysers.keys()
+		gkeys.sort()
+		var g_sample: Array[String] = []
+		for gi in range(mini(6, gkeys.size())):
+			var gk := String(gkeys[gi])
+			var gd: Dictionary = OniElements.csharp_geysers[gk]
+			g_sample.append("%s(%.0f°C/최대%.0fkg)" % [gk, float(gd.get("temp_c", 0.0)), float(gd.get("max_pressure_kg", 5.0))])
+		if not g_sample.is_empty():
+			lines.append("• 간헐천 스펙(%d종): %s" % [gkeys.size(), ", ".join(g_sample)])
+		for rk_v in rec_st.keys():
+			var rnames: Array[String] = []
+			for ritem in (rec_st[rk_v] as Array):
+				rnames.append(String((ritem as Dictionary).get("name_ko", "")))
+			lines.append("• [레시피:%s] %s" % [String(rk_v), " / ".join(rnames)])
 		var bkeys: Array = OniElements.csharp_buildings.keys()
 		bkeys.sort()
 		for bk_v in bkeys:

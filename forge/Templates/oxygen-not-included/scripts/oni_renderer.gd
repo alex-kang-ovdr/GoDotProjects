@@ -991,7 +991,9 @@ func _draw_conduit_layers_on(c: Node2D, ts: int, bright: bool) -> void:
 							c.draw_line(Vector2(cx, wy), Vector2(cx + d.x * ts * 0.5, wy + d.y * ts * 0.5), wc, 3.0 if bright else 1.8)
 
 			if world.has_liquid_pipe[i] == 1:
-				var lpc := Color(0.24, 0.64, 0.98, pipe_a)
+				var lp_dmg := world.lpipe_hp[i] < 95.0
+				var lp_pulse := 0.55 + 0.45 * sin(_anim_time * 9.0)
+				var lpc := Color(1.0, 0.24, 0.22, lp_pulse) if lp_dmg else Color(0.24, 0.64, 0.98, pipe_a)
 				var offset := Vector2(-4, -4)
 				c.draw_circle(Vector2(cx, cy) + offset, pipe_w * 0.6, lpc)
 				for d: Vector2i in dirs:
@@ -999,6 +1001,8 @@ func _draw_conduit_layers_on(c: Node2D, ts: int, bright: bool) -> void:
 					var ny: int = y + d.y
 					if world.in_bounds(nx, ny) and world.has_liquid_pipe[world.idx(nx, ny)] == 1:
 						c.draw_line(Vector2(cx, cy) + offset, Vector2(cx + d.x * ts * 0.5, cy + d.y * ts * 0.5) + offset, lpc, pipe_w)
+				if bright and lp_dmg:
+					c.draw_arc(Vector2(cx, cy) + offset, 7.5, 0.0, TAU, 12, Color(1.0, 0.30, 0.24, lp_pulse), 1.8)
 				if bright and world.lpipe_mass[i] > 0.1:
 					var lpel := world.lpipe_el[i] if not world.lpipe_el[i].is_empty() else "Water"
 					var lcol := Color(0.55, 0.88, 1.0, 0.95)
@@ -1021,7 +1025,9 @@ func _draw_conduit_layers_on(c: Node2D, ts: int, bright: bool) -> void:
 					c.draw_circle(Vector2(cx, cy) + offset + foff + Vector2(-1.2, -1.2), 1.6, Color(1.0, 1.0, 1.0, 0.65))
 
 			if world.has_gas_pipe[i] == 1:
-				var gpc := Color(0.36, 0.90, 0.78, pipe_a)
+				var gp_dmg := world.gpipe_hp[i] < 95.0
+				var gp_pulse := 0.55 + 0.45 * sin(_anim_time * 9.0)
+				var gpc := Color(1.0, 0.24, 0.22, gp_pulse) if gp_dmg else Color(0.36, 0.90, 0.78, pipe_a)
 				var offset := Vector2(4, 4)
 				c.draw_circle(Vector2(cx, cy) + offset, pipe_w * 0.6, gpc)
 				for d: Vector2i in dirs:
@@ -1029,6 +1035,8 @@ func _draw_conduit_layers_on(c: Node2D, ts: int, bright: bool) -> void:
 					var ny: int = y + d.y
 					if world.in_bounds(nx, ny) and world.has_gas_pipe[world.idx(nx, ny)] == 1:
 						c.draw_line(Vector2(cx, cy) + offset, Vector2(cx + d.x * ts * 0.5, cy + d.y * ts * 0.5) + offset, gpc, pipe_w)
+				if bright and gp_dmg:
+					c.draw_arc(Vector2(cx, cy) + offset, 7.5, 0.0, TAU, 12, Color(1.0, 0.30, 0.24, gp_pulse), 1.8)
 				if bright and world.gpipe_mass[i] > 0.01 and world.gpipe_el[i] != "Vacuum":
 					var pec: Color = OniElements.get_element_color(world.gpipe_el[i])
 					var gflow := fmod(_anim_time * 1.35 + float(x - y) * 0.31, 1.0)
@@ -1284,6 +1292,10 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 			var cpill := Rect2(px - 22, py - 52, 44, 12)
 			c.draw_rect(cpill, Color(0.10, 0.36, 0.65, 0.92), true)
 			c.draw_string(font, Vector2(px - 20, py - 43), "저체온", HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(0.82, 0.96, 1.0, 1.0))
+		elif dupe.disease == "RadiationSickness" or dupe.rad_dose >= 100.0:
+			var rpill := Rect2(px - 24, py - 52, 48, 12)
+			c.draw_rect(rpill, Color(0.18, 0.52, 0.08, 0.94), true)
+			c.draw_string(font, Vector2(px - 22, py - 43), "방사능!", HORIZONTAL_ALIGNMENT_CENTER, 44, 9, Color(0.75, 1.0, 0.35, 1.0))
 		elif dupe.bladder >= 80.0:
 			var bpill := Rect2(px - 22, py - 52, 44, 12)
 			c.draw_rect(bpill, Color(0.65, 0.48, 0.10, 0.92), true)
@@ -1296,6 +1308,10 @@ func _draw_duplicant_on(c: Node2D, dupe: OniDuplicant, ts: int) -> void:
 			var spill := Rect2(px - 22, py - 52, 44, 12)
 			c.draw_rect(spill, Color(0.55, 0.14, 0.18, 0.92), true)
 			c.draw_string(font, Vector2(px - 20, py - 43), "스트%.0f%%" % dupe.stress, HORIZONTAL_ALIGNMENT_CENTER, 40, 9, Color(1.0, 0.88, 0.88, 1.0))
+		elif dupe.overjoyed:
+			var jpill := Rect2(px - 24, py - 52, 48, 12)
+			c.draw_rect(jpill, Color(0.45, 0.34, 0.06, 0.90), true)
+			c.draw_string(font, Vector2(px - 22, py - 43), "초생산★", HORIZONTAL_ALIGNMENT_CENTER, 44, 9, Color(1.0, 0.92, 0.42, 1.0))
 		elif dupe.state == "HEAL":
 			c.draw_circle(Vector2(px, py - 44), 4.0, Color(0.35, 0.98, 0.62, 0.92))
 

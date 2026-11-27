@@ -1,6 +1,6 @@
 {
   "source_path": "C:\\Temp\\Oxygen",
-  "extracted_at_utc": "2026-11-27T01:03:41.477222+00:00",
+  "extracted_at_utc": "2026-11-27T08:39:54.788005+00:00",
   "counts": {
     "ko_strings": 21114,
     "elements": 196,
@@ -53,7 +53,12 @@
     "csharp_tuning_classes": 155,
     "csharp_building_defs": 98,
     "csharp_critter_tunings": 10,
-    "csharp_crop_configs": 6
+    "csharp_crop_configs": 6,
+    "csharp_foods": 60,
+    "csharp_geysers": 27,
+    "csharp_diseases": 5,
+    "csharp_rooms": 19,
+    "csharp_recipes": 16
   },
   "source_hashes_sha256": {
     "gas.yaml": "e606d65f24d2f2c2321344d9a401e7bad8f960d3784754046bcdb152f18fe406",
