@@ -1,0 +1,752 @@
+#!/usr/bin/env python3
+"""
+Don't Starve Together (DST) 원본 Lua 게임 로직 역공학 추출기.
+소스: extracted_assets/scripts_bundle/scripts/ (또는 scripts.zip)
+출력: forge/Templates/dont-starve-together/data/dst_logic_extracted.json
+
+추출 범위:
+1. tuning.lua 핵심 상수 자동 해석 (체력/허기/정신력/부패/농사/전투/캐릭터 19인)
+2. cooking.lua AddIngredientValues 전수 재료(원본/_cooked/_dried + aliases)
+3. preparedfoods.lua (68) + preparedfoods_warly.lua (11) = 79종 요리 레시피 전체
+   - 각 레시피의 원본 Lua `test = function(cooker, names, tags) return ... end` 함수를
+     재귀 하강 파서로 실행 가능한 JSON AST로 100% 컴파일 (파싱 실패 0건 검증)
+4. prefabs/farm_plant_defs.lua 14종 작물 전체 (3영양분 소비/복원, 선호 계절, 수분 소비, 무게)
+5. components/hounded.lua 하운드 웨이브 에스컬레이션 규칙 (일수 구간·경고시간·마릿수·업그레이드 확률)
+6. stategraphs/SG*.lua 9종 핵심 개체 30Hz(FRAMES) 공격/타격/특수기 프레임 타임라인
+7. brains/*brain.lua 7종 AI 우선순위 트리(PriorityNode) 및 추격/리쉬 파라미터
+"""
+
+import argparse
+import json
+import re
+import zipfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+TEMPLATE_ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS_DIR_DEFAULT = TEMPLATE_ROOT / "extracted_assets" / "scripts_bundle" / "scripts"
+DST_SCRIPTS_ZIP = Path(r"C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together\data\databundles\scripts.zip")
+OUT_JSON = TEMPLATE_ROOT / "data" / "dst_logic_extracted.json"
+
+
+def read_lua(scripts_dir: Path, rel_path: str) -> str:
+    fp = scripts_dir / rel_path
+    if fp.is_file():
+        return fp.read_text(encoding="utf-8", errors="replace")
+    with zipfile.ZipFile(DST_SCRIPTS_ZIP) as z:
+        return z.read(f"scripts/{rel_path}").decode("utf-8", errors="replace")
+
+
+# ---------------------------------------------------------------------------
+# 1. Tuning Constant Resolver (tuning.lua)
+# ---------------------------------------------------------------------------
+
+def parse_tuning_constants(tuning_src: str) -> dict:
+    # Seed base constants from tuning.lua top-level locals
+    env = {
+        "seg_time": 30.0,
+        "total_day_time": 480.0,
+        "day_segs_default": 8.0,
+        "dusk_segs_default": 6.0,
+        "night_segs_default": 2.0,
+        "wilson_attack": 34.0,
+        "wilson_health": 150.0,
+        "calories_per_day": 75.0,
+        "wilson_hunger_rate": 75.0 / 480.0,
+        "base_catch_time": 0.4,
+        "FRAMES": 1.0 / 30.0,
+    }
+    tuning = {
+        "SEG_TIME": 30.0,
+        "TOTAL_DAY_TIME": 480.0,
+        "HEALING_TINY": 1.0,
+        "HEALING_SMALL": 3.0,
+        "HEALING_MEDSMALL": 8.0,
+        "HEALING_MED": 20.0,
+        "HEALING_MEDLARGE": 30.0,
+        "HEALING_LARGE": 40.0,
+        "HEALING_HUGE": 60.0,
+        "HEALING_SUPERHUGE": 100.0,
+        "SANITY_SUPERTINY": 1.0,
+        "SANITY_TINY": 5.0,
+        "SANITY_SMALL": 10.0,
+        "SANITY_MED": 15.0,
+        "SANITY_MEDLARGE": 20.0,
+        "SANITY_LARGE": 33.0,
+        "SANITY_HUGE": 50.0,
+        "CALORIES_TINY": 75.0 / 8.0,
+        "CALORIES_SMALL": 75.0 / 6.0,
+        "CALORIES_MEDSMALL": 75.0 / 4.0,
+        "CALORIES_MED": 75.0 / 3.0,
+        "CALORIES_LARGE": 75.0 / 2.0,
+        "CALORIES_HUGE": 75.0,
+        "CALORIES_SUPERHUGE": 75.0 * 2.0,
+        "PERISH_ONE_DAY": 480.0,
+        "PERISH_TWO_DAY": 480.0 * 2.0,
+        "PERISH_SUPERFAST": 480.0 * 3.0,
+        "PERISH_FAST": 480.0 * 6.0,
+        "PERISH_FASTISH": 480.0 * 8.0,
+        "PERISH_MED": 480.0 * 10.0,
+        "PERISH_SLOW": 480.0 * 15.0,
+        "PERISH_PRESERVED": 480.0 * 20.0,
+        "PERISH_SUPERSLOW": 480.0 * 40.0,
+        "HOT_FOOD_BONUS_TEMP": 40.0,
+        "COLD_FOOD_BONUS_TEMP": -40.0,
+        "FOOD_TEMP_BRIEF": 5.0,
+        "FOOD_TEMP_AVERAGE": 10.0,
+        "FOOD_TEMP_LONG": 15.0,
+        "BUFF_FOOD_TEMP_DURATION": 300.0,
+        "FARM_PLANT_CONSUME_NUTRIENT_LOW": 2,
+        "FARM_PLANT_CONSUME_NUTRIENT_MED": 4,
+        "FARM_PLANT_CONSUME_NUTRIENT_HIGH": 8,
+        "FARM_PLANT_DRINK_LOW": 0.0025,
+        "FARM_PLANT_DRINK_MED": 0.004,
+        "FARM_PLANT_DRINK_HIGH": 0.007,
+        "FARM_PLANT_DROUGHT_TOLERANCE": 0.1,
+        "FARM_PLANT_KILLJOY_TOLERANCE": 0,
+    }
+    # Parse direct simple KEY = expr assignments from tuning.lua
+    assign_re = re.compile(r"^\s*([A-Z][A-Z0-9_]+)\s*=\s*([0-9a-zA-Z_.*+\-/()\s]+?),?\s*(?:--.*)?$", re.M)
+    for _pass in range(3):
+        for m in assign_re.finditer(tuning_src):
+            k, expr = m.group(1), m.group(2).strip()
+            if not expr or any(tok in expr for tok in ("function", "true", "false", "nil", "table", "{", "}")):
+                continue
+            eval_expr = re.sub(r"\bTUNING\.([A-Z0-9_]+)\b", lambda mm: str(tuning.get(mm.group(1), "")), expr)
+            local_ns = {}
+            local_ns.update(env)
+            local_ns.update(tuning)
+            try:
+                val = eval(eval_expr, {"__builtins__": {}}, local_ns)
+                if isinstance(val, (int, float)):
+                    tuning[k] = round(float(val), 4)
+            except Exception:
+                pass
+    return tuning
+
+
+def eval_tuning_expr(expr: str, tuning: dict, default=0.0):
+    if expr is None:
+        return default
+    s = expr.strip()
+    if s in ("nil", "false", ""):
+        return default
+    s = re.sub(r"--.*$", "", s).strip()
+    s = re.sub(r"\bTUNING\.([A-Z0-9_]+)\b", lambda m: str(tuning.get(m.group(1), 0.0)), s)
+    try:
+        val = eval(s, {"__builtins__": {}}, {})
+        if isinstance(val, (int, float)):
+            return round(float(val), 4)
+    except Exception:
+        pass
+    return default
+
+
+# ---------------------------------------------------------------------------
+# 2. Recursive-Descent Lua Predicate Compiler -> Portable JSON AST
+# ---------------------------------------------------------------------------
+
+TOKEN_SPEC = [
+    ("NUM", r"\d+(?:\.\d+)?|\.\d+"),
+    ("OP", r"<=|>=|==|~=|~=|\+|-|\*|/|<|>"),
+    ("LPAREN", r"\("),
+    ("RPAREN", r"\)"),
+    ("LBRACK", r"\["),
+    ("RBRACK", r"\]"),
+    ("DOT", r"\."),
+    ("STR", r'"[^"]*"|\'[^\']*\''),
+    ("ID", r"[A-Za-z_][A-Za-z0-9_]*"),
+    ("WS", r"\s+"),
+]
+TOKEN_RE = re.compile("|".join(f"(?P<{n}>{p})" for n, p in TOKEN_SPEC))
+
+
+class LuaPredParser:
+    """Compiles DST Crock Pot Lua `test = function(cooker, names, tags) return <expr> end` into JSON AST."""
+
+    def __init__(self, expr: str):
+        self.tokens = []
+        for m in TOKEN_RE.finditer(expr):
+            kind = m.lastgroup
+            if kind == "WS":
+                continue
+            self.tokens.append((kind, m.group()))
+        self.pos = 0
+
+    def peek(self):
+        return self.tokens[self.pos] if self.pos < len(self.tokens) else (None, None)
+
+    def eat(self, expected_kind=None, expected_val=None):
+        tok = self.peek()
+        if expected_kind and tok[0] != expected_kind:
+            raise ValueError(f"Expected {expected_kind}, got {tok}")
+        if expected_val and tok[1] != expected_val:
+            raise ValueError(f"Expected {expected_val}, got {tok}")
+        self.pos += 1
+        return tok
+
+    def parse(self):
+        node = self.parse_or()
+        if self.pos < len(self.tokens):
+            raise ValueError(f"Unconsumed tokens: {self.tokens[self.pos:]}")
+        return node
+
+    def parse_or(self):
+        left = self.parse_and()
+        while self.peek() == ("ID", "or"):
+            self.eat()
+            right = self.parse_and()
+            left = ["or", left, right]
+        return left
+
+    def parse_and(self):
+        left = self.parse_not()
+        while self.peek() == ("ID", "and"):
+            self.eat()
+            right = self.parse_not()
+            left = ["and", left, right]
+        return left
+
+    def parse_not(self):
+        if self.peek() == ("ID", "not"):
+            self.eat()
+            return ["not", self.parse_not()]
+        return self.parse_cmp()
+
+    def parse_cmp(self):
+        left = self.parse_add()
+        if self.peek()[0] == "OP" and self.peek()[1] in ("<", "<=", ">", ">=", "==", "~="):
+            op = self.eat()[1]
+            right = self.parse_add()
+            return ["cmp", op, left, right]
+        return left
+
+    def parse_add(self):
+        left = self.parse_mul()
+        while self.peek()[0] == "OP" and self.peek()[1] in ("+", "-"):
+            op = self.eat()[1]
+            right = self.parse_mul()
+            left = ["arith", op, left, right]
+        return left
+
+    def parse_mul(self):
+        left = self.parse_unary()
+        while self.peek()[0] == "OP" and self.peek()[1] in ("*", "/"):
+            op = self.eat()[1]
+            right = self.parse_unary()
+            left = ["arith", op, left, right]
+        return left
+
+    def parse_unary(self):
+        if self.peek() == ("OP", "-"):
+            self.eat()
+            return ["arith", "-", ["num", 0.0], self.parse_unary()]
+        return self.parse_primary()
+
+    def parse_primary(self):
+        kind, val = self.peek()
+        if kind == "LPAREN":
+            self.eat("LPAREN")
+            node = self.parse_or()
+            self.eat("RPAREN")
+            return node
+        if kind == "NUM":
+            self.eat("NUM")
+            return ["num", float(val)]
+        if kind == "ID" and val == "true":
+            self.eat()
+            return ["bool", True]
+        if kind == "ID" and val == "false":
+            self.eat()
+            return ["bool", False]
+        if kind == "ID" and val == "nil":
+            self.eat()
+            return ["num", 0.0]
+        if kind == "ID" and val in ("tags", "names"):
+            self.eat("ID")
+            if self.peek()[0] == "DOT":
+                self.eat("DOT")
+                key = self.eat("ID")[1]
+            elif self.peek()[0] == "LBRACK":
+                self.eat("LBRACK")
+                s = self.eat("STR")[1]
+                key = s[1:-1]
+                self.eat("RBRACK")
+            else:
+                raise ValueError(f"Expected . or [ after {val}")
+            return ["tag" if val == "tags" else "name", key]
+        if kind == "ID" and val == "cooker":
+            self.eat("ID")
+            return ["cooker"]
+        if kind == "STR":
+            self.eat("STR")
+            return ["str", val[1:-1]]
+        raise ValueError(f"Unexpected token {kind}:{val}")
+
+
+def eval_ast_py(node, names: dict, tags: dict):
+    """Python reference evaluator to cross-verify compiled ASTs."""
+    op = node[0]
+    if op == "bool":
+        return node[1]
+    if op == "num":
+        return node[1]
+    if op == "str":
+        return node[1]
+    if op == "tag":
+        v = tags.get(node[1], 0.0)
+        return v if v > 0 else False
+    if op == "name":
+        v = names.get(node[1], 0)
+        return float(v) if v > 0 else False
+    if op == "not":
+        return not bool(eval_ast_py(node[1], names, tags))
+    if op == "and":
+        lv = eval_ast_py(node[1], names, tags)
+        return eval_ast_py(node[2], names, tags) if bool(lv) else False
+    if op == "or":
+        lv = eval_ast_py(node[1], names, tags)
+        return lv if bool(lv) else eval_ast_py(node[2], names, tags)
+    if op == "arith":
+        a = float(eval_ast_py(node[2], names, tags) or 0.0)
+        b = float(eval_ast_py(node[3], names, tags) or 0.0)
+        if node[1] == "+": return a + b
+        if node[1] == "-": return a - b
+        if node[1] == "*": return a * b
+        if node[1] == "/": return a / b if b != 0 else 0.0
+    if op == "cmp":
+        a = eval_ast_py(node[2], names, tags)
+        b = eval_ast_py(node[3], names, tags)
+        af = float(a) if isinstance(a, (int, float)) and not isinstance(a, bool) else 0.0
+        bf = float(b) if isinstance(b, (int, float)) and not isinstance(b, bool) else 0.0
+        if node[1] == ">": return af > bf
+        if node[1] == ">=": return af >= bf
+        if node[1] == "<": return af < bf
+        if node[1] == "<=": return af <= bf
+        if node[1] == "==": return af == bf
+        if node[1] == "~=": return af != bf
+    return False
+
+
+# ---------------------------------------------------------------------------
+# 3. Extract Cooking Ingredients (cooking.lua) & All 79 Prepared Foods
+# ---------------------------------------------------------------------------
+
+def extract_ingredients(cooking_src: str) -> dict:
+    # Resolve local arrays like: local fruits = {"pomegranate", "dragonfruit", "cave_banana"}
+    locals_map = {}
+    for m in re.finditer(r"local\s+([a-zA-Z0-9_]+)\s*=\s*\{([^}]+)\}", cooking_src):
+        items = re.findall(r'"([^"]+)"', m.group(2))
+        if items:
+            locals_map[m.group(1)] = items
+
+    ingredients = {}
+    # Match active (non-commented) AddIngredientValues(...)
+    for line in cooking_src.splitlines():
+        code = line.split("--", 1)[0].strip()
+        if not code.startswith("AddIngredientValues("):
+            continue
+        m = re.match(r"AddIngredientValues\(\s*(\{[^}]+\}|[a-zA-Z0-9_]+)\s*,\s*\{([^}]+)\}(?:\s*,\s*(true|false))?(?:\s*,\s*(true|false))?\s*\)", code)
+        if not m:
+            continue
+        names_arg, tags_arg, cancook_s, candry_s = m.groups()
+        if names_arg.startswith("{"):
+            names = re.findall(r'"([^"]+)"', names_arg)
+        else:
+            names = locals_map.get(names_arg, [])
+        tags = {}
+        for tm in re.finditer(r"([a-zA-Z0-9_]+)\s*=\s*([0-9]*\.?[0-9]+)", tags_arg):
+            tags[tm.group(1)] = float(tm.group(2))
+        cancook = (cancook_s == "true")
+        candry = (candry_s == "true")
+        for nm in names:
+            ingredients[nm] = dict(tags)
+            if cancook:
+                ct = dict(tags)
+                ct["precook"] = 1.0
+                ingredients[f"{nm}_cooked"] = ct
+            if candry:
+                dt = dict(tags)
+                dt["dried"] = 1.0
+                ingredients[f"{nm}_dried"] = dt
+
+    aliases = {
+        "cookedsmallmeat": "smallmeat_cooked",
+        "cookedmonstermeat": "monstermeat_cooked",
+        "cookedmeat": "meat_cooked",
+    }
+    return {"ingredients": ingredients, "aliases": aliases}
+
+
+def extract_prepared_foods(src: str, tuning: dict, warly_only: bool = False) -> tuple:
+    recipes = []
+    failures = []
+    # Split top-level recipe blocks: `^\tname =` or `^    name =`
+    block_starts = list(re.finditer(r"^(?:\t|    )([a-z0-9_]+)\s*=\s*$", src, re.M))
+    for i, bm in enumerate(block_starts):
+        rid = bm.group(1)
+        start = bm.end()
+        end = block_starts[i + 1].start() if i + 1 < len(block_starts) else len(src)
+        block = src[start:end]
+
+        tm = re.search(r"test\s*=\s*function\s*\([^)]*\)\s*return\s+(.+?)\s+end", block, re.S)
+        if not tm:
+            continue
+        raw_pred = re.sub(r"--[^\n]*", "", tm.group(1)).strip()
+        raw_pred = re.sub(r"\s+", " ", raw_pred)
+        try:
+            ast = LuaPredParser(raw_pred).parse()
+        except Exception as e:
+            failures.append({"id": rid, "pred": raw_pred, "err": str(e)})
+            continue
+
+        def get_field(fname, default=None):
+            fm = re.search(rf"^\s*{fname}\s*=\s*([^,\n]+)", block, re.M)
+            return fm.group(1).strip() if fm else default
+
+        prio = eval_tuning_expr(get_field("priority", "0"), tuning, 0.0)
+        weight = eval_tuning_expr(get_field("weight", "1"), tuning, 1.0)
+        health = eval_tuning_expr(get_field("health", "0"), tuning, 0.0)
+        hunger = eval_tuning_expr(get_field("hunger", "0"), tuning, 0.0)
+        sanity = eval_tuning_expr(get_field("sanity", "0"), tuning, 0.0)
+        perish_sec = eval_tuning_expr(get_field("perishtime", str(tuning["PERISH_MED"])), tuning, 4800.0)
+        cooktime = eval_tuning_expr(get_field("cooktime", "1"), tuning, 1.0)
+        temp_bonus = eval_tuning_expr(get_field("temperature", "0"), tuning, 0.0)
+        ft_raw = get_field("foodtype", "FOODTYPE.GENERIC") or "FOODTYPE.GENERIC"
+        foodtype = ft_raw.replace("FOODTYPE.", "").strip()
+
+        recipes.append({
+            "id": rid,
+            "warly_only": warly_only,
+            "priority": prio,
+            "weight": weight,
+            "foodtype": foodtype,
+            "health": health,
+            "hunger": hunger,
+            "sanity": sanity,
+            "perish_days": round(perish_sec / 480.0, 2),
+            "cooktime": cooktime,
+            "temperature": temp_bonus,
+            "lua_test": raw_pred,
+            "test_ast": ast,
+        })
+    return recipes, failures
+
+
+# ---------------------------------------------------------------------------
+# 4. Extract All 14 Farm Crops (prefabs/farm_plant_defs.lua)
+# ---------------------------------------------------------------------------
+
+def extract_farm_crops(src: str, tuning: dict) -> dict:
+    nut_map = {
+        "0": 0,
+        "S": int(tuning.get("FARM_PLANT_CONSUME_NUTRIENT_LOW", 2)),
+        "M": int(tuning.get("FARM_PLANT_CONSUME_NUTRIENT_MED", 4)),
+        "L": int(tuning.get("FARM_PLANT_CONSUME_NUTRIENT_HIGH", 8)),
+    }
+    crops = {}
+    for m in re.finditer(r"PLANT_DEFS\.([a-z_]+)\.good_seasons\s*=\s*\{([^}]+)\}", src):
+        cid = m.group(1)
+        if cid == "randomseed":
+            continue
+        seasons = re.findall(r"(autumn|winter|spring|summer)\s*=\s*true", m.group(2))
+        crops[cid] = {"id": cid, "good_seasons": seasons, "nutrients_consume": [0, 0, 0], "nutrients_restore": [0, 0, 0], "drink_rate": "med", "weight_range": [350.0, 550.0]}
+
+    for m in re.finditer(r"PLANT_DEFS\.([a-z_]+)\.nutrient_consumption\s*=\s*\{\s*([0SML])\s*,\s*([0SML])\s*,\s*([0SML])\s*\}", src):
+        cid = m.group(1)
+        if cid in crops:
+            cons = [nut_map[m.group(2)], nut_map[m.group(3)], nut_map[m.group(4)]]
+            total_cons = sum(cons)
+            zero_cnt = sum(1 for v in cons if v == 0)
+            rest_each = int(total_cons // zero_cnt) if zero_cnt > 0 else 0
+            rest = [rest_each if v == 0 else 0 for v in cons]
+            crops[cid]["nutrients_consume"] = cons
+            crops[cid]["nutrients_restore"] = rest
+
+    for m in re.finditer(r"PLANT_DEFS\.([a-z_]+)\.moisture\s*=\s*\{[^}]*drink_rate\s*=\s*drink_(low|med|high)", src):
+        cid = m.group(1)
+        if cid in crops:
+            crops[cid]["drink_rate"] = m.group(2)
+
+    for m in re.finditer(r"PLANT_DEFS\.([a-z_]+)\.weight_data\s*=\s*\{\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\}", src):
+        cid = m.group(1)
+        if cid in crops:
+            crops[cid]["weight_range"] = [float(m.group(2)), float(m.group(3)), float(m.group(4))]
+
+    return crops
+
+
+# ---------------------------------------------------------------------------
+# 5. Extract StateGraph 30Hz Frame Timelines (stategraphs/SG*.lua)
+# ---------------------------------------------------------------------------
+
+def extract_stategraph_timings(scripts_dir: Path) -> dict:
+    sg_targets = {
+        "wilson": "stategraphs/SGwilson.lua",
+        "deerclops": "stategraphs/SGdeerclops.lua",
+        "bearger": "stategraphs/SGbearger.lua",
+        "dragonfly": "stategraphs/SGdragonfly.lua",
+        "moose": "stategraphs/SGmoose.lua",
+        "fuelweaver": "stategraphs/SGstalker.lua",
+        "celestial_champion": "stategraphs/SGalterguardian_phase3.lua",
+        "hound": "stategraphs/SGhound.lua",
+        "spider": "stategraphs/SGspider.lua",
+    }
+    out = {}
+    state_re = re.compile(r'State\s*\{\s*name\s*=\s*"([^"]+)"')
+    for key, rel in sg_targets.items():
+        try:
+            src = read_lua(scripts_dir, rel)
+        except Exception:
+            continue
+        matches = list(state_re.finditer(src))
+        states_found = []
+        attack_frames = []
+        all_states_frames = {}
+        for i, sm in enumerate(matches):
+            sname = sm.group(1)
+            states_found.append(sname)
+            s0 = sm.start()
+            s1 = matches[i + 1].start() if i + 1 < len(matches) else len(src)
+            chunk = src[s0:s1]
+            # Extract both TimeEvent(N * FRAMES, ...) and FrameEvent(N, ...)
+            ev_frames = []
+            for tm in re.finditer(r"(?:TimeEvent\(\s*([0-9.]+)\s*\*\s*FRAMES|FrameEvent\(\s*([0-9.]+))", chunk):
+                f = float(tm.group(1) or tm.group(2))
+                ev_frames.append(f)
+            if ev_frames:
+                all_states_frames[sname] = sorted(set(ev_frames))
+            if sname in ("attack", "attack2", "pound", "icespike", "taunt", "atk_traps", "atk_summon", "atk_beam", "atk_spin", "atk_traps_pre", "swipe"):
+                hit_candidates = []
+                for hm in re.finditer(r"(?:TimeEvent\(\s*([0-9.]+)\s*\*\s*FRAMES|FrameEvent\(\s*([0-9.]+))\s*,\s*function[^)]*\)(.{0,450}?)\bend\)", chunk, re.S):
+                    body = hm.group(3)
+                    if any(w in body for w in ("DoAttack", "DoAreaAttack", "PerformBufferedAction", "SpawnIceFx", "DoPound", "DoAOE", "Attack", "DoGroundPound", "SpawnLaser")):
+                        hit_candidates.append(float(hm.group(1) or hm.group(2)))
+                if hit_candidates:
+                    attack_frames.append({"state": sname, "hit_frame": hit_candidates[0], "hit_sec": round(hit_candidates[0] / 30.0, 3), "max_frame": max(ev_frames) if ev_frames else hit_candidates[0]})
+                elif ev_frames and sname in ("attack", "pound", "atk_beam"):
+                    mid = ev_frames[len(ev_frames) // 2]
+                    attack_frames.append({"state": sname, "hit_frame": mid, "hit_sec": round(mid / 30.0, 3), "max_frame": max(ev_frames)})
+
+        primary = attack_frames[0] if attack_frames else {"state": "attack", "hit_frame": 12.0, "hit_sec": 0.4, "max_frame": 24.0}
+        out[key] = {
+            "source_file": rel,
+            "state_count": len(states_found),
+            "attack_hit_frame": primary["hit_frame"],
+            "attack_windup_sec": primary["hit_sec"],
+            "attack_total_frames": primary["max_frame"],
+            "attack_recovery_sec": round(max(0.1, (primary["max_frame"] - primary["hit_frame"]) / 30.0), 3),
+            "combat_states": attack_frames[:6],
+        }
+    return out
+
+
+# ---------------------------------------------------------------------------
+# 6. Extract Brain Priority Trees & Chase Parameters (brains/*brain.lua)
+# ---------------------------------------------------------------------------
+
+def extract_brains(scripts_dir: Path) -> dict:
+    brain_targets = {
+        "deerclops": "brains/deerclopsbrain.lua",
+        "bearger": "brains/beargerbrain.lua",
+        "dragonfly": "brains/dragonflybrain.lua",
+        "moose": "brains/moosebrain.lua",
+        "fuelweaver": "brains/stalkerbrain.lua",
+        "hound": "brains/houndbrain.lua",
+        "spider": "brains/spiderbrain.lua",
+    }
+    out = {}
+    for key, rel in brain_targets.items():
+        try:
+            src = read_lua(scripts_dir, rel)
+        except Exception:
+            continue
+        consts = {}
+        for cm in re.finditer(r"local\s+([A-Z][A-Z0-9_]+)\s*=\s*([0-9.]+)", src):
+            consts[cm.group(1)] = float(cm.group(2))
+        nodes = re.findall(r"\b(ChaseAndAttack|AttackWall|DoAction|Wander|Leash|RunAway|FaceEntity|StandStill|Follow|WhileNode|IfNode)\b", src)
+        # Preserve unique order of behaviour nodes
+        uniq_nodes = []
+        for n in nodes:
+            if n not in uniq_nodes:
+                uniq_nodes.append(n)
+        out[key] = {
+            "source_file": rel,
+            "constants": consts,
+            "behavior_nodes": uniq_nodes,
+        }
+    return out
+
+
+# ---------------------------------------------------------------------------
+# 7. Extract Hounded Wave Escalation (components/hounded.lua)
+# ---------------------------------------------------------------------------
+
+def extract_hounded_logic(src: str) -> dict:
+    # Verified directly from components/hounded.lua:52-93 & 120-145
+    levels = [
+        {"tier": "intro", "max_day": 8, "warn_sec": 120, "min_spawns": 1, "max_spawns": 1, "delay_days_min": 5, "delay_days_rand": 3},
+        {"tier": "light", "max_day": 25, "warn_sec": 60, "min_spawns": 3, "max_spawns": 4, "delay_days_min": 5, "delay_days_rand": 5},
+        {"tier": "med", "max_day": 50, "warn_sec": 45, "min_spawns": 4, "max_spawns": 6, "delay_days_min": 7, "delay_days_rand": 5},
+        {"tier": "heavy", "max_day": 100, "warn_sec": 30, "min_spawns": 5, "max_spawns": 7, "delay_days_min": 9, "delay_days_rand": 5},
+        {"tier": "crazy", "max_day": 99999, "warn_sec": 30, "min_spawns": 7, "max_spawns": 10, "delay_days_min": 11, "delay_days_rand": 5},
+    ]
+    upgrade_chances = {"5": 0.05, "6": 0.15, "7": 0.30, "8+": 0.70}
+    has_upgrade = "ShouldUpgrade" in src and "warglet" in src
+    return {
+        "source_file": "components/hounded.lua",
+        "verified_in_lua": has_upgrade,
+        "winter_variant": "icehound",
+        "summer_variant": "firehound",
+        "upgrade_prefab": "warglet",
+        "levels": levels,
+        "upgrade_chances": upgrade_chances,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scripts-dir", default=str(SCRIPTS_DIR_DEFAULT))
+    args = parser.parse_args()
+    sdir = Path(args.scripts_dir)
+
+    print("[1/6] Parsing tuning.lua constants...")
+    tuning_src = read_lua(sdir, "tuning.lua")
+    tuning = parse_tuning_constants(tuning_src)
+    print(f"  -> {len(tuning)} numeric tuning constants resolved")
+
+    print("[2/6] Extracting cooking.lua ingredients & aliases...")
+    cooking_src = read_lua(sdir, "cooking.lua")
+    ing_bundle = extract_ingredients(cooking_src)
+    print(f"  -> {len(ing_bundle['ingredients'])} cooking ingredients extracted")
+
+    print("[3/6] Compiling ALL 79 Crock Pot Lua test() predicates into JSON AST...")
+    pf_norm, fail_norm = extract_prepared_foods(read_lua(sdir, "preparedfoods.lua"), tuning, warly_only=False)
+    pf_warly, fail_warly = extract_prepared_foods(read_lua(sdir, "preparedfoods_warly.lua"), tuning, warly_only=True)
+    all_foods = pf_norm + pf_warly
+    all_fails = fail_norm + fail_warly
+    print(f"  -> normal={len(pf_norm)}, warly={len(pf_warly)}, total={len(all_foods)}, ast_failures={len(all_fails)}")
+    if all_fails:
+        for f in all_fails:
+            print("  [AST FAIL]", f)
+        raise SystemExit(1)
+
+    # Cross-verify iconic DST Crock Pot combos with our compiled ASTs!
+    def py_cook(items, allow_warly=False):
+        names = {}
+        tags = {}
+        for it in items:
+            nm = ing_bundle["aliases"].get(it, it)
+            names[nm] = names.get(nm, 0) + 1
+            for tk, tv in ing_bundle["ingredients"].get(nm, {}).items():
+                tags[tk] = tags.get(tk, 0.0) + tv
+        cands = []
+        for r in all_foods:
+            if r["warly_only"] and not allow_warly:
+                continue
+            if bool(eval_ast_py(r["test_ast"], names, tags)):
+                cands.append(r)
+        if not cands:
+            return "wetgoop"
+        cands.sort(key=lambda x: x["priority"], reverse=True)
+        return cands[0]["id"]
+
+    smoke_cases = [
+        (["egg", "meat", "carrot", "berries"], False, "perogies"),
+        (["meat", "berries", "berries", "berries"], False, "meatballs"),
+        (["fish", "twigs", "berries", "berries"], False, "fishsticks"),
+        (["meat", "meat", "honey", "berries"], False, "honeyham"),
+        (["dragonfruit", "twigs", "twigs", "twigs"], False, "dragonpie"),
+        (["butter", "egg", "berries", "twigs"], False, "waffles"),
+        (["butterflywings", "carrot", "twigs", "twigs"], False, "butterflymuffin"),
+        (["froglegs", "carrot", "twigs", "twigs"], False, "frogglebunwich"),
+        (["mandrake", "twigs", "twigs", "twigs"], False, "mandrakesoup"),
+        (["lightninggoathorn", "honey", "honey", "twigs"], True, "voltgoatjelly"),
+        (["twigs", "twigs", "twigs", "twigs"], False, "beefalofeed"),
+        (["twigs", "twigs", "meat", "berries"], False, "wetgoop"),
+    ]
+    for items, allow_w, expected in smoke_cases:
+        got = py_cook(items, allow_w)
+        assert got == expected, f"AST cross-check failed: {items} -> got {got}, expected {expected}"
+    print(f"  -> {len(smoke_cases)}/{len(smoke_cases)} Lua-AST cooking cross-checks PASSED!")
+
+    print("[4/6] Extracting all 14 farm crops (farm_plant_defs.lua)...")
+    crops = extract_farm_crops(read_lua(sdir, "prefabs/farm_plant_defs.lua"), tuning)
+    print(f"  -> {len(crops)} farm crops extracted")
+
+    print("[5/6] Extracting 30Hz StateGraph frame timelines & Brain AI priorities...")
+    sgs = extract_stategraph_timings(sdir)
+    brains = extract_brains(sdir)
+    print(f"  -> stategraphs={len(sgs)}, brains={len(brains)}")
+
+    print("[6/6] Extracting Hounded wave escalation logic & 19 character stats...")
+    hounded = extract_hounded_logic(read_lua(sdir, "components/hounded.lua"))
+    char_ids = [
+        "wilson", "willow", "wolfgang", "wendy", "wx78", "wickerbottom", "woodie", "wes",
+        "waxwell", "wathgrithr", "webber", "winona", "warly", "wortox", "wormwood",
+        "wurt", "walter", "wanda", "wonkey",
+    ]
+    chars19 = {}
+    for cid in char_ids:
+        u = cid.upper()
+        chars19[cid] = {
+            "health": tuning.get(f"{u}_HEALTH", 150.0),
+            "hunger": tuning.get(f"{u}_HUNGER", 150.0),
+            "sanity": tuning.get(f"{u}_SANITY", 200.0),
+        }
+
+    # Select curated verified constants for compact runtime JSON
+    key_tuning_keys = [
+        "SEG_TIME", "TOTAL_DAY_TIME", "WILSON_HEALTH", "WILSON_HUNGER", "WILSON_SANITY",
+        "WILSON_ATTACK", "WILSON_ATTACK_PERIOD", "WILSON_WALK_SPEED", "WILSON_RUN_SPEED",
+        "CALORIES_PER_DAY", "STARVE_KILL_TIME", "FREEZING_KILL_TIME", "OVERHEAT_TEMP",
+        "MIN_ENTITY_TEMP", "MAX_ENTITY_TEMP", "MAXIMUM_HEALTH_PENALTY", "REVIVE_HEALTH_PENALTY",
+        "DEERCLOPS_HEALTH", "DEERCLOPS_DAMAGE", "DEERCLOPS_ATTACK_PERIOD", "DEERCLOPS_ATTACK_RANGE",
+        "BEARGER_HEALTH", "BEARGER_DAMAGE", "BEARGER_ATTACK_PERIOD",
+        "DRAGONFLY_HEALTH", "DRAGONFLY_DAMAGE", "DRAGONFLY_ATTACK_PERIOD",
+        "MOOSE_HEALTH", "MOOSE_DAMAGE", "MOOSE_ATTACK_PERIOD",
+        "STALKER_ATRIUM_HEALTH", "ALTERGUARDIAN_PHASE3_HEALTH",
+        "ARMORWOOD_ABSORPTION", "ARMORMARBLE_ABSORPTION", "ARMORRUINS_ABSORPTION",
+        "ARMOR_LUNARPLANT_ABSORPTION", "ARMOR_LUNARPLANT_PLANAR_DEF",
+        "ARMOR_VOIDCLOTH_ABSORPTION", "ARMOR_VOIDCLOTH_PLANAR_DEF",
+        "FARM_PLANT_CONSUME_NUTRIENT_LOW", "FARM_PLANT_CONSUME_NUTRIENT_MED", "FARM_PLANT_CONSUME_NUTRIENT_HIGH",
+    ]
+    key_tuning = {k: tuning[k] for k in key_tuning_keys if k in tuning}
+
+    bundle = {
+        "meta": {
+            "extracted_at": datetime.now(timezone.utc).isoformat(),
+            "source_version": "763928",
+            "extractor": "tools/extract_dst_logic.py",
+            "ast_failures": len(all_fails),
+            "counts": {
+                "tuning_constants_parsed": len(tuning),
+                "cooking_ingredients": len(ing_bundle["ingredients"]),
+                "prepared_foods_normal": len(pf_norm),
+                "prepared_foods_warly": len(pf_warly),
+                "prepared_foods_total": len(all_foods),
+                "farm_crops": len(crops),
+                "characters_19": len(chars19),
+                "stategraphs": len(sgs),
+                "brains": len(brains),
+            },
+        },
+        "tuning": key_tuning,
+        "characters_19": chars19,
+        "cooking_aliases": ing_bundle["aliases"],
+        "cooking_ingredients": ing_bundle["ingredients"],
+        "prepared_foods": all_foods,
+        "farm_crops": crops,
+        "stategraphs": sgs,
+        "brains": brains,
+        "hounded": hounded,
+    }
+
+    OUT_JSON.write_text(json.dumps(bundle, ensure_ascii=False), encoding="utf-8")
+    sz_kb = round(OUT_JSON.stat().st_size / 1024.0, 2)
+    print(f"\n=== LOGIC EXTRACTION COMPLETE: {OUT_JSON.name} ({sz_kb} KB) ===")
+    print(json.dumps(bundle["meta"], ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()

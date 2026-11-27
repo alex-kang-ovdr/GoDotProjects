@@ -484,6 +484,7 @@ func spawn_creature(kind: String, pos: Vector2) -> Dictionary:
 	if not cdefs.has(kind):
 		return {}
 	var d: Dictionary = cdefs[kind]
+	var sg: Dictionary = db.logic.get_stategraph_timing(kind) if db.logic.loaded else {}
 	var ent: Dictionary = {
 		"id": _next_uid,
 		"kind": kind,
@@ -496,6 +497,8 @@ func spawn_creature(kind: String, pos: Vector2) -> Dictionary:
 		"player_dmg_pct": float(d.get("player_dmg_pct", 1.0)),
 		"attack_period": float(d["attack_period"]),
 		"cd": 0.6,
+		"windup_sec": float(sg.get("attack_windup_sec", 0.4)),
+		"windup_timer": -1.0,
 		"speed": float(d["speed"]),
 		"range": float(d["range"]),
 		"planar_entity": bool(d.get("planar_entity", false)),
@@ -1113,6 +1116,7 @@ func craft_recipe(recipe_id: String) -> bool:
 			farm_plots.append({
 				"id": _next_uid, "pos": pos, "crop": "carrot", "stage": 0, "timer": 0.0,
 				"stress_points": 0, "hydrated": true, "fertilized": true, "tended": true,
+				"soil_nutrients": [50.0, 50.0, 50.0],
 				"oversized": false, "harvestable": false,
 			})
 			_next_uid += 1
@@ -1248,12 +1252,20 @@ func _update_resources_and_farms(dt: float) -> void:
 		if float(fp["timer"]) >= 45.0:
 			fp["timer"] = 0.0
 			var add_stress: int = 0
-			if not bool(fp["hydrated"]):
-				add_stress += 1
-			if not bool(fp["fertilized"]):
-				add_stress += 1
-			if not bool(fp["tended"]):
-				add_stress += 1
+			if db.logic.loaded:
+				var soil: Array = fp.get("soil_nutrients", [50.0, 50.0, 50.0])
+				if bool(fp["fertilized"]):
+					soil = [max(50.0, float(soil[0])), max(50.0, float(soil[1])), max(50.0, float(soil[2]))]
+				var ev: Dictionary = db.logic.evaluate_farm_checkpoint(
+					str(fp.get("crop", "carrot")), get_season_name(), soil,
+					bool(fp["hydrated"]), bool(fp["tended"]), 4, 0, false
+				)
+				add_stress = int(ev["stress_added"])
+				fp["soil_nutrients"] = ev["soil_after"]
+			else:
+				if not bool(fp["hydrated"]): add_stress += 1
+				if not bool(fp["fertilized"]): add_stress += 1
+				if not bool(fp["tended"]): add_stress += 1
 			fp["stress_points"] = int(fp["stress_points"]) + add_stress
 			fp["hydrated"] = is_raining
 			fp["tended"] = false
@@ -1288,14 +1300,17 @@ func _update_perishables(dt: float) -> void:
 
 
 func _update_creatures(dt: float) -> void:
-	# 주기적 하운드 습격
+	# 주기적 하운드 습격 (components/hounded.lua 에스컬레이션 규칙)
 	_hound_timer -= dt
-	if _hound_timer <= 0.0 and not is_ghost:
+	if _hound_timer <= 0.0 and not is_ghost and shard == "master":
+		var wave: Dictionary = db.logic.calc_hound_wave(day, get_season_name(), rng) if db.logic.loaded else {"tier": "intro", "spawn_count": 1, "variant": "hound"}
 		_hound_timer = 420.0
-		var ang: float = rng.randf_range(0.0, TAU)
-		var h: Dictionary = spawn_creature("hound", player_pos + Vector2(cos(ang), sin(ang)) * 18.0)
-		h["aggro"] = true
-		push_log("하운드 습격 경보! 하운드가 접근 중입니다.")
+		var scnt: int = min(3, int(wave.get("spawn_count", 1)))
+		for _hi in range(scnt):
+			var ang: float = rng.randf_range(0.0, TAU)
+			var h: Dictionary = spawn_creature("hound", player_pos + Vector2(cos(ang), sin(ang)) * 18.0)
+			h["aggro"] = true
+		push_log("하운드 습격 경보 [%s · %s ×%d]! 접근 중입니다." % [str(wave.get("tier", "intro")).to_upper(), str(wave.get("variant", "hound")), scnt])
 
 	for c in creatures:
 		c["cd"] = max(0.0, float(c["cd"]) - dt)
@@ -1317,15 +1332,27 @@ func _update_creatures(dt: float) -> void:
 					_trigger_boss_telegraph(c)
 
 			var r_atk: float = float(c["range"])
-			if dist > r_atk * 0.85:
+			var wt: float = float(c.get("windup_timer", -1.0))
+			if wt > 0.0:
+				# 30Hz StateGraph 공격 선딜 진행 -> 히트프레임 도달 시 사거리 재판정(카이팅 회피!)
+				wt -= dt
+				if wt <= 0.0:
+					c["windup_timer"] = -1.0
+					c["cd"] = float(c["attack_period"])
+					if player_pos.distance_to(c["pos"]) <= r_atk + 0.6:
+						var eff_dmg: float = float(c["damage"]) * float(c["player_dmg_pct"])
+						var p_dmg: float = float(c["planar_damage"])
+						var res: Dictionary = receive_attack(eff_dmg, p_dmg, str(c["name"]), str(c.get("alignment", "")))
+						push_log("%s의 공격! 피해 %.1f (흡수 %.0f%%)" % [str(c["name"]), float(res["total_damage"]), float(res["absorbed_percent"]) * 100.0])
+					else:
+						push_floating(player_pos, "회피! (카이팅)", Color(0.55, 0.96, 0.72))
+				else:
+					c["windup_timer"] = wt
+			elif dist > r_atk * 0.85:
 				var dir: Vector2 = (player_pos - c["pos"]).normalized()
 				c["pos"] = c["pos"] + dir * float(c["speed"]) * dt
 			elif float(c["cd"]) <= 0.0:
-				c["cd"] = float(c["attack_period"])
-				var eff_dmg: float = float(c["damage"]) * float(c["player_dmg_pct"])
-				var p_dmg: float = float(c["planar_damage"])
-				var res: Dictionary = receive_attack(eff_dmg, p_dmg, str(c["name"]), str(c.get("alignment", "")))
-				push_log("%s의 공격! 피해 %.1f (흡수 %.0f%%)" % [str(c["name"]), float(res["total_damage"]), float(res["absorbed_percent"]) * 100.0])
+				c["windup_timer"] = float(c.get("windup_sec", 0.4))
 
 
 func _trigger_boss_telegraph(boss: Dictionary) -> void:

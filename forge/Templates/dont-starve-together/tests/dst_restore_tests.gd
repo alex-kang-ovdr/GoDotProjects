@@ -106,13 +106,21 @@ func _run() -> void:
 	_check(_approx(sim.health_penalty, 0.75) and _approx(sim.get_max_health_with_penalty(), 37.5), "QA-06_PENALTY_CLAMP_75", "pen=%.2f max=%.2f" % [sim.health_penalty, sim.get_max_health_with_penalty()])
 	_check(not sim.is_ghost and sim.world_reset_countdown < 0.0, "QA-10_REVIVE_CANCELS_RESET")
 
-	# QA-07: 냄비 우선순위 (피에로기 vs 미트볼 vs 젖은 찌꺼기)
+	# QA-07: 냄비 우선순위 (역공학 79종 전체 Lua AST 평가: 피에로기/미트볼/스팀가지/젖은찌꺼기/와플/나비머핀/왈리전용 등)
 	var dish_p: Dictionary = db.calculate_crockpot_recipe(["egg", "meat", "carrot", "berries"])
 	_check(str(dish_p["id"]) == "perogies", "QA-07_PEROGIES", str(dish_p))
 	var dish_m: Dictionary = db.calculate_crockpot_recipe(["meat", "berries", "berries", "berries"])
 	_check(str(dish_m["id"]) == "meatballs", "QA-07_MEATBALLS", str(dish_m))
-	var dish_w: Dictionary = db.calculate_crockpot_recipe(["twigs", "twigs", "twigs", "twigs"])
+	var dish_bf: Dictionary = db.calculate_crockpot_recipe(["twigs", "twigs", "twigs", "twigs"])
+	_check(str(dish_bf["id"]) == "beefalofeed", "QA-07_BEEFALOFEED_V763928", str(dish_bf))
+	var dish_w: Dictionary = db.calculate_crockpot_recipe(["twigs", "twigs", "meat", "berries"])
 	_check(str(dish_w["id"]) == "wetgoop", "QA-07_WETGOOP", str(dish_w))
+	_check(str(db.calculate_crockpot_recipe(["butter", "egg", "berries", "twigs"])["id"]) == "waffles", "LOGIC_AST_WAFFLES")
+	_check(str(db.calculate_crockpot_recipe(["butterflywings", "carrot", "twigs", "twigs"])["id"]) == "butterflymuffin", "LOGIC_AST_BUTTERFLYMUFFIN")
+	_check(str(db.calculate_crockpot_recipe(["froglegs", "carrot", "twigs", "twigs"])["id"]) == "frogglebunwich", "LOGIC_AST_FROGGLEBUNWICH")
+	_check(str(db.calculate_crockpot_recipe(["mandrake", "twigs", "twigs", "twigs"])["id"]) == "mandrakesoup", "LOGIC_AST_MANDRAKESOUP")
+	_check(str(db.calculate_crockpot_recipe(["lightninggoathorn", "honey", "honey", "twigs"], 0.0, true)["id"]) == "voltgoatjelly", "LOGIC_AST_WARLY_VOLTGOATJELLY")
+	_check(db.logic.loaded and db.logic.recipes_79.size() == 79 and db.logic.ingredients.size() >= 130, "LOGIC_ENGINE_79_RECIPES_137_INGS", "r=%d i=%d" % [db.logic.recipes_79.size(), db.logic.ingredients.size()])
 
 	# QA-08: 작물 스트레스 판정 (1점 NONE 거대작물 vs 2점 LOW)
 	_check(DSTDatabase.calc_farm_stress_state(1) == "NONE", "QA-08_FARM_OVERSIZED_1")
@@ -351,6 +359,33 @@ func _run() -> void:
 	_check(sim.day == 1 and sim.character_id == "wx78", "SAVE_MUTATE_BEFORE_LOAD")
 	_check(sim.load_from_disk(save_path), "LOAD_WORLD_DISK")
 	_check(sim.day == 17 and sim.season_index == 1 and sim.character_id == "wilson" and sim.boat_masts == 2 and sim.unlocked_skills.has("combat_mastery"), "SAVE_LOAD_EXACT_RESTORE", "day=%d char=%s masts=%d" % [sim.day, sim.character_id, sim.boat_masts])
+
+	# 역공학 로직 검증 1: 14종 작물 3영양분(N/P/K) & 7스트레스 평가 (토마토+감자 상호보완 & 계절 불일치)
+	_check(db.logic.farm_crops.size() == 14, "LOGIC_14_FARM_CROPS")
+	var ev_carrot_ok: Dictionary = db.logic.evaluate_farm_checkpoint("carrot", "autumn", [50.0, 50.0, 50.0], true, true, 4, 0, false)
+	_check(int(ev_carrot_ok["stress_added"]) == 0 and _approx(float(ev_carrot_ok["soil_after"][0]), 46.0), "LOGIC_FARM_CARROT_NPK", str(ev_carrot_ok))
+	var ev_df_winter: Dictionary = db.logic.evaluate_farm_checkpoint("dragonfruit", "winter", [50.0, 50.0, 50.0], false, false, 1, 1, true)
+	_check(int(ev_df_winter["stress_added"]) == 6 and _approx(float(ev_df_winter["soil_after"][2]), 42.0), "LOGIC_FARM_7STRESS_CHECK", str(ev_df_winter))
+
+	# 역공학 로직 검증 2: 30Hz StateGraph 프레임 선딜(외눈사슴 31f = 1.033s) 카이팅 회피
+	sim.init_world(db, 1017, "wilson")
+	var kite_dc: Dictionary = sim.spawn_creature("deerclops", Vector2(2.5, 0.0))
+	kite_dc["cd"] = 0.0
+	kite_dc["special_cd"] = 99.0
+	var hp_before_kite: float = sim.health
+	sim.step(0.1, Vector2.ZERO) # 선딜(windup_timer = 1.033s) 시작
+	_check(float(kite_dc["windup_timer"]) > 0.8, "LOGIC_SG_DEERCLOPS_WINDUP_31F", "wt=%.3f" % float(kite_dc["windup_timer"]))
+	sim.player_pos = Vector2(-12.0, 0.0) # 선딜 도중 사거리 밖으로 회피!
+	sim.step(1.2, Vector2.ZERO) # 히트프레임 도달 시 회피 판정
+	_check(_approx(sim.health, hp_before_kite), "LOGIC_SG_KITE_DODGE_ZERO_DMG", "hp0=%.1f hp1=%.1f" % [hp_before_kite, sim.health])
+
+	# 역공학 로직 검증 3: components/hounded.lua 웨이브 에스컬레이션 (일수·계절 변종)
+	var hw_d3: Dictionary = db.logic.calc_hound_wave(3, "autumn")
+	var hw_d60: Dictionary = db.logic.calc_hound_wave(60, "winter")
+	var hw_d120: Dictionary = db.logic.calc_hound_wave(120, "summer")
+	_check(str(hw_d3["tier"]) == "intro" and int(hw_d3["spawn_count"]) == 1, "LOGIC_HOUNDED_INTRO", str(hw_d3))
+	_check(str(hw_d60["tier"]) == "heavy" and str(hw_d60["variant"]) == "icehound", "LOGIC_HOUNDED_WINTER_HEAVY", str(hw_d60))
+	_check(str(hw_d120["tier"]) == "crazy" and str(hw_d120["variant"]) == "firehound" and float(hw_d120["warglet_upgrade_chance"]) >= 0.30, "LOGIC_HOUNDED_SUMMER_CRAZY", str(hw_d120))
 
 	# 메인 씬 로드/인스턴스화 검증
 	var packed: PackedScene = load("res://scenes/main.tscn")

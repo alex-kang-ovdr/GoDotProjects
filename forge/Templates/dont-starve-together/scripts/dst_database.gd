@@ -8,6 +8,7 @@ extends RefCounted
 var data: Dictionary = {}
 var foods_by_id: Dictionary = {}
 var recipes_by_id: Dictionary = {}
+var logic: DSTLogicEngine = DSTLogicEngine.new()
 
 
 func load_from_path(path: String = "res://data/dst_tuning.json") -> bool:
@@ -20,10 +21,24 @@ func load_from_path(path: String = "res://data/dst_tuning.json") -> bool:
 		push_error("DSTDatabase: failed to parse JSON " + path)
 		return false
 	data = parsed
+	logic.load_from_path("res://data/dst_logic_extracted.json")
 	foods_by_id.clear()
+	# 먼저 역공학 추출된 79종 전체 요리 등록 후, 로컬 한글명/보조 필드 병합
+	if logic.loaded:
+		for rf in logic.recipes_79:
+			var fid: String = str(rf["id"])
+			var copy_f: Dictionary = rf.duplicate(true)
+			if not copy_f.has("name"):
+				copy_f["name"] = fid
+			foods_by_id[fid] = copy_f
 	for f in data.get("foods", []):
 		if typeof(f) == TYPE_DICTIONARY and f.has("id"):
-			foods_by_id[str(f["id"])] = f
+			var fid: String = str(f["id"])
+			if foods_by_id.has(fid):
+				for k in f.keys():
+					foods_by_id[fid][k] = f[k]
+			else:
+				foods_by_id[fid] = f
 	recipes_by_id.clear()
 	for r in data.get("recipes", []):
 		if typeof(r) == TYPE_DICTIONARY and r.has("id"):
@@ -137,7 +152,13 @@ func get_crockpot_tags(ingredients: Array) -> Dictionary:
 	return tags
 
 
-func calculate_crockpot_recipe(ingredients: Array, rng_roll: float = 0.0) -> Dictionary:
+func calculate_crockpot_recipe(ingredients: Array, rng_roll: float = 0.0, allow_warly: bool = false) -> Dictionary:
+	if logic != null and logic.loaded:
+		var dish: Dictionary = logic.evaluate_crockpot_79(ingredients, allow_warly, rng_roll)
+		var fid: String = str(dish.get("id", "wetgoop"))
+		if foods_by_id.has(fid):
+			return foods_by_id[fid]
+		return dish
 	var tags: Dictionary = get_crockpot_tags(ingredients)
 
 	var candidates: Array = []

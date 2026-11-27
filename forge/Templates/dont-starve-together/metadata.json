@@ -6,6 +6,7 @@
   "assetPaths": [
     "assets/icon.svg",
     "data/dst_tuning.json",
+    "data/dst_logic_extracted.json",
     "data/extraction_manifest.json",
     "data/full_asset_index.json",
     "data/dst_textures_extracted.txt",
@@ -15,7 +16,9 @@
   ],
   "guideOrder": [
     "data/dst_tuning.json",
+    "data/dst_logic_extracted.json",
     "scripts/dst_media.gd",
+    "scripts/dst_logic_engine.gd",
     "scripts/dst_database.gd",
     "scripts/dst_world_sim.gd",
     "scripts/dst_net_sync.gd",

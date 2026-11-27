@@ -26,9 +26,11 @@ test('DST Godot template exposes valid PlayForge metadata and ready/guided proje
   const ready = store.createProject({ name: 'DST Ready', template: 'dont-starve-together', mode: 'ready' });
   assert.match(ready.files['scenes/main.tscn'], /type="Node3D"/);
   assert.ok(ready.files['scripts/dst_media.gd']);
+  assert.ok(ready.files['scripts/dst_logic_engine.gd']);
   assert.ok(ready.files['scripts/dst_database.gd']);
   assert.ok(ready.files['scripts/dst_world_sim.gd']);
   assert.ok(ready.files['scripts/dst_net_sync.gd']);
+  assert.ok(ready.files['data/dst_logic_extracted.json']);
   assert.ok(ready.files['scripts/dst_camera.gd']);
   assert.ok(ready.files['scripts/dst_renderer.gd']);
   assert.ok(ready.files['scripts/dst_hud.gd']);
@@ -62,6 +64,23 @@ test('DST zero-omission full asset index verifies 100% source file accounting an
   assert.equal(idx.totals.fmod_fsb_banks, 155);
   assert.ok(idx.totals.fmod_samples_indexed >= 20800);
   assert.ok(idx.totals.fmod_pcm16_wavs_extracted >= 2560);
+});
+
+test('DST reverse-engineered Lua logic JSON compiles all 79 Crock Pot ASTs with 0 failures', () => {
+  const logicPath = path.join(templateDir, 'data', 'dst_logic_extracted.json');
+  assert.ok(fs.existsSync(logicPath), 'data/dst_logic_extracted.json must exist');
+  const logic = JSON.parse(fs.readFileSync(logicPath, 'utf8'));
+  assert.equal(logic.meta.ast_failures, 0);
+  assert.equal(logic.meta.counts.prepared_foods_normal, 68);
+  assert.equal(logic.meta.counts.prepared_foods_warly, 11);
+  assert.equal(logic.meta.counts.prepared_foods_total, 79);
+  assert.ok(logic.meta.counts.cooking_ingredients >= 130);
+  assert.equal(logic.meta.counts.farm_crops, 14);
+  assert.equal(logic.meta.counts.characters_19, 19);
+  assert.equal(logic.meta.counts.stategraphs, 9);
+  assert.equal(logic.meta.counts.brains, 7);
+  assert.equal(logic.stategraphs.deerclops.attack_hit_frame, 31);
+  assert.equal(logic.stategraphs.wilson.attack_hit_frame, 6);
 });
 
 test('DST static catalog JSON contains verified full counts from local installation', () => {
@@ -112,5 +131,5 @@ test('DST Godot 4.7.2 restoration passes QA-01~QA-10 formulas, 3-day simulation,
   assert.ok(m, `Missing DST_TEST_RESULT:\n${out}`);
   const summary = JSON.parse(m[1]);
   assert.equal(summary.failed, 0, out);
-  assert.ok(summary.passed >= 90, `expected >= 90 checks, got ${summary.passed}\n${out}`);
+  assert.ok(summary.passed >= 105, `expected >= 105 checks, got ${summary.passed}\n${out}`);
 });
