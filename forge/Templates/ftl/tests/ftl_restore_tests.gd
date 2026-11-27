@@ -623,6 +623,61 @@ func _run() -> void:
 		"Binary FTL 1.6 Augments & Sensors: BatteryBooster(10s), SystemCasing, CrystalVengeance, MannedSensors(Lv4), DefenseScrambler & NanoMedbay(Lv3=4.8/s)",
 		"bat=%s cas=%s shd=%s s4=%s scr=%s nano=%.2f" % [str(bat_boost_ok), str(casing_ok), str(shard_ok), str(sens_lv4_ok), str(scrambler_ok), float(nano_c.hp)])
 
+	# 8x. Wave 4 Binary Logic: 46 Vtables, Bio/Fire 0-dmg Beams, Healing/Repair/Stun/Lockdown Bombs, ShipRepairDrone 3..5 charge self-destruct & ScoreKeeper
+	_check((spec_json.get("vtables", {}) as Dictionary).size() >= 46 and spec_json.has("weaponSpecials") and spec_json.has("drones") and spec_json.has("scoring"),
+		"Wave 4 ftl_logic_spec.json includes 46 C++ vtables + weaponSpecials/drones/scoring tables")
+
+	var w4_ship := FTLShip.new()
+	w4_ship.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	w4_ship.systems.engines.power = 0
+	var r0 := int(w4_ship.rooms[0].id)
+	w4_ship.crew.clear()
+	var bio_c := w4_ship.add_crew("human", r0, true, "TestCrew")
+	var bio_bp := {"id": "BEAM_BIO", "type": "BEAM", "damage": 0, "persDamage": 4, "sysDamage": 0, "sp": 0}
+	w4_ship.shield_layers = 1
+	var bio_blocked := w4_ship.apply_projectile_impact(bio_bp, r0) == "shield"
+	w4_ship.shield_layers = 0
+	var bio_hit := w4_ship.apply_projectile_impact(bio_bp, r0) == "hit" and absf(float(bio_c.hp) - 40.0) < 0.1
+	# Healing Burst (persDamage < 0) & Repair Burst (sysDamage < 0)
+	var heal_bomb := {"id": "BOMB_HEAL", "type": "BOMB", "damage": 0, "persDamage": -10, "sysDamage": 0, "sp": 5}
+	w4_ship.apply_projectile_impact(heal_bomb, r0, true, w4_ship)
+	var heal_ok := absf(float(bio_c.hp) - 100.0) < 0.1
+	var wpn_r := int(w4_ship.systems.weapons.room)
+	w4_ship.systems.weapons.damage = 3
+	var rep_bomb := {"id": "BOMB_REPAIR", "type": "BOMB", "damage": 0, "persDamage": 0, "sysDamage": -8, "sp": 5}
+	w4_ship.apply_projectile_impact(rep_bomb, wpn_r, true, w4_ship)
+	var rep_ok := int(w4_ship.systems.weapons.damage) == 0
+	# Stun Bomb (0 dmg, 15s stun) & Lockdown Bomb (12s lockdown)
+	var stun_bomb := {"id": "BOMB_STUN", "type": "BOMB", "damage": 0, "persDamage": 0, "sysDamage": 0, "stun": 15.0, "sp": 5}
+	w4_ship.apply_projectile_impact(stun_bomb, r0)
+	var stun_ok := absf(float(bio_c.stun_timer) - 15.0) < 0.1
+	var lock_bomb := {"id": "BOMB_LOCK", "type": "BOMB", "damage": 0, "persDamage": 0, "sysDamage": 0, "lockdown": true, "sp": 5}
+	w4_ship.apply_projectile_impact(lock_bomb, r0)
+	var lock_b_ok := absf(float(w4_ship.room_by_id[r0].lockdown_timer) - 12.0) < 0.1
+	_check(bio_blocked and bio_hit and heal_ok and rep_ok and stun_ok and lock_b_ok,
+		"Binary FTL 1.6 Weapon Specials: BioBeam(0-dmg), HealBurst, RepairBurst, StunBomb(15s) & LockdownBomb(12s)",
+		"bio=%s/%s heal=%s rep=%s stun=%s lock=%s" % [str(bio_blocked), str(bio_hit), str(heal_ok), str(rep_ok), str(stun_ok), str(lock_b_ok)])
+
+	# 15ShipRepairDrone (3..5 repairs then auto-deactivates, works out of combat too!) & Authentic ScoreKeeper formula
+	var hr_ship := FTLShip.new()
+	hr_ship.init_from_blueprint(st_db, "PLAYER_SHIP_HARD", true, 0)
+	hr_ship.reactor_max += 4
+	hr_ship.install_system("drones")
+	hr_ship.systems.drones.level = 2
+	hr_ship.systems.drones.power = 2
+	hr_ship.hull = 15
+	hr_ship.drones.append({"id": "SHIP_REPAIR", "bp": {"type": "SHIP_REPAIR", "power": 2}, "powered": true, "active": true, "angle": 0.0, "cooldown": 0.0, "hp": 1, "repair_charges": 3})
+	for _hr in range(4):
+		hr_ship.drones[0].cooldown = 0.0
+		hr_ship.step(0.1, null, false)
+	var hr_ok := hr_ship.hull == 18 and not bool(hr_ship.drones[0].powered) and not bool(hr_ship.drones[0].active)
+	var sc_easy := FTLShip.compute_final_score(1000, 50, 20, 0) # (1000 + 500 + 400) * 1.0 = 1900
+	var sc_norm := FTLShip.compute_final_score(1000, 50, 20, 1) # 1900 * 1.25 = 2375
+	var sc_hard := FTLShip.compute_final_score(1000, 50, 20, 2) # 1900 * 1.50 = 2850
+	_check(hr_ok and sc_easy == 1900 and sc_norm == 2375 and sc_hard == 2850,
+		"Binary FTL 1.6 ShipRepairDrone (3..5 charges self-destruct) & ScoreKeeper (Easy/Normal/Hard)",
+		"hull=%d active=%s scores=%d/%d/%d" % [hr_ship.hull, str(hr_ship.drones[0].active), sc_easy, sc_norm, sc_hard])
+
 	# 9. Native scenes/main.tscn boot + Start Run + Profile Modal smoke + Font base64 integrity
 	var font_raw := Marshalls.base64_to_raw(FileAccess.get_file_as_string("res://assets/fonts/ftl-ui.txt").strip_edges())
 	_check(font_raw.size() > 10000 and font_raw[0] == 0 and font_raw[1] == 1, "Bundled ftl-ui.txt base64 decodes to valid TTF", "bytes=%d" % font_raw.size())

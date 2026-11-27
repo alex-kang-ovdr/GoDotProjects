@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBinary": "FTLGame_orig.exe",
-  "extractedAt": "2026-11-27T09:21:22.904050+00:00",
+  "extractedAt": "2026-11-27T10:16:04.233811+00:00",
   "simulationTickHz": 16,
   "simulationTickDt": 0.0625,
   "vtables": {
@@ -95,20 +95,45 @@
       "slot_count": 70,
       "on_loop_va": "0x775c00"
     },
+    "15BoarderPodDrone": {
+      "vtable_va": "0x90bd58",
+      "slot_count": 57,
+      "on_loop_va": "0x756b30"
+    },
+    "11BattleDrone": {
+      "vtable_va": "0x909b08",
+      "slot_count": 70,
+      "on_loop_va": "0x775c00"
+    },
     "11RepairDrone": {
       "vtable_va": "0x90a254",
       "slot_count": 70,
       "on_loop_va": "0x775c00"
+    },
+    "15ShipRepairDrone": {
+      "vtable_va": "0x90bfe0",
+      "slot_count": 57,
+      "on_loop_va": "0x421e50"
     },
     "16SuperShieldDrone": {
       "vtable_va": "0x90c308",
       "slot_count": 57,
       "on_loop_va": "0x4203b0"
     },
+    "12HackingDrone": {
+      "vtable_va": "0x90ac48",
+      "slot_count": 57,
+      "on_loop_va": "0x756b30"
+    },
     "9CrewDrone": {
       "vtable_va": "0x90d330",
       "slot_count": 70,
       "on_loop_va": "0x775c00"
+    },
+    "10Projectile": {
+      "vtable_va": "0x9095cc",
+      "slot_count": 33,
+      "on_loop_va": null
     },
     "10BeamWeapon": {
       "vtable_va": "0x909200",
@@ -133,6 +158,16 @@
     "17ProjectileFactory": {
       "vtable_va": "0x90c540",
       "slot_count": 2,
+      "on_loop_va": null
+    },
+    "15WeaponBlueprint": {
+      "vtable_va": "0x90c1c8",
+      "slot_count": 6,
+      "on_loop_va": null
+    },
+    "14DroneBlueprint": {
+      "vtable_va": "0x90b8e4",
+      "slot_count": 6,
       "on_loop_va": null
     },
     "10CrewMember": {
@@ -160,6 +195,11 @@
       "slot_count": 17,
       "on_loop_va": null
     },
+    "6CEvent": {
+      "vtable_va": "0x90c9d4",
+      "slot_count": 25,
+      "on_loop_va": null
+    },
     "4Door": {
       "vtable_va": "0x90c61c",
       "slot_count": 13,
@@ -173,6 +213,11 @@
     "4Fire": {
       "vtable_va": "0x90c670",
       "slot_count": 32,
+      "on_loop_va": null
+    },
+    "8SpreaderI4FireE": {
+      "vtable_va": "0x90d220",
+      "slot_count": 2,
       "on_loop_va": null
     },
     "7PDSFire": {
@@ -554,5 +599,42 @@
       "proofVa": "0x47c3b6",
       "suffocationMultiplier": 0.5
     }
+  },
+  "weaponSpecials": {
+    "parserProofVa": "0x608019..0x6085e0",
+    "sysDamageStructOffset": "0xec",
+    "persDamageStructOffset": "0xf0",
+    "hullBustStructOffset": "0xf4",
+    "lockdownStructOffset": "0xf5",
+    "crewDamagePerPoint": 15.0,
+    "lockdownDurationSec": 12.0,
+    "zeroDamageBeamBlockedOnlyByShields": true,
+    "negativePersDamageHealsCrew": true,
+    "negativeSysDamageRepairsSystem": true,
+    "stunAppliesOnZeroDamageHit": true
+  },
+  "drones": {
+    "shipRepairVtableVa": "0x90bfe0",
+    "shipRepairOnLoopVa": "0x428b80",
+    "hullRepairChargesMin": 3,
+    "hullRepairChargesMax": 5,
+    "hullRepairSelfDestructOnDeplete": true,
+    "repairDroneHp": 25.0,
+    "battleDroneHp": 150.0,
+    "boarderDroneHp": 150.0,
+    "superShieldDroneCap": 5,
+    "antiDroneDisablesEnemyDrones": true
+  },
+  "scoring": {
+    "proofVa": "0x449bdd..0x449ca0 (0x44ccb5)",
+    "scrapWeight": 1,
+    "beaconsExploredWeight": 10,
+    "shipsDefeatedWeight": 20,
+    "difficultyMultiplier": [
+      1.0,
+      1.25,
+      1.5
+    ],
+    "flatVictoryBonus": 0
   }
 }

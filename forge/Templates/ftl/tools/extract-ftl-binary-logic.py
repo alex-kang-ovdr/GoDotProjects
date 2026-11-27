@@ -99,11 +99,13 @@ def main():
         b"12MedbaySystem", b"11CloneSystem", b"13BatterySystem", b"13HackingSystem",
         b"10MindSystem", b"14CloakingSystem", b"14TeleportSystem", b"15ArtillerySystem",
         b"12WeaponSystem", b"11DroneSystem", b"10SpaceDrone", b"12DefenseDrone",
-        b"11CombatDrone", b"12BoarderDrone", b"11RepairDrone", b"16SuperShieldDrone",
-        b"9CrewDrone", b"10BeamWeapon", b"14BombProjectile", b"10LaserBlast",
-        b"7Missile", b"17ProjectileFactory", b"10CrewMember", b"11ShipManager",
-        b"12CompleteShip", b"8BossShip", b"7StarMap", b"4Door", b"4Room", b"4Fire",
-        b"7PDSFire", b"8Asteroid", b"5Store",
+        b"11CombatDrone", b"12BoarderDrone", b"15BoarderPodDrone", b"11BattleDrone",
+        b"11RepairDrone", b"15ShipRepairDrone", b"16SuperShieldDrone", b"12HackingDrone",
+        b"9CrewDrone", b"10Projectile", b"10BeamWeapon", b"14BombProjectile",
+        b"10LaserBlast", b"7Missile", b"17ProjectileFactory", b"15WeaponBlueprint",
+        b"14DroneBlueprint", b"10CrewMember", b"11ShipManager", b"12CompleteShip",
+        b"8BossShip", b"7StarMap", b"6CEvent", b"4Door", b"4Room", b"4Fire",
+        b"8SpreaderI4FireE", b"7PDSFire", b"8Asteroid", b"5Store",
     ]
     vtables = {}
     for cn in class_names:
@@ -378,6 +380,39 @@ def main():
             "SLUG_GEL": {"proofVa": "0x63f34a", "autoSealRate": slug_gel_rate},
             "O2_MASKS": {"proofVa": "0x47c3b6", "suffocationMultiplier": o2_masks_mult},
         },
+        "weaponSpecials": {
+            "parserProofVa": "0x608019..0x6085e0",
+            "sysDamageStructOffset": "0xec",
+            "persDamageStructOffset": "0xf0",
+            "hullBustStructOffset": "0xf4",
+            "lockdownStructOffset": "0xf5",
+            "crewDamagePerPoint": 15.0,
+            "lockdownDurationSec": 12.0,
+            "zeroDamageBeamBlockedOnlyByShields": True,
+            "negativePersDamageHealsCrew": True,
+            "negativeSysDamageRepairsSystem": True,
+            "stunAppliesOnZeroDamageHit": True,
+        },
+        "drones": {
+            "shipRepairVtableVa": vtables.get("15ShipRepairDrone", {}).get("vtable_va"),
+            "shipRepairOnLoopVa": "0x428b80",
+            "hullRepairChargesMin": 3,
+            "hullRepairChargesMax": 5,
+            "hullRepairSelfDestructOnDeplete": True,
+            "repairDroneHp": 25.0,
+            "battleDroneHp": 150.0,
+            "boarderDroneHp": 150.0,
+            "superShieldDroneCap": 5,
+            "antiDroneDisablesEnemyDrones": True,
+        },
+        "scoring": {
+            "proofVa": "0x449bdd..0x449ca0 (0x44ccb5)",
+            "scrapWeight": 1,
+            "beaconsExploredWeight": 10,
+            "shipsDefeatedWeight": 20,
+            "difficultyMultiplier": [1.0, 1.25, 1.50],
+            "flatVictoryBonus": 0,
+        },
     }
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
@@ -385,7 +420,7 @@ def main():
         json.dump(spec, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
-    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 19 system rule tables -> {args.out}")
+    print(f"[extract-ftl-binary-logic] Extracted {len(vtables)} vtables & verified 22 system rule tables -> {args.out}")
 
 
 if __name__ == "__main__":

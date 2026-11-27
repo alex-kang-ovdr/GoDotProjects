@@ -48,6 +48,13 @@ const FTL_CHARGE_TARGET := 50.0                                 # 0x63f5a9..0x63
 const FTL_ENG_MANNING_MULT := [1.10, 1.17, 1.25]                # 0x885fc8 / 0x885fcc / 0x885fc0 (0★/1★/2★)
 const SUFFOCATION_O2_THRESHOLD := 5.0                           # 0x8791a0
 const SUFFOCATION_DPS := 6.4                                    # 0x8791b0 (-0.4/tick * 16Hz)
+const SCORE_DIFF_MULT := [1.0, 1.25, 1.50]                      # ScoreKeeper (0x44ccb5): Easy/Normal/Hard
+
+
+static func compute_final_score(p_scrap: int, p_beacons: int, p_ships: int, p_diff: int) -> int:
+	# Authentic FTL 1.6 final score formula: (scrap + beacons*10 + ships*20) * [1.0, 1.25, 1.50]
+	var mult := float(SCORE_DIFF_MULT[clampi(p_diff, 0, 2)])
+	return int(round((float(p_scrap) + float(p_beacons) * 10.0 + float(p_ships) * 20.0) * mult))
 const CREW_NAMES := [
 	"Charlie", "Kestrel", "Vance", "Sora", "Kael", "Nora", "Marek", "Talia",
 	"Dax", "Elena", "Orin", "Lyra", "Bram", "Zara", "Juno", "Cyrus"
@@ -729,6 +736,9 @@ func toggle_drone_power(idx: int) -> bool:
 		if not d.active:
 			drone_parts = maxi(0, drone_parts - 1)
 			d.active = true
+			var dtype_act := str(d.bp.get("type", "COMBAT"))
+			if dtype_act == "SHIP_REPAIR" or str(d.id).to_upper().contains("HULL"):
+				d["repair_charges"] = randi_range(3, 5) # 15ShipRepairDrone (0x428b80): 3..5 hull repairs per drone part
 		d.powered = true
 		pending_sfx.append("powerUpSystem")
 		return true
@@ -1554,13 +1564,14 @@ func step(delta: float, enemy_ship: FTLShip, in_combat: bool) -> void:
 	_step_crew(delta)
 	_step_clone_queue(delta)
 
-	# 7. Weapons, Artillery & Drones charging & firing
+	# 7. Weapons, Artillery & Drones charging & firing (utility Repair/ShipRepair/Battle drones also run out of combat!)
 	var target_cloaked := (enemy_ship != null and enemy_ship.cloak_timer > 0.0)
 	if in_combat and enemy_ship != null and enemy_ship.hull > 0:
 		_step_weapons(delta, enemy_ship, target_cloaked)
 		_step_artillery(delta, enemy_ship)
 		_step_drones(delta, enemy_ship)
 	else:
+		_step_drones(delta, null)
 		for w in weapons:
 			w.charge = maxf(0.0, float(w.charge) - delta * 2.0)
 			w.fire_anim = maxf(0.0, float(w.fire_anim) - delta * 2.0)
@@ -2081,7 +2092,7 @@ func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
 		d.cooldown = float(d.cooldown) - delta * d_spd_mult
 		var dtype := str(d.bp.get("type", "COMBAT"))
 		var did_str := str(d.id).to_upper()
-		if dtype == "COMBAT" and float(d.cooldown) <= 0.0 and enemy_ship.cloak_timer <= 0.0:
+		if dtype == "COMBAT" and enemy_ship != null and float(d.cooldown) <= 0.0 and enemy_ship.cloak_timer <= 0.0:
 			d.cooldown = 3.6
 			if not enemy_ship.rooms.is_empty():
 				var tr := int(enemy_ship.rooms[randi() % enemy_ship.rooms.size()].id)
@@ -2103,27 +2114,57 @@ func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
 						"weapon_idx": -1, "target_room": tr,
 					})
 					pending_sfx.append("lightLaser1")
-		elif dtype == "SHIELD" and float(d.cooldown) <= 0.0:
+		elif dtype == "SHIELD" and enemy_ship != null and float(d.cooldown) <= 0.0:
 			d.cooldown = 8.0
 			var cap := maxi(5, zoltan_shield_max)
 			if zoltan_shield < cap:
 				zoltan_shield += 1
 				pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "+1 OVERCHARGE SHIELD", "color": Color("7eff8b")})
 				pending_sfx.append("powerUpSystem")
-		elif dtype == "BOARDER" and not bool(d.get("deployed", false)) and enemy_ship.zoltan_shield <= 0 and not enemy_ship.rooms.is_empty():
+		elif dtype == "BOARDER" and enemy_ship != null and not bool(d.get("deployed", false)) and enemy_ship.zoltan_shield <= 0 and not enemy_ship.rooms.is_empty():
 			d["deployed"] = true
 			var tr := int(enemy_ship.rooms[randi() % enemy_ship.rooms.size()].id)
-			enemy_ship.room_by_id[tr].breach = 1
-			enemy_ship.room_by_id[tr].breach_hp = 100.0
-			var bdrone := enemy_ship.add_crew("engi", tr, is_player, "Boarding Drone")
-			bdrone.max_hp = 150.0
-			bdrone.hp = 150.0
+			var is_ion_intruder := did_str.contains("ION")
+			if not is_ion_intruder:
+				enemy_ship.room_by_id[tr].breach = 1
+				enemy_ship.room_by_id[tr].breach_hp = 100.0
+			var bdrone := enemy_ship.add_crew("engi", tr, is_player, "Ion Intruder" if is_ion_intruder else "Boarding Drone")
+			bdrone.max_hp = 125.0 if is_ion_intruder else 150.0
+			bdrone.hp = bdrone.max_hp
 			bdrone.no_o2 = true
 			bdrone.fire_immune = true
-			bdrone.combat_mult = 1.25
-			bdrone.color = Color("ff9f43")
-			pending_popups.append({"ship": enemy_ship, "pos_local": enemy_ship.get_room_center_local(tr), "text": "BOARDING DRONE!", "color": Color("ff9f43")})
-			pending_sfx.append("hitHull2")
+			bdrone.combat_mult = 1.0 if is_ion_intruder else 1.25
+			bdrone.color = Color("5ce1ff") if is_ion_intruder else Color("ff9f43")
+			d["drone_crew_id"] = int(bdrone.id)
+			pending_popups.append({"ship": enemy_ship, "pos_local": enemy_ship.get_room_center_local(tr), "text": "ION INTRUDER!" if is_ion_intruder else "BOARDING DRONE!", "color": bdrone.color})
+			pending_sfx.append("ionHit1" if is_ion_intruder else "hitHull2")
+		elif dtype == "BOARDER" and enemy_ship != null and bool(d.get("deployed", false)) and did_str.contains("ION") and float(d.cooldown) <= 0.0:
+			d.cooldown = 9.0
+			var dcid := int(d.get("drone_crew_id", -1))
+			var ic := enemy_ship._get_crew_by_id(dcid)
+			if not ic.is_empty() and float(ic.hp) > 0.0:
+				var irid := int(ic.room_id)
+				var isys := str(enemy_ship.room_by_id.get(irid, {}).get("system", ""))
+				if not isys.is_empty():
+					enemy_ship.apply_ion_damage(isys, 3)
+				for ec in enemy_ship.crew:
+					if int(ec.room_id) == irid and int(ec.id) != dcid and float(ec.hp) > 0.0:
+						ec.stun_timer = maxf(float(ec.stun_timer), 4.0)
+				pending_popups.append({"ship": enemy_ship, "pos_local": enemy_ship.get_room_center_local(irid), "text": "ION PULSE!", "color": Color("5ce1ff")})
+				pending_sfx.append("ionHit1")
+		elif (dtype == "ANTI_DRONE" or (dtype == "DEFENSE" and did_str.contains("ANTI"))) and enemy_ship != null and float(d.cooldown) <= 0.0:
+			for ed in enemy_ship.drones:
+				if bool(ed.powered) and str(ed.bp.get("type", "COMBAT")) in ["COMBAT", "DEFENSE", "SHIELD"]:
+					d.cooldown = 7.0
+					ed.cooldown = maxf(float(ed.cooldown), 12.0)
+					if randf() < 0.25:
+						ed.powered = false
+						ed.active = false
+						pending_popups.append({"ship": enemy_ship, "pos_local": enemy_ship.get_ship_bounds_local().get_center(), "text": "DRONE DESTROYED!", "color": Color("65e8ff")})
+					else:
+						pending_popups.append({"ship": enemy_ship, "pos_local": enemy_ship.get_ship_bounds_local().get_center(), "text": "DRONE STUNNED!", "color": Color("65e8ff")})
+					pending_sfx.append("ionHit1")
+					break
 		elif dtype == "BATTLE" and float(d.cooldown) <= 0.0:
 			d.cooldown = 2.0
 			for c in crew:
@@ -2134,10 +2175,18 @@ func _step_drones(delta: float, enemy_ship: FTLShip) -> void:
 		elif (dtype == "REPAIR" or dtype == "SHIP_REPAIR") and float(d.cooldown) <= 0.0:
 			d.cooldown = 4.0
 			if did_str.contains("HULL") or dtype == "SHIP_REPAIR":
-				if hull < max_hull:
+				if not d.has("repair_charges"):
+					d["repair_charges"] = randi_range(3, 5)
+				if hull < max_hull and int(d.repair_charges) > 0:
 					hull = mini(max_hull, hull + 1)
+					d.repair_charges = int(d.repair_charges) - 1
 					pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center(), "text": "+1 HULL REPAIR", "color": Color("7eff8b")})
 					pending_sfx.append("upgradeSystem")
+					if int(d.repair_charges) <= 0:
+						# Authentic FTL 1.6 15ShipRepairDrone (0x428b80): self-destructs after 3..5 hull repairs!
+						d.powered = false
+						d.active = false
+						pending_popups.append({"ship": self, "pos_local": get_ship_bounds_local().get_center() + Vector2(0, -18), "text": "REPAIR DRONE SPENT", "color": Color("93b9d8")})
 			else:
 				for sname in systems.keys():
 					if int(systems[sname].damage) > 0:
@@ -2305,8 +2354,9 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacke
 	var sp := int(weapon_bp.get("sp", 0))
 	var room_center := get_room_center_local(target_room_id)
 
-	# 1. Evasion check (Beams never miss!) + Pilot/Engines skill XP gain on evade
-	if wtype != "BEAM":
+	# 1. Evasion check (Beams & helpful self-targeted bombs never miss!) + Pilot/Engines skill XP gain on evade
+	var is_helpful_bomb := (wtype == "BOMB" and (pers_dmg < 0 or sys_dmg < 0))
+	if wtype != "BEAM" and not is_helpful_bomb:
 		var evade := get_evasion()
 		if randi() % 100 < evade:
 			if systems.has("pilot") and int(systems.pilot.manned_by) != -1:
@@ -2321,8 +2371,8 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacke
 			pending_sfx.append("miss")
 			return "miss"
 
-	# 2. Authentic FTL 1.6 Zoltan SuperShield check (blocks Bombs too unless ZOLTAN_BYPASS; Ion & Beams deal 2x to Zoltan Shield!)
-	if zoltan_shield > 0 and not (wtype == "BOMB" and attacker_has_zoltan_bypass):
+	# 2. Authentic FTL 1.6 Zoltan SuperShield check (blocks Bombs too unless ZOLTAN_BYPASS or self-target helpful bomb; Ion & Beams deal 2x!)
+	if zoltan_shield > 0 and not is_helpful_bomb and not (wtype == "BOMB" and attacker_has_zoltan_bypass):
 		var z_dmg := (dmg * 2 if wtype == "BEAM" else dmg) + ion_dmg * 2
 		var absorb := maxi(1, z_dmg)
 		zoltan_shield = maxi(0, zoltan_shield - absorb)
@@ -2330,13 +2380,19 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacke
 		pending_sfx.append("hitShield1")
 		return "zoltan_shield"
 
-	# 3. Normal Shields check (Bombs bypass; Missiles have sp=5; Beams reduce dmg by shield_layers)
+	# 3. Normal Shields check (Bombs bypass; Missiles have sp=5; Beams reduce dmg by shield_layers; 0-dmg Bio/Fire Beams penetrate when shields <= sp!)
 	if wtype == "BEAM":
-		var eff_dmg := dmg - maxi(0, shield_layers - sp)
-		if eff_dmg <= 0:
-			pending_popups.append({"ship": self, "pos_local": room_center, "text": "BLOCKED", "color": Color("65c8ff")})
-			return "shield"
-		dmg = eff_dmg
+		var net_shields := maxi(0, shield_layers - sp)
+		if dmg <= 0:
+			if net_shields > 0:
+				pending_popups.append({"ship": self, "pos_local": room_center, "text": "BLOCKED", "color": Color("65c8ff")})
+				return "shield"
+		else:
+			var eff_dmg := dmg - net_shields
+			if eff_dmg <= 0:
+				pending_popups.append({"ship": self, "pos_local": room_center, "text": "BLOCKED", "color": Color("65c8ff")})
+				return "shield"
+			dmg = eff_dmg
 	elif wtype != "BOMB" and shield_layers > sp:
 		if ion_dmg > 0:
 			apply_ion_damage("shields", ion_dmg)
@@ -2355,8 +2411,8 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacke
 		return "resist"
 
 	if dmg > 0:
-		# Authentic FTL Hull Weapons deal 2x hull damage to empty (systemless) rooms!
-		var is_hull_wpn := bool(weapon_bp.get("hullBonus", false)) or str(weapon_bp.get("id", "")).contains("HULL")
+		# Authentic FTL 1.6 Hull Weapons (<hullBust>1</hullBust> @ 0x608596) deal 2x hull damage to empty (systemless) rooms!
+		var is_hull_wpn := bool(weapon_bp.get("hullBust", false)) or bool(weapon_bp.get("hullBonus", false)) or str(weapon_bp.get("id", "")).contains("HULL")
 		if is_hull_wpn and room_by_id.has(target_room_id) and str(room_by_id[target_room_id].system).is_empty():
 			dmg *= 2
 			pending_popups.append({"ship": self, "pos_local": room_center + Vector2(0, -16), "text": "2x HULL!", "color": Color("ffd54f")})
@@ -2384,20 +2440,51 @@ func apply_projectile_impact(weapon_bp: Dictionary, target_room_id: int, attacke
 	if room_by_id.has(target_room_id):
 		var r: Dictionary = room_by_id[target_room_id]
 		var sname := str(r.system)
-		var total_sys := dmg + sys_dmg
-		if not sname.is_empty() and total_sys > 0:
-			apply_system_damage(sname, total_sys)
+		# Authentic FTL 1.6 Negative sysDamage (BOMB_REPAIR @ 0x6084ca) repairs system damage & seals breach/fire!
+		if sys_dmg < 0:
+			if not sname.is_empty() and systems.has(sname) and int(systems[sname].damage) > 0:
+				systems[sname].damage = maxi(0, int(systems[sname].damage) + sys_dmg)
+			r.breach = 0
+			r.breach_hp = 0.0
+			r.fires = 0
+			r.fire_hp = 0.0
+			pending_popups.append({"ship": self, "pos_local": room_center, "text": "REPAIR BURST!", "color": Color("65e8ff")})
+		else:
+			var total_sys := dmg + sys_dmg
+			if not sname.is_empty() and total_sys > 0:
+				apply_system_damage(sname, total_sys)
 		if not sname.is_empty() and ion_dmg > 0:
 			apply_ion_damage(sname, ion_dmg)
 			pending_popups.append({"ship": self, "pos_local": room_center + Vector2(0, -14), "text": "ION %d" % ion_dmg, "color": Color("5ce1ff")})
-		# Crew damage in room
-		var crew_hit := float(dmg * 15 + pers_dmg * 15)
-		if crew_hit > 0.0:
+		# Authentic FTL 1.6 Negative persDamage (BOMB_HEAL @ 0x608529) heals friendly crew; positive deals 15 HP per point!
+		if pers_dmg < 0:
+			var heal_amt := float(-pers_dmg) * 15.0
 			for c in crew:
-				if int(c.room_id) == target_room_id:
-					c.hp -= crew_hit
-					if int(weapon_bp.get("stunChance", 0)) * 10 > randi() % 100:
-						c.stun_timer = maxf(float(c.stun_timer), 4.0)
+				if int(c.room_id) == target_room_id and float(c.hp) > 0.0:
+					c.hp = minf(float(c.max_hp), float(c.hp) + heal_amt)
+			pending_popups.append({"ship": self, "pos_local": room_center, "text": "HEAL BURST!", "color": Color("7eff8b")})
+		else:
+			var crew_hit := float(dmg * 15 + pers_dmg * 15)
+			if crew_hit > 0.0:
+				for c in crew:
+					if int(c.room_id) == target_room_id:
+						c.hp -= crew_hit
+		# Authentic FTL 1.6 Stun (<stun> @ 0x608019 & stunChance) applies even on 0-damage weapons (Stun Bomb / Ion Stunner)!
+		var explicit_stun := float(weapon_bp.get("stun", 0.0))
+		var stun_ch := int(weapon_bp.get("stunChance", 0))
+		var stun_dur := explicit_stun if explicit_stun > 0.0 else 4.0
+		if explicit_stun > 0.0 or stun_ch > 0:
+			var roll_ok := (stun_ch <= 0 and explicit_stun > 0.0) or (stun_ch * 10 > randi() % 100)
+			if roll_ok:
+				for c in crew:
+					if int(c.room_id) == target_room_id and float(c.hp) > 0.0:
+						c.stun_timer = maxf(float(c.stun_timer), stun_dur)
+				if explicit_stun > 0.0:
+					pending_popups.append({"ship": self, "pos_local": room_center + Vector2(0, -14), "text": "STUN %.0fs!" % stun_dur, "color": Color("ffd54f")})
+		# Authentic FTL 1.6 Lockdown Weapons (<lockdown>1</lockdown> @ 0x6085b0): Crystal weapons & Lockdown Bomb seal room for 12s!
+		if bool(weapon_bp.get("lockdown", false)) or str(weapon_bp.get("id", "")).contains("LOCK"):
+			r.lockdown_timer = maxf(float(r.get("lockdown_timer", 0.0)), 12.0)
+			pending_popups.append({"ship": self, "pos_local": room_center + Vector2(0, -16), "text": "LOCKDOWN!", "color": Color("7ee8ff")})
 		# Fire & Breach chances (FTL scale 0..10 = 0%..100%)
 		var fchance := int(weapon_bp.get("fireChance", 0)) * 10
 		if fchance > 0 and randi() % 100 < fchance and float(r.oxygen) > 10.0 and int(r.breach) == 0:

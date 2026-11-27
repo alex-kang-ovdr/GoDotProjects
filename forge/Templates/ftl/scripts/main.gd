@@ -1180,6 +1180,24 @@ func _on_player_room_clicked(room_id: int, button_index: int) -> void:
 			_banner("해당 선실에 세뇌된 아군 승무원이 없습니다.")
 		_update_hud_labels()
 		return
+	# Authentic FTL 1.6 Self-Targeted Healing/Repair Burst Bombs (BOMB_HEAL / BOMB_REPAIR) on own ship rooms!
+	if button_index == MOUSE_BUTTON_LEFT and targeting_weapon_idx >= 0 and targeting_weapon_idx < player_ship.weapons.size():
+		var tw: Dictionary = player_ship.weapons[targeting_weapon_idx]
+		var tbp: Dictionary = tw.bp
+		if str(tbp.get("type", "")) == "BOMB" and (int(tbp.get("persDamage", 0)) < 0 or int(tbp.get("sysDamage", 0)) < 0):
+			var eff_cd := player_ship.get_weapon_effective_cooldown(tw)
+			var mcost := int(tbp.get("missiles", 0))
+			if bool(tw.powered) and float(tw.charge) >= eff_cd and player_ship.missiles >= mcost:
+				if mcost > 0 and not (player_ship.has_augment("EXPLOSIVE_REPLICATOR") and randf() < 0.5):
+					player_ship.missiles -= mcost
+				tw.charge = 0.0
+				tw.fire_anim = 1.0
+				player_ship.apply_projectile_impact(tbp, room_id, true, player_ship)
+				audio.play_sfx("upgradeSystem")
+				_banner("아군 선실에 지원 폭탄(%s)을 투하했습니다!" % str(tbp.get("title", tw.id)))
+				targeting_weapon_idx = -1
+				_update_hud_labels()
+				return
 	if button_index == MOUSE_BUTTON_RIGHT and selected_crew_id >= 0:
 		for c in player_ship.crew:
 			if int(c.id) == selected_crew_id and bool(c.is_player):
@@ -2282,9 +2300,9 @@ func _open_store() -> void:
 			sbtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			sgrid.add_child(sbtn)
 
-	# Authentic FTL 1.6 Store Selling (50% scrap resale for Weapons, Drones, Augments)
-	if not player_ship.weapons.is_empty() or not player_ship.cargo_weapons.is_empty() or not player_ship.drones.is_empty() or not player_ship.augments.is_empty():
-		modal_box.add_child(_mk_label("SELL EQUIPMENT (50% 스크랩 환급)", 14, Color("ffcf5c")))
+	# Authentic FTL 1.6 Store Selling (50% scrap resale for Weapons, Cargo, Drones, Augments)
+	if not player_ship.weapons.is_empty() or not player_ship.cargo_weapons.is_empty() or not player_ship.drones.is_empty() or not player_ship.cargo_drones.is_empty() or not player_ship.augments.is_empty():
+		modal_box.add_child(_mk_label("SELL EQUIPMENT (장비 판매 · 50% 스크랩 환급)", 14, Color("ffcf5c")))
 		var sell_grid := GridContainer.new()
 		sell_grid.columns = 2
 		sell_grid.add_theme_constant_override("h_separation", 8)
@@ -2315,6 +2333,15 @@ func _open_store() -> void:
 				if player_ship.sell_drone(idx_d, false) > 0:
 					_rebuild_hud_controls(); _open_store()
 			))
+		for cdi in range(player_ship.cargo_drones.size()):
+			var cdid := player_ship.cargo_drones[cdi]
+			var cd_bp: Dictionary = db.drones.get(cdid, {})
+			var sval := maxi(1, int(floor(float(cd_bp.get("cost", 40)) * 0.5)))
+			var idx_cd := cdi
+			sell_grid.add_child(_mk_btn("Sell Cargo %s (+%d Scrap)" % [str(cd_bp.get("title", cdid)), sval], func():
+				if player_ship.sell_drone(idx_cd, true) > 0:
+					_open_store()
+			))
 		for ai in range(player_ship.augments.size()):
 			var aid_s := player_ship.augments[ai]
 			var abp_s: Dictionary = db.augments.get(aid_s, {})
@@ -2323,46 +2350,6 @@ func _open_store() -> void:
 			sell_grid.add_child(_mk_btn("Sell Aug %s (+%d Scrap)" % [str(abp_s.get("title", aid_s)), sval], func():
 				if player_ship.sell_augment(idx_a) > 0:
 					_open_store()
-			))
-
-	# Sell Equipment (50% Scrap refund)
-	var has_sellable := not player_ship.cargo_weapons.is_empty() or not player_ship.cargo_drones.is_empty() or player_ship.weapons.size() > 1 or not player_ship.drones.is_empty() or not player_ship.augments.is_empty()
-	if has_sellable:
-		modal_box.add_child(_mk_label("SELL EQUIPMENT (장비 판매 · 50% 환급)", 14, Color("ff9e80")))
-		var sell_grid := GridContainer.new()
-		sell_grid.columns = 2
-		sell_grid.add_theme_constant_override("h_separation", 8)
-		sell_grid.add_theme_constant_override("v_separation", 5)
-		modal_box.add_child(sell_grid)
-		for i in range(player_ship.cargo_weapons.size()):
-			var cwid := player_ship.cargo_weapons[i]
-			var wbp: Dictionary = db.weapons.get(cwid, {})
-			var refund := maxi(10, int(wbp.get("cost", 40)) / 2)
-			sell_grid.add_child(_mk_btn("Sell [Cargo] %s (+%d)" % [str(wbp.get("short", cwid)), refund], func():
-				player_ship.cargo_weapons.remove_at(i)
-				player_ship.scrap += refund
-				audio.play_sfx("upgradeSystem")
-				_open_store()
-			))
-		for i in range(player_ship.cargo_drones.size()):
-			var cdid := player_ship.cargo_drones[i]
-			var dbp: Dictionary = db.drones.get(cdid, {})
-			var refund := maxi(10, int(dbp.get("cost", 50)) / 2)
-			sell_grid.add_child(_mk_btn("Sell [Cargo] %s (+%d)" % [str(dbp.get("short", cdid)), refund], func():
-				player_ship.cargo_drones.remove_at(i)
-				player_ship.scrap += refund
-				audio.play_sfx("upgradeSystem")
-				_open_store()
-			))
-		for i in range(player_ship.augments.size()):
-			var aid := player_ship.augments[i]
-			var abp: Dictionary = db.augments.get(aid, {})
-			var refund := maxi(10, int(abp.get("cost", 50)) / 2)
-			sell_grid.add_child(_mk_btn("Sell Aug: %s (+%d)" % [str(abp.get("title", aid)).left(18), refund], func():
-				player_ship.augments.remove_at(i)
-				player_ship.scrap += refund
-				audio.play_sfx("upgradeSystem")
-				_open_store()
 			))
 
 
@@ -2436,8 +2423,7 @@ func _open_profile_modal() -> void:
 
 
 func _show_end_modal(won: bool) -> void:
-	var diff_mult := 1.0 + float(difficulty) * 0.25
-	var final_score := int(round((float(scrap_collected) + float(ships_defeated) * 20.0 + float(sector_map.total_jumps) * 10.0) * diff_mult)) + (500 if won else 0)
+	var final_score := FTLShip.compute_final_score(scrap_collected, sector_map.total_jumps, ships_defeated, difficulty)
 	if profile != null and player_ship != null:
 		profile.record_godot_run(
 			player_ship.blueprint_id, player_ship.ship_name, final_score,
