@@ -529,6 +529,16 @@ func _draw_ghost(cell_size: Vector2, origin: Vector2) -> void:
 	draw_circle(center, minf(rect.size.x, rect.size.y) * 0.14, Color(color, 0.88))
 	var heading := Vector2.UP.rotated(float(rotation_quarters) * PI * 0.5)
 	draw_line(center, center + heading * minf(rect.size.x, rect.size.y) * 0.36, color, 3.0, true)
+	if CombatSystems.is_weapon(selected_id):
+		var w_stats: Dictionary = source.get("stats", {})
+		var arc_deg := float(w_stats.get("fire_arc_deg", 90.0))
+		var rest_a := deg_to_rad(float(w_stats.get("turret_rotation_deg", -90.0))) + float(rotation_quarters) * PI * 0.5
+		var half_a := deg_to_rad(clampf(arc_deg, 10.0, 360.0)) * 0.5
+		var arc_r := maxf(cell_size.x * 2.4, minf(rect.size.x, rect.size.y) * 1.35)
+		draw_arc(center, arc_r, rest_a - half_a, rest_a + half_a, 24, Color(color, 0.55), 1.6, true)
+		if arc_deg < 355.0:
+			draw_line(center, center + Vector2.from_angle(rest_a - half_a) * arc_r, Color(color, 0.45), 1.2, true)
+			draw_line(center, center + Vector2.from_angle(rest_a + half_a) * arc_r, Color(color, 0.45), 1.2, true)
 	if mirror_mode:
 		var mcell := Vector2i(_hover.x, GRID_SIZE.y - dims.y - _hover.y)
 		if mcell != _hover:
@@ -574,8 +584,11 @@ func _draw_crew_member(center: Vector2, cell_size: float, member: Dictionary) ->
 	var radius := maxf(4.0, cell_size * 0.14)
 	var color := MINT if role == "carrier" else (AMBER if role == "gunner" else BLUE)
 	var carrying := role == "carrier" and int(member.get("cargo", 0)) > 0
-	var ckey := "crew_carry" if carrying else ("crew_operate" if role in ["pilot", "gunner", "rocket_operator"] else "crew_walk")
+	var tick := int(Time.get_ticks_msec() / 110) + int(member.get("id", 0))
+	var ckey := ("crew_carry_%d" % (tick % 3)) if carrying else (("crew_operate_%d" % (tick % 2)) if role in ["pilot", "gunner", "rocket_operator"] else ("crew_walk_%d" % (tick % 3)))
 	var ctex: Texture2D = AssetLoader.get_sprite(ckey)
+	if ctex == null:
+		ctex = AssetLoader.get_sprite("crew_carry" if carrying else ("crew_operate" if role in ["pilot", "gunner", "rocket_operator"] else "crew_walk"))
 	if ctex != null:
 		var sz := maxf(10.0, cell_size * 0.42)
 		var ctint := color.lerp(Color.WHITE, 0.55)

@@ -1,5 +1,7 @@
 extends VBoxContainer
 
+const AssetLoader := preload("res://sim/asset_loader.gd")
+
 var lab
 var records: Dictionary
 var section := "parts"
@@ -10,6 +12,7 @@ var kind := OptionButton.new()
 var counter: Label
 var detail := RichTextLabel.new()
 var title: Label
+var preview_row := HBoxContainer.new()
 var graph: Dictionary
 var trace: Dictionary
 var incoming := {}
@@ -71,6 +74,7 @@ func build(host) -> void:
 	filters.add_child(finder)
 	listing.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	listing.fixed_column_width = 425
+	listing.fixed_icon_size = Vector2i(24, 24)
 	listing.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	listing.add_theme_constant_override("v_separation",6)
 	listing.item_selected.connect(_select)
@@ -81,11 +85,69 @@ func build(host) -> void:
 	title = lab.label("",20,lab.GREEN)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	right.add_child(title)
+	preview_row.add_theme_constant_override("separation", 12)
+	preview_row.visible = false
+	right.add_child(preview_row)
 	detail.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	detail.selection_enabled = true
 	detail.add_theme_color_override("default_color",lab.WHITE)
 	right.add_child(detail)
 	_filter("")
+
+func refresh_visuals() -> void:
+	var sel: PackedInt32Array = listing.get_selected_items()
+	var selected_idx: int = int(sel[0]) if not sel.is_empty() else 0
+	for i in visible_rows.size():
+		var icon: Texture2D = _row_icon(visible_rows[i])
+		if icon != null:
+			listing.set_item_icon(i, icon)
+	if selected_idx >= 0 and selected_idx < visible_rows.size():
+		_update_preview(visible_rows[selected_idx])
+
+func _row_icon(row: Dictionary) -> Texture2D:
+	if section == "parts":
+		return AssetLoader.get_part_texture(str(row.id), "cutaway")
+	if section == "resources":
+		var rid := str(row.id).trim_prefix("cosmoteer.")
+		var rtex: Texture2D = AssetLoader.get_sprite("res_" + rid)
+		if rtex == null and rid == "battery":
+			rtex = AssetLoader.get_sprite("battery")
+		return rtex
+	return null
+
+func _update_preview(row: Dictionary) -> void:
+	for child in preview_row.get_children():
+		child.queue_free()
+	var items: Array = []
+	if section == "parts":
+		var pid := str(row.id)
+		var cut := AssetLoader.get_part_texture(pid, "cutaway")
+		var roof := AssetLoader.get_part_texture(pid, "roof")
+		var tur := AssetLoader.get_part_texture(pid, "turret")
+		if cut != null:
+			items.append(["내부", cut])
+		if roof != null:
+			items.append(["외장", roof])
+		if tur != null:
+			items.append(["포탑", tur])
+	elif section == "resources":
+		var rtex := _row_icon(row)
+		if rtex != null:
+			items.append(["자원", rtex])
+	preview_row.visible = not items.is_empty()
+	for entry in items:
+		var card := VBoxContainer.new()
+		card.add_theme_constant_override("separation", 3)
+		var tex_rect := TextureRect.new()
+		tex_rect.texture = entry[1]
+		tex_rect.custom_minimum_size = Vector2(56, 56)
+		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		card.add_child(tex_rect)
+		var cap: Label = lab.label(str(entry[0]), 12, lab.SOFT)
+		cap.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		card.add_child(cap)
+		preview_row.add_child(card)
 
 func _change_kind(index: int) -> void:
 	section = sections[index]
@@ -101,10 +163,16 @@ func _filter(query: String) -> void:
 		if not needle.is_empty() and not search_text.to_lower().contains(needle):
 			continue
 		visible_rows.append(row)
-		listing.add_item(str(row.id).trim_prefix("cosmoteer.").trim_prefix("Cosmoteer.Ships.Parts."))
+		var caption: String = str(row.id).trim_prefix("cosmoteer.").trim_prefix("Cosmoteer.Ships.Parts.")
+		var icon := _row_icon(row)
+		if icon != null:
+			listing.add_item(caption, icon)
+		else:
+			listing.add_item(caption)
 	counter.text = "%d / %d 항목" % [visible_rows.size(), records[section].size()]
 	if visible_rows.is_empty():
 		title.text = "검색 결과 없음"
+		preview_row.visible = false
 		detail.text = ""
 	else:
 		listing.select(0)
@@ -113,6 +181,7 @@ func _filter(query: String) -> void:
 func _select(index: int) -> void:
 	var row: Dictionary = visible_rows[index]
 	title.text = row.id
+	_update_preview(row)
 	detail.clear()
 	detail.get_v_scroll_bar().value = 0
 	if section == "rules":

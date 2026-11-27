@@ -115,6 +115,8 @@ func _ready() -> void:
 func _on_assets_ready(_count: int) -> void:
 	if board != null:
 		board.queue_redraw()
+	if library != null and library.has_method("refresh_visuals"):
+		library.refresh_visuals()
 	if shipyard != null:
 		if shipyard.has_method("_refresh_palette_icons"):
 			shipyard._refresh_palette_icons()

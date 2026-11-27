@@ -250,19 +250,25 @@ func _draw_environment(center: Vector2, zoom: float) -> void:
 				halo_col = Color("#d4bc9c")
 		var p_pos := Vector2(size.x * 0.78, size.y * 0.24) - center * zoom * 0.04
 		var p_rad := clampf(minf(size.x, size.y) * 0.13, 36.0, 96.0)
-		draw_circle(p_pos, p_rad * 1.24, Color(halo_col, 0.09))
-		draw_circle(p_pos, p_rad * 1.10, Color(halo_col, 0.15))
-		draw_circle(p_pos, p_rad, Color(p_col, 0.42))
-		draw_circle(p_pos + Vector2(-p_rad * 0.22, -p_rad * 0.22), p_rad * 0.65, Color(halo_col, 0.18))
-		draw_arc(p_pos, p_rad, -PI * 0.85, PI * 0.15, 36, Color(halo_col, 0.36), 2.0, true)
-		if ringed:
-			var ring_pts := PackedVector2Array()
-			for k in 41:
-				var a := TAU * float(k) / 40.0
-				var local := Vector2(cos(a) * p_rad * 1.95, sin(a) * p_rad * 0.44).rotated(-0.34)
-				ring_pts.append(p_pos + local)
-			draw_polyline(ring_pts, Color(halo_col, 0.38), 3.2, true)
-			draw_polyline(ring_pts, Color(Color.WHITE, 0.18), 1.2, true)
+		var p_tex: Texture2D = AssetLoader.get_sprite(planet_id)
+		if p_tex != null:
+			draw_circle(p_pos, p_rad * 1.18, Color(halo_col, 0.11))
+			var psz := Vector2(p_rad * 2.15, p_rad * 2.15)
+			draw_texture_rect(p_tex, Rect2(p_pos - psz * 0.5, psz), false, Color(1.0, 1.0, 1.0, 0.78))
+		else:
+			draw_circle(p_pos, p_rad * 1.24, Color(halo_col, 0.09))
+			draw_circle(p_pos, p_rad * 1.10, Color(halo_col, 0.15))
+			draw_circle(p_pos, p_rad, Color(p_col, 0.42))
+			draw_circle(p_pos + Vector2(-p_rad * 0.22, -p_rad * 0.22), p_rad * 0.65, Color(halo_col, 0.18))
+			draw_arc(p_pos, p_rad, -PI * 0.85, PI * 0.15, 36, Color(halo_col, 0.36), 2.0, true)
+			if ringed:
+				var ring_pts := PackedVector2Array()
+				for k in 41:
+					var a := TAU * float(k) / 40.0
+					var local := Vector2(cos(a) * p_rad * 1.95, sin(a) * p_rad * 0.44).rotated(-0.34)
+					ring_pts.append(p_pos + local)
+				draw_polyline(ring_pts, Color(halo_col, 0.38), 3.2, true)
+				draw_polyline(ring_pts, Color(Color.WHITE, 0.18), 1.2, true)
 	var env_info := CombatSystems.nebula_environment(battle.mission)
 	if not str(env_info.id).is_empty():
 		var ncol := Color(str(env_info.color))
@@ -458,14 +464,22 @@ func _draw_ship(ship: Dictionary, camera: Vector2, zoom: float, viewport_center:
 			else:
 				draw_circle(sm_c, maxf(2.2, zoom * 0.55), Color("#23272e", 0.36))
 	if show_cutaway and zoom >= 2.2:
-		for member in ship.get("crew", []):
+		var walk_f: int = int(floor(float(battle.elapsed) * 9.0)) % 3
+		var op_f: int = int(floor(float(battle.elapsed) * 4.0)) % 2
+		var crew_list: Array = ship.get("crew", [])
+		for ci_m in crew_list.size():
+			var member: Dictionary = crew_list[ci_m]
 			if not member.get("alive", true):
 				continue
 			var pos_grid: Vector2 = Vector2(member.get("pos", Vector2.ZERO)) + Vector2(0.5, 0.5)
 			var c_scr := _world_to_screen(_grid_world(ship, pos_grid), camera, zoom, viewport_center)
 			var role := str(member.get("role", "carrier"))
 			var carrying := role == "carrier" and int(member.get("cargo", 0)) > 0
-			var ctex: Texture2D = AssetLoader.get_sprite("crew_carry" if carrying else ("crew_operate" if role != "carrier" else "crew_walk"))
+			var cf: int = (walk_f + ci_m) % 3
+			var ckey := ("crew_carry_%d" % cf) if carrying else (("crew_operate_%d" % ((op_f + ci_m) % 2)) if role != "carrier" else ("crew_walk_%d" % cf))
+			var ctex: Texture2D = AssetLoader.get_sprite(ckey)
+			if ctex == null:
+				ctex = AssetLoader.get_sprite("crew_carry" if carrying else ("crew_operate" if role != "carrier" else "crew_walk"))
 			var csz := clampf(zoom * 0.52, 4.0, 18.0)
 			if ctex != null:
 				draw_texture_rect(ctex, Rect2(c_scr - Vector2(csz, csz) * 0.5, Vector2(csz, csz)), false, Color.WHITE)
@@ -631,11 +645,13 @@ func _draw_ion_beams(camera: Vector2, zoom: float, viewport_center: Vector2) -> 
 		draw_line(a, b, Color(outer.lightened(0.25), 0.88), maxf(2.4, zoom * 0.40 * strength), true)
 		draw_line(a, b, Color.WHITE, maxf(1.2, zoom * 0.16 * strength), true)
 		if beam.hit_kind != "miss":
-			var bspark: Texture2D = AssetLoader.get_sprite("exp_spark")
+			var bspark: Texture2D = AssetLoader.get_sprite("ion_hit")
+			if bspark == null:
+				bspark = AssetLoader.get_sprite("exp_spark")
 			if bspark != null:
-				var bsr := maxf(6.0, zoom * 0.95 * strength)
+				var bsr := maxf(6.5, zoom * 1.15 * strength)
 				draw_set_transform(b, float(battle.elapsed) * 8.0, Vector2.ONE)
-				draw_texture_rect(bspark, Rect2(-Vector2(bsr, bsr), Vector2(bsr * 2.0, bsr * 2.0)), false, outer.lightened(0.45))
+				draw_texture_rect(bspark, Rect2(-Vector2(bsr, bsr), Vector2(bsr * 2.0, bsr * 2.0)), false, outer.lightened(0.42))
 				draw_set_transform(Vector2.ZERO)
 			else:
 				draw_circle(b, maxf(3.5, zoom * 0.42 * strength), outer.lightened(0.45))
@@ -687,6 +703,7 @@ func _draw_projectiles(camera: Vector2, zoom: float, viewport_center: Vector2) -
 			"cannon_deck", "cannon_large": skey = "shot_bullet_large_1" if anim_odd else "shot_bullet_large"
 			"cannon": skey = "shot_bullet_med"
 			"chaingun": skey = "shot_chaingun"
+			"disruptor": skey = "shot_disruptor"
 			"railgun": skey = "shot_railgun_1" if anim_odd else "shot_railgun"
 			"heavy_laser": skey = "shot_laser_large_1" if anim_odd else "shot_laser_large"
 			"laser": skey = "shot_laser_small_1" if anim_odd else "shot_laser_small"
