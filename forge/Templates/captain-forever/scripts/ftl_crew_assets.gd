@@ -186,20 +186,22 @@ static func draw_crew_sprite(
 				row = 1 if facing.x >= 0.0 else 3
 			else:
 				row = 0 if facing.y >= 0.0 else 2
-			frame = int(anim_t * 8.0) % 4
-		elif state in ["repair", "build", "fire"]:
+			frame = int(anim_t * 8.0) & 3
+		elif state == "repair" or state == "build" or state == "fire":
 			row = 4
-			frame = int(anim_t * 6.5) % 4
-		elif state in ["fight", "sabotage"]:
+			frame = int(anim_t * 6.5) & 3
+		elif state == "fight" or state == "sabotage":
 			row = 5
-			frame = int(anim_t * 7.5) % 4
+			frame = int(anim_t * 7.5) & 3
 		elif state == "man":
 			row = 2
 			frame = 0
-		var max_rows := maxi(1, int(float(tex.get_height()) / FRAME_H))
+		var tw := float(tex.get_width())
+		var th := float(tex.get_height())
+		var max_rows := maxi(1, int(th / FRAME_H))
 		var sy := float(mini(row, max_rows - 1)) * FRAME_H
-		var sx := fmod(float(frame) * FRAME_W, maxf(FRAME_W, float(tex.get_width())))
-		var src := Rect2(sx, sy, minf(FRAME_W, float(tex.get_width())), minf(FRAME_H, float(tex.get_height())))
+		var sx := fmod(float(frame) * FRAME_W, maxf(FRAME_W, tw))
+		var src := Rect2(sx, sy, minf(FRAME_W, tw), minf(FRAME_H, th))
 		var tint := Color.WHITE if is_friendly else Color(1.0, 0.56, 0.56)
 		canvas.draw_texture_rect_region(tex, Rect2(pos - Vector2(draw_size, draw_size) * 0.5, Vector2(draw_size, draw_size)), src, tint)
 	else:
@@ -209,9 +211,9 @@ static func draw_crew_sprite(
 		canvas.draw_arc(pos, draw_size * 0.28, 0.0, TAU, 12, Color.BLACK, 1.4)
 
 	# State spark / combat flash
-	if state in ["repair", "build"] and fmod(anim_t * 5.0, 1.0) < 0.45:
+	if (state == "repair" or state == "build") and fmod(anim_t * 5.0, 1.0) < 0.45:
 		canvas.draw_circle(pos + Vector2(draw_size * 0.26, -draw_size * 0.16), 2.6, Color("ffd866", 0.9))
-	elif state in ["fight", "sabotage"] and fmod(anim_t * 6.0, 1.0) < 0.4:
+	elif (state == "fight" or state == "sabotage") and fmod(anim_t * 6.0, 1.0) < 0.4:
 		canvas.draw_circle(pos + Vector2(draw_size * 0.24, -draw_size * 0.10), 3.0, Color("ff5c5c", 0.92))
 
 	# FTL Crew HP bar above head

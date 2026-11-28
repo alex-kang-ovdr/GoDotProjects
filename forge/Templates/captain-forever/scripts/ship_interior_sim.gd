@@ -131,6 +131,18 @@ var _wire_isolated_cells: Array[Vector2i] = []
 
 var _env_substep_accum := 0.0
 
+# 20 vs 20 대규모 승조원 교전 O(1) 공간 해시 캐시 (프레임당 1회 구축 · 증분 갱신)
+var _crew_spatial_valid := false
+var _crew_stat_f: Dictionary = {}   # Vector2i -> [count, first_id]
+var _crew_stat_e: Dictionary = {}
+var _crew_claim_f: Dictionary = {}
+var _crew_claim_e: Dictionary = {}
+var _crew_cell_f: Dictionary = {}   # Vector2i -> crew Dict (생존 아군)
+var _crew_cell_e: Dictionary = {}   # Vector2i -> crew Dict (생존 적군)
+var _crew_part_f: Dictionary = {}   # part.uid -> crew Dict (생존 아군)
+var _crew_part_e: Dictionary = {}   # part.uid -> crew Dict (생존 적군)
+var _has_alive_boarders_tick := false
+
 func _mark_interior_topology_dirty() -> void:
 	_power_topology_dirty = true
 	_wiring_stats_dirty = true
@@ -1340,8 +1352,92 @@ static func _cardinal_facing(vec: Vector2) -> Vector2:
 		return Vector2.RIGHT if vec.x >= 0.0 else Vector2.LEFT
 	return Vector2.DOWN if vec.y >= 0.0 else Vector2.UP
 
+static func _spatial_count_add(map: Dictionary, key: Vector2i, cid: int) -> void:
+	if map.has(key):
+		var rec: Array = map[key]
+		rec[0] = int(rec[0]) + 1
+	else:
+		map[key] = [1, cid]
+
+static func _spatial_count_has_other(map: Dictionary, key: Vector2i, ignore_crew_id: int) -> bool:
+	if not map.has(key):
+		return false
+	var rec: Array = map[key]
+	var cnt := int(rec[0])
+	if cnt <= 0:
+		return false
+	if cnt > 1:
+		return true
+	return int(rec[1]) != ignore_crew_id
+
+func _spatial_claim_shift(old_cell: Vector2i, new_cell: Vector2i, friendly: bool, cid: int) -> void:
+	if not _crew_spatial_valid or old_cell == new_cell:
+		return
+	var map := _crew_claim_f if friendly else _crew_claim_e
+	if map.has(old_cell):
+		var rec: Array = map[old_cell]
+		var ncnt := int(rec[0]) - 1
+		if ncnt <= 0:
+			map.erase(old_cell)
+		else:
+			rec[0] = ncnt
+			if int(rec[1]) == cid:
+				rec[1] = -1
+	_spatial_count_add(map, new_cell, cid)
+
+func _rebuild_crew_spatial_index() -> void:
+	_crew_stat_f.clear()
+	_crew_stat_e.clear()
+	_crew_claim_f.clear()
+	_crew_claim_e.clear()
+	_crew_cell_f.clear()
+	_crew_cell_e.clear()
+	_crew_part_f.clear()
+	_crew_part_e.clear()
+	_has_alive_boarders_tick = false
+	var cell_map := model.cell_to_part_map() if model != null else {}
+	for c in crew:
+		if float(c.hp) <= 0.0:
+			continue
+		var cid := int(c.id)
+		var fr := bool(c.is_friendly)
+		var cc: Vector2i = c.cell
+		if not fr:
+			_has_alive_boarders_tick = true
+		if fr:
+			if not _crew_cell_f.has(cc):
+				_crew_cell_f[cc] = c
+		else:
+			if not _crew_cell_e.has(cc):
+				_crew_cell_e[cc] = c
+		var p: PartData = cell_map.get(cc, null)
+		if p != null and p.hp > 0.0:
+			if fr:
+				if not _crew_part_f.has(p.uid):
+					_crew_part_f[p.uid] = c
+			else:
+				if not _crew_part_e.has(p.uid):
+					_crew_part_e[p.uid] = c
+		var is_stat := (c.path as Array).is_empty() and float(c.get("step_t", 0.0)) <= 0.001
+		if is_stat:
+			if fr:
+				_spatial_count_add(_crew_stat_f, cc, cid)
+				_spatial_count_add(_crew_claim_f, cc, cid)
+			else:
+				_spatial_count_add(_crew_stat_e, cc, cid)
+				_spatial_count_add(_crew_claim_e, cc, cid)
+		else:
+			var gc: Vector2i = c.goal_cell
+			if fr:
+				_spatial_count_add(_crew_claim_f, gc, cid)
+			else:
+				_spatial_count_add(_crew_claim_e, gc, cid)
+	_crew_spatial_valid = true
+
 ## 같은 팀 정지 배치 점유 판정: 정지 상태(path가 비어 있고 step_t == 0)인 아군/적군이 이미 해당 블럭에 서 있는지 확인
 func is_cell_stationary_occupied_by_team(cell: Vector2i, friendly: bool, ignore_crew_id: int = -1) -> bool:
+	if _crew_spatial_valid:
+		return _spatial_count_has_other(_crew_stat_f if friendly else _crew_stat_e, cell, ignore_crew_id)
 	for other in crew:
 		if int(other.id) == ignore_crew_id or bool(other.is_friendly) != friendly or float(other.hp) <= 0.0:
 			continue
@@ -1351,6 +1447,8 @@ func is_cell_stationary_occupied_by_team(cell: Vector2i, friendly: bool, ignore_
 
 ## 같은 팀 목적지·배치 점유 판정: 한 칸에 같은 팀은 오직 1명만 배치(정지 점유 또는 최종 도착 예약) 가능! (이동 중 경유 타일 통과 겹침은 허용)
 func is_cell_claimed_by_team(cell: Vector2i, friendly: bool, ignore_crew_id: int = -1) -> bool:
+	if _crew_spatial_valid:
+		return _spatial_count_has_other(_crew_claim_f if friendly else _crew_claim_e, cell, ignore_crew_id)
 	for other in crew:
 		if int(other.id) == ignore_crew_id or bool(other.is_friendly) != friendly or float(other.hp) <= 0.0:
 			continue
@@ -1626,6 +1724,7 @@ func _step_crew_and_combat(dt: float) -> void:
 	weapon_cooldown_mult = 1.0
 	shield_recharge_mult = 1.0
 	thrust_manning_mult = 1.0
+	_rebuild_crew_spatial_index()
 
 	var dead_ids: Array[int] = []
 	for c in crew:
@@ -1704,16 +1803,22 @@ func _step_crew_and_combat(dt: float) -> void:
 				continue
 
 		# 2) 정지 상태에서 같은 팀과 블럭이 겹쳤을 경우 즉시 인접 빈 블럭으로 4방향 1칸 분산 (같은팀 1칸 1명 엄수!)
-		if cur_path.is_empty() and not is_mid_hop and cell_has_stationary_ally:
+		if cur_path.is_empty() and not is_mid_hop and cell_has_stationary_ally and float(c.repath_cd) <= 0.0:
 			var free_c := find_nearest_free_team_cell(c.cell as Vector2i, bool(c.is_friendly), int(c.id))
 			if free_c.x != 9999 and free_c != (c.cell as Vector2i):
 				var sidestep := find_corridor_path(c.cell as Vector2i, free_c, not bool(c.is_friendly))
 				if sidestep.is_empty() and abs(free_c.x - int(c.cell.x)) + abs(free_c.y - int(c.cell.y)) == 1:
 					sidestep = [free_c]
 				if not sidestep.is_empty():
+					var old_gc: Vector2i = c.goal_cell
 					c.path = sidestep
 					c.goal_cell = free_c
+					_spatial_claim_shift(old_gc, free_c, bool(c.is_friendly), int(c.id))
 					cur_path = c.path
+				else:
+					c.repath_cd = 0.25
+			else:
+				c.repath_cd = 0.25
 
 		# 3) 블럭 한칸씩 4방향(상/하/좌/우) 이동 실행 (이동 중 다른 승조원 타일 통과·겹침 허용!)
 		while not cur_path.is_empty() and (cur_path[0] as Vector2i) == (c.cell as Vector2i):
@@ -2016,10 +2121,34 @@ func _step_crew_and_combat(dt: float) -> void:
 			else:
 				alive_list.append(c)
 		crew = alive_list
+	_crew_spatial_valid = false
 
 func _find_hostile_for_crew(c: Dictionary, part_uid: int) -> Dictionary:
 	var my_friendly := bool(c.is_friendly)
 	var my_cell: Vector2i = c.cell
+	if _crew_spatial_valid:
+		var opp_part_map := _crew_part_e if my_friendly else _crew_part_f
+		if opp_part_map.has(part_uid):
+			var same_p: Dictionary = opp_part_map[part_uid]
+			if float(same_p.hp) > 0.0:
+				return same_p
+		var opp_cell_map := _crew_cell_e if my_friendly else _crew_cell_f
+		if opp_cell_map.is_empty():
+			return {}
+		var my_p := model.part_at(my_cell)
+		var my_is_corr := my_p != null and is_corridor_kind(my_p.kind)
+		for dir in NEIGHBORS:
+			var ncell: Vector2i = my_cell + dir
+			if not opp_cell_map.has(ncell):
+				continue
+			var cand: Dictionary = opp_cell_map[ncell]
+			if float(cand.hp) <= 0.0:
+				continue
+			if not is_edge_blocking_enemy(my_cell, ncell):
+				var op := model.part_at(ncell)
+				if op != null and (is_corridor_kind(op.kind) or my_is_corr):
+					return cand
+		return {}
 	var best_adj: Dictionary = {}
 	for other in crew:
 		if float(other.hp) <= 0.0 or bool(other.is_friendly) == my_friendly:
@@ -2035,6 +2164,13 @@ func _find_hostile_for_crew(c: Dictionary, part_uid: int) -> Dictionary:
 	return best_adj
 
 func _find_hostile_in_part(part_uid: int, my_friendly: bool) -> Dictionary:
+	if _crew_spatial_valid:
+		var opp_part_map := _crew_part_e if my_friendly else _crew_part_f
+		if opp_part_map.has(part_uid):
+			var cand: Dictionary = opp_part_map[part_uid]
+			if float(cand.hp) > 0.0:
+				return cand
+		return {}
 	for other in crew:
 		if float(other.hp) <= 0.0 or bool(other.is_friendly) == my_friendly:
 			continue
@@ -2046,6 +2182,11 @@ func _find_hostile_in_part(part_uid: int, my_friendly: bool) -> Dictionary:
 func _crew_slot_pos(c: Dictionary) -> Vector2:
 	var base := Vector2(c.cell) * BalanceData.CELL
 	# 같은 팀은 한 칸에 1명만 정지 배치되므로 오프셋 불필요. 적군과 같은 칸에서 교전 중일 때만 좌우로 마주보게 정렬!
+	if _crew_spatial_valid:
+		var opp_stat := _crew_stat_e if bool(c.is_friendly) else _crew_stat_f
+		if opp_stat.has(c.cell as Vector2i):
+			return base + (Vector2(-6.0, 0.0) if bool(c.is_friendly) else Vector2(6.0, 0.0))
+		return base
 	for other in crew:
 		if int(other.id) != int(c.id) and float(other.hp) > 0.0 and bool(other.is_friendly) != bool(c.is_friendly):
 			if (other.cell as Vector2i) == (c.cell as Vector2i) and (other.path as Array).is_empty():
@@ -2079,18 +2220,21 @@ func _assign_boarder_target(boarder: Dictionary) -> void:
 			best_cell = dcell
 			best_path = route
 	if not best_path.is_empty():
+		var old_bg: Vector2i = boarder.goal_cell
 		boarder.path = best_path
 		boarder.goal_cell = best_cell
+		_spatial_claim_shift(old_bg, best_cell, false, b_id)
 		boarder.state = "walk"
 
 func _assign_friendly_chore(member: Dictionary) -> bool:
 	var m_cell: Vector2i = member.cell
 	var m_id := int(member.id)
-	var has_any_boarder := false
-	for other_b in crew:
-		if not bool(other_b.is_friendly) and float(other_b.hp) > 0.0:
-			has_any_boarder = true
-			break
+	var has_any_boarder := _has_alive_boarders_tick if _crew_spatial_valid else false
+	if not _crew_spatial_valid:
+		for other_b in crew:
+			if not bool(other_b.is_friendly) and float(other_b.hp) > 0.0:
+				has_any_boarder = true
+				break
 	if not has_any_boarder and part_fires.is_empty() and _damaged_wire_cells.is_empty() and build_ghosts.is_empty():
 		var has_damaged_part := false
 		for p_chk in model.parts:

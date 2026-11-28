@@ -1289,6 +1289,63 @@ func _run() -> void:
 	cc_bar.queue_free()
 	await process_frame
 
+	# 22. 20 vs 20 대규모 승조원 전투 시뮬레이션 · 16×6 전술 데크 · 같은팀 1칸1명 · 성능 예산(<1.5ms/step) 검증
+	var cc_20 := (load("res://scenes/crew_combat_lab_mode.tscn") as PackedScene).instantiate() as CrewCombatLabMode
+	root.add_child(cc_20)
+	for _c20 in 2: await process_frame
+	cc_20.door_locked = true
+	cc_20.bio_gas_active = true
+	cc_20.setup_20v20_battle(true)
+	assert(cc_20.grid_cols == 16 and cc_20.grid_rows == 6,
+		"20 vs 20 mode must automatically expand deck to 16x6, got %dx%d" % [cc_20.grid_cols, cc_20.grid_rows])
+	assert(cc_20.alive_attacker_count() == 20 and cc_20.alive_defender_count() == 20,
+		"20 vs 20 setup must spawn 20 attackers and 20 defenders")
+	var init_atk_cells: Dictionary = {}
+	var init_def_cells: Dictionary = {}
+	for u20 in cc_20.units:
+		var c20: Vector2i = u20.cell
+		if bool(u20.is_defender):
+			assert(not init_def_cells.has(c20), "Initial 20v20 defenders must occupy 20 distinct cells: dup at %s" % str(c20))
+			init_def_cells[c20] = true
+		else:
+			assert(not init_atk_cells.has(c20), "Initial 20v20 attackers must occupy 20 distinct cells: dup at %s" % str(c20))
+			init_atk_cells[c20] = true
+	var t20_start := Time.get_ticks_usec()
+	for _s20 in 360:
+		cc_20.step_combat(1.0 / 60.0)
+	var t20_ms := float(Time.get_ticks_usec() - t20_start) / 1000.0
+	var avg20_ms := t20_ms / 360.0
+	assert(avg20_ms < 2.5, "Optimized 20 vs 20 combat simulation must stay well under 2.5 ms/step (got %.3f ms/step)" % avg20_ms)
+	assert(cc_20.total_atk_dmg_dealt > 50.0 and cc_20.total_def_dmg_dealt > 50.0,
+		"20 vs 20 battle must breach doors and exchange active melee combat damage (atk=%.1f def=%.1f)" % [cc_20.total_atk_dmg_dealt, cc_20.total_def_dmg_dealt])
+	var fin_atk_20: Dictionary = {}
+	var fin_def_20: Dictionary = {}
+	for u20f in cc_20.units:
+		if float(u20f.hp) <= 0.0:
+			continue
+		var gp20 := cc_20.unit_grid_pos(u20f)
+		assert(absf(gp20.x - roundf(gp20.x)) < 0.001 or absf(gp20.y - roundf(gp20.y)) < 0.001,
+			"20v20 units must stay strictly on 4-dir grid lines: %s" % str(gp20))
+		if (u20f.path as Array).is_empty() and float(u20f.move_t) <= 0.001:
+			var fc20: Vector2i = u20f.cell
+			if bool(u20f.is_defender):
+				assert(not fin_def_20.has(fc20), "20v20 stationary defenders must never share a tile: %s" % str(fc20))
+				fin_def_20[fc20] = true
+			else:
+				assert(not fin_atk_20.has(fc20), "20v20 stationary attackers must never share a tile: %s" % str(fc20))
+				fin_atk_20[fc20] = true
+	for vp20 in [Vector2i(1280, 720), Vector2i(720, 1280), Vector2i(580, 1280)]:
+		cc_20.mode_switcher.apply_orientation(vp20.x < vp20.y, false)
+		root.size = vp20
+		root.content_scale_size = vp20
+		cc_20.mode_switcher._sync_dock_placement()
+		cc_20._sync_responsive_layout()
+		for _f20 in 2: await process_frame
+		_assert_panels_inside_viewport(cc_20, root.get_visible_rect(), "CrewCombatLabMode.20v20(%s)" % str(vp20))
+	cc_20.mode_switcher.apply_orientation(false, true)
+	cc_20.queue_free()
+	await process_frame
+
 	root.size = Vector2i(1280, 720)
 	root.content_scale_size = Vector2i(1280, 720)
 	ShipModel.clear_saved_blueprint()
