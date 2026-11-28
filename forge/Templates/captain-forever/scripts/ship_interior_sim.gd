@@ -2123,6 +2123,36 @@ func _step_crew_and_combat(dt: float) -> void:
 		crew = alive_list
 	_crew_spatial_valid = false
 
+func _can_melee_step_cells(a: Vector2i, b: Vector2i) -> bool:
+	if is_edge_blocking_enemy(a, b):
+		return false
+	var pa := model.part_at(a)
+	var pb := model.part_at(b)
+	if pa == null or pb == null or pa.hp <= 0.0 or pb.hp <= 0.0:
+		return false
+	return pa.uid == pb.uid or is_corridor_kind(pa.kind) or is_corridor_kind(pb.kind)
+
+## 함내 8방향(동일 방 + 상하좌우 4방향 + 대각 4방향) 근접 공격 가능 여부 판정 (두 코너 중 한쪽 이상 개방 시 대각 공격 허용)
+func can_crew_melee_cells(a: Vector2i, b: Vector2i) -> bool:
+	if model == null:
+		return false
+	var dx := b.x - a.x
+	var dy := b.y - a.y
+	var adx := absi(dx)
+	var ady := absi(dy)
+	if adx == 0 and ady == 0:
+		return true
+	if adx + ady == 1:
+		return _can_melee_step_cells(a, b)
+	if adx == 1 and ady == 1:
+		var h_cell := Vector2i(a.x + dx, a.y)
+		if _can_melee_step_cells(a, h_cell) and _can_melee_step_cells(h_cell, b):
+			return true
+		var v_cell := Vector2i(a.x, a.y + dy)
+		if _can_melee_step_cells(a, v_cell) and _can_melee_step_cells(v_cell, b):
+			return true
+	return false
+
 func _find_hostile_for_crew(c: Dictionary, part_uid: int) -> Dictionary:
 	var my_friendly := bool(c.is_friendly)
 	var my_cell: Vector2i = c.cell
@@ -2135,8 +2165,6 @@ func _find_hostile_for_crew(c: Dictionary, part_uid: int) -> Dictionary:
 		var opp_cell_map := _crew_cell_e if my_friendly else _crew_cell_f
 		if opp_cell_map.is_empty():
 			return {}
-		var my_p := model.part_at(my_cell)
-		var my_is_corr := my_p != null and is_corridor_kind(my_p.kind)
 		for dir in NEIGHBORS:
 			var ncell: Vector2i = my_cell + dir
 			if not opp_cell_map.has(ncell):
@@ -2144,12 +2172,21 @@ func _find_hostile_for_crew(c: Dictionary, part_uid: int) -> Dictionary:
 			var cand: Dictionary = opp_cell_map[ncell]
 			if float(cand.hp) <= 0.0:
 				continue
-			if not is_edge_blocking_enemy(my_cell, ncell):
-				var op := model.part_at(ncell)
-				if op != null and (is_corridor_kind(op.kind) or my_is_corr):
-					return cand
+			if _can_melee_step_cells(my_cell, ncell):
+				return cand
+		# 대각 4방향 (8방향 근접 교전!)
+		for d_off in [Vector2i(1, 1), Vector2i(1, -1), Vector2i(-1, 1), Vector2i(-1, -1)]:
+			var dcell: Vector2i = my_cell + (d_off as Vector2i)
+			if not opp_cell_map.has(dcell):
+				continue
+			var dcand: Dictionary = opp_cell_map[dcell]
+			if float(dcand.hp) <= 0.0:
+				continue
+			if can_crew_melee_cells(my_cell, dcell):
+				return dcand
 		return {}
 	var best_adj: Dictionary = {}
+	var best_diag: Dictionary = {}
 	for other in crew:
 		if float(other.hp) <= 0.0 or bool(other.is_friendly) == my_friendly:
 			continue
@@ -2157,11 +2194,15 @@ func _find_hostile_for_crew(c: Dictionary, part_uid: int) -> Dictionary:
 		if op != null and op.uid == part_uid:
 			return other
 		var ocell: Vector2i = other.cell
-		if abs(ocell.x - my_cell.x) + abs(ocell.y - my_cell.y) == 1:
-			if not is_edge_blocking_enemy(my_cell, ocell):
-				if op != null and (is_corridor_kind(op.kind) or is_corridor_kind(model.part_at(my_cell).kind)):
-					best_adj = other
-	return best_adj
+		var adx := absi(ocell.x - my_cell.x)
+		var ady := absi(ocell.y - my_cell.y)
+		if adx + ady == 1:
+			if _can_melee_step_cells(my_cell, ocell):
+				best_adj = other
+		elif adx == 1 and ady == 1 and best_diag.is_empty():
+			if can_crew_melee_cells(my_cell, ocell):
+				best_diag = other
+	return best_adj if not best_adj.is_empty() else best_diag
 
 func _find_hostile_in_part(part_uid: int, my_friendly: bool) -> Dictionary:
 	if _crew_spatial_valid:

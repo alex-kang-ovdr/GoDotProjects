@@ -37,6 +37,12 @@ const MAX_BARRIER_LEVEL := 3
 const DIR_DX := [1, -1, 0, 0]
 const DIR_DY := [0, 0, 1, -1]
 const DIR_OPP := [1, 0, 3, 2]
+const DIAG_DX := [1, 1, -1, -1]
+const DIAG_DY := [1, -1, 1, -1]
+const DIAG_H_DIR := [0, 0, 1, 1] # 0=RIGHT(+1,0), 1=LEFT(-1,0)
+const DIAG_V_DIR := [2, 3, 2, 3] # 2=DOWN(0,+1), 3=UP(0,-1)
+const DIAG_OPP := [3, 2, 1, 0]   # (+1,+1)<->(-1,-1), (+1,-1)<->(-1,+1)
+const DIAG_MELEE_MULT := 0.85    # 대각선(√2 거리) 근접 타격 위력 배율 (정면 십자 1.0× / 대각 0.85×)
 const LARGE_SQUAD_ATK_MIX := [
 	"mantis", "mantis", "mantis", "mantis", "mantis", "mantis",
 	"rock", "rock", "rock", "rock",
@@ -312,7 +318,12 @@ class DynamicArenaLayer extends Control:
 				draw_arc(fpos, br, 0.0, TAU, 20, Color(0.62, 1.0, 0.45, 1.0 - ratio), 3.2)
 			elif fkind == "slash":
 				var tpos := arena_ref.tile_center_px(Vector2(float(fx.tx), float(fx.ty)), m)
-				draw_line(fpos, fpos.lerp(tpos, 1.0 - ratio * 0.4), fx.color as Color, 2.6 * (1.0 - ratio) + 1.0)
+				var sc: Color = fx.color
+				var tip := fpos.lerp(tpos, 1.0 - ratio * 0.35)
+				draw_line(fpos, tip, sc, 2.8 * (1.0 - ratio) + 1.1)
+				if ratio < 0.65:
+					var sp_a := 1.0 - ratio / 0.65
+					draw_circle(tip, 3.6 * sp_a + 1.2, Color(1.0, 0.96, 0.78, sp_a * 0.9))
 			elif fkind == "pop" and font != null:
 				var fc: Color = fx.color
 				draw_string(font, fpos + Vector2(-50.0, -14.0 - ratio * 16.0), str(fx.text), HORIZONTAL_ALIGNMENT_CENTER, 100.0, pop_font_sz, Color(fc.r, fc.g, fc.b, 1.0 - ratio))
@@ -634,7 +645,7 @@ func _build_ui() -> void:
 	root_vbox.add_child(_header_box)
 
 	_header_title = Label.new()
-	_header_title.text = "승조원 전투 실험실 · 격실벽/방화문 설치·업글·제거 & 4방향 기동"
+	_header_title.text = "승조원 전투 실험실 · 격실벽/방화문 · 4방향 기동 · 8방향 공격"
 	_header_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_header_title.clip_text = true
 	_header_title.add_theme_font_size_override("font_size", 23)
@@ -1304,6 +1315,59 @@ func _is_edge_blocking_melee_idx(cell_i: int, d_idx: int) -> bool:
 	if str(bh.kind) == "wall":
 		return true
 	return door_locked and not bool(bh.open)
+
+func _is_edge_solid_wall_idx(cell_i: int, d_idx: int) -> bool:
+	var bh_v: Variant = _edge_barrier[cell_i * 4 + d_idx]
+	if bh_v == null:
+		return false
+	var bh: Dictionary = bh_v
+	return float(bh.hp) > 0.0 and str(bh.kind) == "wall"
+
+## 대각선(45°) 근접 공격 차단 판정: 두 코너 L경로(수평->수직, 수직->수평)가 모두 격실벽/잠긴 방화문으로 막혔을 때만 차단!
+func _is_diagonal_melee_blocked_idx(ax: int, ay: int, diag_idx: int) -> bool:
+	var gcols := grid_cols
+	var ci := ay * gcols + ax
+	var h_dir: int = DIAG_H_DIR[diag_idx]
+	var v_dir: int = DIAG_V_DIR[diag_idx]
+	var hi: int = ay * gcols + (ax + int(DIR_DX[h_dir]))
+	var vi: int = (ay + int(DIR_DY[v_dir])) * gcols + ax
+	var path_h_open := (not _is_edge_blocking_melee_idx(ci, h_dir)) and (not _is_edge_blocking_melee_idx(hi, v_dir))
+	if path_h_open:
+		return false
+	var path_v_open := (not _is_edge_blocking_melee_idx(ci, v_dir)) and (not _is_edge_blocking_melee_idx(vi, h_dir))
+	return not path_v_open
+
+func _is_diagonal_wall_blocked_idx(ax: int, ay: int, diag_idx: int) -> bool:
+	var gcols := grid_cols
+	var ci := ay * gcols + ax
+	var h_dir: int = DIAG_H_DIR[diag_idx]
+	var v_dir: int = DIAG_V_DIR[diag_idx]
+	var hi: int = ay * gcols + (ax + int(DIR_DX[h_dir]))
+	var vi: int = (ay + int(DIR_DY[v_dir])) * gcols + ax
+	var path_h_open := (not _is_edge_solid_wall_idx(ci, h_dir)) and (not _is_edge_solid_wall_idx(hi, v_dir))
+	if path_h_open:
+		return false
+	var path_v_open := (not _is_edge_solid_wall_idx(ci, v_dir)) and (not _is_edge_solid_wall_idx(vi, h_dir))
+	return not path_v_open
+
+## 8방향(동일 칸 + 상하좌우 4방향 + 대각 4방향) 백병전 공격 가능 여부 판정
+func can_melee_attack_tile(a: Vector2i, b: Vector2i) -> bool:
+	if not is_valid_tile(a) or not is_valid_tile(b):
+		return false
+	var dx := b.x - a.x
+	var dy := b.y - a.y
+	var adx := absi(dx)
+	var ady := absi(dy)
+	if adx == 0 and ady == 0:
+		return true
+	_ensure_edge_table()
+	if adx + ady == 1:
+		return not _is_edge_blocking_melee_idx(a.y * grid_cols + a.x, _edge_dir_index(a, b))
+	if adx == 1 and ady == 1:
+		for dg in 4:
+			if DIAG_DX[dg] == dx and DIAG_DY[dg] == dy:
+				return not _is_diagonal_melee_blocked_idx(a.x, a.y, dg)
+	return false
 
 func is_edge_gas_sealed(a: Vector2i, b: Vector2i) -> bool:
 	_ensure_edge_table()
@@ -2061,7 +2125,7 @@ func _step_gas_diffusion(dt: float) -> void:
 		for ev in erase_list:
 			cell_gas.erase(ev)
 
-## O(1) 공간 테이블 기반 백병전 교전 상대 탐색 (최대 5칸 배열 조회, 기존 O(N) 스캔 제거!)
+## O(1) 공간 테이블 기반 8방향 백병전 교전 상대 탐색 (동일 칸 -> 상하좌우 4방향 -> 대각 4방향, 총 9칸 배열 조회!)
 func _find_engageable_opponent_fast(u_cell: Vector2i, my_is_def: bool) -> Dictionary:
 	var gcols := grid_cols
 	var grows := grid_rows
@@ -2083,10 +2147,23 @@ func _find_engageable_opponent_fast(u_cell: Vector2i, my_is_def: bool) -> Dictio
 		var cand: Dictionary = units[nidx]
 		if float(cand.hp) > 0.0:
 			return cand
+	for dg in 4:
+		var dnx: int = u_cell.x + DIAG_DX[dg]
+		var dny: int = u_cell.y + DIAG_DY[dg]
+		if dnx < 0 or dnx >= gcols or dny < 0 or dny >= grows:
+			continue
+		var dnidx := opp_arr[dny * gcols + dnx]
+		if dnidx < 0:
+			continue
+		if _is_diagonal_melee_blocked_idx(u_cell.x, u_cell.y, dg):
+			continue
+		var dcand: Dictionary = units[dnidx]
+		if float(dcand.hp) > 0.0:
+			return dcand
 	return {}
 
-## 단일 패스 조기 종료(Single-Pass Early-Exit) 교전 위치+경로 동시 산출!
-## 기존: 적 20명 × 5방향 = 최대 100회 Dijkstra 호출 -> 개선: 단 1회 평탄화 BFS/Dijkstra로 최소비용 칸+경로 즉시 반환!
+## 단일 패스 조기 종료(Single-Pass Early-Exit) 8방향 교전 위치+경로 동시 산출!
+## 기존: 적 20명 × 5방향 = 최대 100회 Dijkstra 호출 -> 개선: 단 1회 평탄화 BFS/Dijkstra로 8방향 최소비용 칸+경로 즉시 반환!
 func _pick_combat_tile_and_path(u: Dictionary, opponents: Array[Dictionary], min_col: int = 0, max_col: int = -1) -> Dictionary:
 	if max_col < 0:
 		max_col = grid_cols - 1
@@ -2127,14 +2204,35 @@ func _pick_combat_tile_and_path(u: Dictionary, opponents: Array[Dictionary], min
 				if _is_edge_blocking_melee_idx(ci, opp_d):
 					continue
 			else:
-				var bh_v: Variant = _edge_barrier[ci * 4 + opp_d]
-				if bh_v != null and float((bh_v as Dictionary).hp) > 0.0 and str((bh_v as Dictionary).kind) == "wall":
+				if _is_edge_solid_wall_idx(ci, opp_d):
 					continue
 			if _is_idx_claimed_by_team(ci, is_def, uid):
 				continue
 			if ci == start_i:
 				return {"cell": start_c, "path": [] as Array[Vector2i]}
 			_cand_mask[ci] = 1
+			any_cand = true
+		# 5..8) 적 대각 4방향 인접 칸 (8방향 근접 포위·교전!)
+		for dg in 4:
+			var dcx: int = oc.x + DIAG_DX[dg]
+			var dcy: int = oc.y + DIAG_DY[dg]
+			if dcx < min_col or dcx > max_col or dcy < 0 or dcy >= grows:
+				continue
+			var dci := dcy * gcols + dcx
+			if _cand_mask[dci] != 0:
+				continue
+			var opp_dg: int = DIAG_OPP[dg]
+			if is_def:
+				if _is_diagonal_melee_blocked_idx(dcx, dcy, opp_dg):
+					continue
+			else:
+				if _is_diagonal_wall_blocked_idx(dcx, dcy, opp_dg):
+					continue
+			if _is_idx_claimed_by_team(dci, is_def, uid):
+				continue
+			if dci == start_i:
+				return {"cell": start_c, "path": [] as Array[Vector2i]}
+			_cand_mask[dci] = 1
 			any_cand = true
 
 	if not any_cand:
@@ -2483,9 +2581,11 @@ func step_combat(dt: float) -> void:
 					u.goal_cell = ucell
 					_claim_shift(old_gd, ucell, false, uid)
 					var d_gpos := unit_grid_pos(eng_d)
+					var d_cell: Vector2i = eng_d.cell
+					var diag_mult := DIAG_MELEE_MULT if (absi(d_cell.x - ucell.x) == 1 and absi(d_cell.y - ucell.y) == 1) else 1.0
 					u.facing = _cardinal_facing(d_gpos - gpos) if d_gpos.distance_to(gpos) > 0.05 else Vector2.RIGHT
 					u.state = "fight"
-					var raw_dps := 11.5 * float(u.combat_mult) * atk_scale
+					var raw_dps := 11.5 * float(u.combat_mult) * atk_scale * diag_mult
 					var eff_dps := raw_dps * def_armor_mult
 					var dmg := eff_dps * dt
 					eng_d.hp = maxf(0.0, float(eng_d.hp) - dmg)
@@ -2526,9 +2626,11 @@ func step_combat(dt: float) -> void:
 					u.goal_cell = ucell
 					_claim_shift(old_ga, ucell, true, uid)
 					var a_gpos := unit_grid_pos(eng_a)
+					var a_cell: Vector2i = eng_a.cell
+					var diag_mult_d := DIAG_MELEE_MULT if (absi(a_cell.x - ucell.x) == 1 and absi(a_cell.y - ucell.y) == 1) else 1.0
 					u.facing = _cardinal_facing(a_gpos - gpos) if a_gpos.distance_to(gpos) > 0.05 else Vector2.LEFT
 					u.state = "fight"
-					var def_dps := 11.5 * float(u.combat_mult) * mastery_mult
+					var def_dps := 11.5 * float(u.combat_mult) * mastery_mult * diag_mult_d
 					var ddmg := def_dps * dt
 					eng_a.hp = maxf(0.0, float(eng_a.hp) - ddmg)
 					total_def_dmg_dealt += ddmg

@@ -1346,6 +1346,49 @@ func _run() -> void:
 	cc_20.queue_free()
 	await process_frame
 
+	# 23. 8방향(상하좌우 + 대각 4방향) 근접 공격 및 격실벽/잠긴 방화문 대각선 차단 검증
+	var cc_8dir := (load("res://scenes/crew_combat_lab_mode.tscn") as PackedScene).instantiate() as CrewCombatLabMode
+	root.add_child(cc_8dir)
+	for _c8 in 2: await process_frame
+	cc_8dir.barriers.clear()
+	cc_8dir._custom_barriers_dirty = true
+	cc_8dir.door_locked = true
+	cc_8dir.medbay_powered = false
+	cc_8dir.bio_gas_active = false
+	cc_8dir.fire_active = false
+	cc_8dir.params["atk_count"] = 1.0
+	cc_8dir.params["def_count"] = 1.0
+	cc_8dir.params["def_armor_pct"] = 0.0
+	cc_8dir.set_matchup("mantis", "rock")
+	# 대각선 배치: 공격조 (3,0), 방어조 (4,1) — 개방 지형에서는 즉시 대각 공격으로 이동 없이 교전해야 함!
+	for u8 in cc_8dir.units:
+		var pos8 := Vector2i(4, 1) if bool(u8.is_defender) else Vector2i(3, 0)
+		u8.cell = pos8
+		u8.next_cell = pos8
+		u8.goal_cell = pos8
+		u8.anchor_cell = pos8
+		u8.path = [] as Array[Vector2i]
+		u8.move_t = 0.0
+	assert(cc_8dir.can_melee_attack_tile(Vector2i(3, 0), Vector2i(4, 1)), "Open diagonal (3,0)<->(4,1) must allow 8-dir melee attack")
+	for _d8 in 10:
+		cc_8dir.step_combat(0.05)
+	assert(cc_8dir.total_atk_dmg_dealt > 2.0 and cc_8dir.total_def_dmg_dealt > 2.0,
+		"Units positioned diagonally at (3,0) & (4,1) must immediately deal 8-dir melee damage (atk=%.1f def=%.1f)" % [cc_8dir.total_atk_dmg_dealt, cc_8dir.total_def_dmg_dealt])
+	for u8c in cc_8dir.units:
+		var exp_c := Vector2i(4, 1) if bool(u8c.is_defender) else Vector2i(3, 0)
+		assert(u8c.cell == exp_c, "Diagonal attackers must fight in-place without unnecessary stepping: got %s" % str(u8c.cell))
+	# 격실벽으로 (3,0):(4,0)과 (3,1):(4,1)을 모두 막으면 대각선 (3,0)<->(4,1) 공격은 차단되어야 함!
+	cc_8dir.install_barrier(Vector2i(3, 0), Vector2i(4, 0), "wall", 1, true)
+	cc_8dir.install_barrier(Vector2i(3, 1), Vector2i(4, 1), "wall", 1, true)
+	assert(not cc_8dir.can_melee_attack_tile(Vector2i(3, 0), Vector2i(4, 1)),
+		"Continuous Compartment Wall separating cols 3 and 4 must block diagonal melee (3,0)<->(4,1)")
+	# 반면 (3,1):(4,1) 벽을 제거해 코너 한쪽이 열리면 대각선 공격이 다시 허용되어야 함!
+	cc_8dir.remove_barrier(Vector2i(3, 1), Vector2i(4, 1))
+	assert(cc_8dir.can_melee_attack_tile(Vector2i(3, 0), Vector2i(4, 1)),
+		"Opening one corner edge (3,1)<->(4,1) must re-enable diagonal 8-dir melee attack")
+	cc_8dir.queue_free()
+	await process_frame
+
 	root.size = Vector2i(1280, 720)
 	root.content_scale_size = Vector2i(1280, 720)
 	ShipModel.clear_saved_blueprint()
