@@ -1,0 +1,2044 @@
+{
+  "version": 2,
+  "cell_px": 44,
+  "width": 2048,
+  "height": 2064,
+  "part_count": 96,
+  "sprite_count": 106,
+  "tile_count": 305,
+  "parts": {
+    "cosmoteer.chaingun": {
+      "cutaway": [
+        2,
+        2,
+        132,
+        264
+      ],
+      "roof": [
+        136,
+        2,
+        132,
+        264
+      ],
+      "turret": [
+        270,
+        2,
+        132,
+        264
+      ]
+    },
+    "cosmoteer.flak_cannon_large": {
+      "cutaway": [
+        404,
+        2,
+        132,
+        264
+      ],
+      "roof": [
+        538,
+        2,
+        132,
+        264
+      ],
+      "turret": [
+        672,
+        2,
+        132,
+        264
+      ]
+    },
+    "cosmoteer.shield_gen_large": {
+      "cutaway": [
+        806,
+        2,
+        132,
+        264
+      ],
+      "roof": [
+        940,
+        2,
+        132,
+        264
+      ]
+    },
+    "cosmoteer.tractor_beam_emitter": {
+      "cutaway": [
+        260,
+        268,
+        220,
+        220
+      ],
+      "roof": [
+        482,
+        268,
+        220,
+        220
+      ],
+      "turret": [
+        704,
+        268,
+        220,
+        220
+      ]
+    },
+    "cosmoteer.cannon_deck": {
+      "cutaway": [
+        926,
+        268,
+        176,
+        220
+      ],
+      "roof": [
+        1104,
+        268,
+        176,
+        220
+      ],
+      "turret": [
+        1282,
+        268,
+        176,
+        220
+      ]
+    },
+    "cosmoteer.thruster_rocket_nozzle": {
+      "cutaway": [
+        1460,
+        268,
+        132,
+        220
+      ],
+      "roof": [
+        1594,
+        268,
+        132,
+        220
+      ]
+    },
+    "cosmoteer.ion_beam_emitter": {
+      "cutaway": [
+        1728,
+        268,
+        88,
+        220
+      ],
+      "roof": [
+        1818,
+        268,
+        88,
+        220
+      ]
+    },
+    "cosmoteer.laser_blaster_large": {
+      "cutaway": [
+        1908,
+        268,
+        88,
+        220
+      ],
+      "roof": [
+        2,
+        526,
+        88,
+        220
+      ],
+      "turret": [
+        92,
+        526,
+        88,
+        220
+      ]
+    },
+    "cosmoteer.thruster_boost": {
+      "cutaway": [
+        182,
+        526,
+        88,
+        220
+      ],
+      "roof": [
+        272,
+        526,
+        88,
+        220
+      ]
+    },
+    "cosmoteer.control_room_large": {
+      "cutaway": [
+        362,
+        526,
+        176,
+        176
+      ],
+      "roof": [
+        540,
+        526,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.factory_nuke": {
+      "cutaway": [
+        718,
+        526,
+        176,
+        176
+      ],
+      "roof": [
+        896,
+        526,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.factory_steel": {
+      "cutaway": [
+        1074,
+        526,
+        176,
+        176
+      ],
+      "roof": [
+        1252,
+        526,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.factory_tristeel": {
+      "cutaway": [
+        1430,
+        526,
+        176,
+        176
+      ],
+      "roof": [
+        1608,
+        526,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.hyperdrive_beacon": {
+      "cutaway": [
+        1786,
+        526,
+        176,
+        176
+      ],
+      "roof": [
+        2,
+        748,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.hyperdrive_large": {
+      "cutaway": [
+        180,
+        748,
+        176,
+        176
+      ],
+      "roof": [
+        358,
+        748,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.reactor_large": {
+      "cutaway": [
+        536,
+        748,
+        176,
+        176
+      ],
+      "roof": [
+        714,
+        748,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.resonance_beam_turret": {
+      "cutaway": [
+        892,
+        748,
+        176,
+        176
+      ],
+      "roof": [
+        1070,
+        748,
+        176,
+        176
+      ],
+      "turret": [
+        1248,
+        748,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.storage_4x4": {
+      "cutaway": [
+        1426,
+        748,
+        176,
+        176
+      ],
+      "roof": [
+        1604,
+        748,
+        176,
+        176
+      ]
+    },
+    "cosmoteer.crew_quarters_large": {
+      "cutaway": [
+        1782,
+        748,
+        132,
+        176
+      ],
+      "roof": [
+        2,
+        926,
+        132,
+        176
+      ]
+    },
+    "cosmoteer.factory_emp": {
+      "cutaway": [
+        136,
+        926,
+        132,
+        176
+      ],
+      "roof": [
+        270,
+        926,
+        132,
+        176
+      ]
+    },
+    "cosmoteer.factory_uranium": {
+      "cutaway": [
+        404,
+        926,
+        132,
+        176
+      ],
+      "roof": [
+        538,
+        926,
+        132,
+        176
+      ]
+    },
+    "cosmoteer.thruster_huge": {
+      "cutaway": [
+        672,
+        926,
+        132,
+        176
+      ],
+      "roof": [
+        806,
+        926,
+        132,
+        176
+      ]
+    },
+    "cosmoteer.missile_launcher": {
+      "cutaway": [
+        940,
+        926,
+        88,
+        176
+      ],
+      "roof": [
+        1030,
+        926,
+        88,
+        176
+      ]
+    },
+    "cosmoteer.railgun_launcher": {
+      "cutaway": [
+        1120,
+        926,
+        88,
+        176
+      ],
+      "roof": [
+        1210,
+        926,
+        88,
+        176
+      ]
+    },
+    "cosmoteer.disruptor": {
+      "cutaway": [
+        1300,
+        926,
+        44,
+        176
+      ],
+      "roof": [
+        1346,
+        926,
+        44,
+        176
+      ],
+      "turret": [
+        1392,
+        926,
+        44,
+        176
+      ]
+    },
+    "cosmoteer.radiator": {
+      "cutaway": [
+        1438,
+        926,
+        44,
+        176
+      ],
+      "roof": [
+        1484,
+        926,
+        44,
+        176
+      ]
+    },
+    "cosmoteer.factory_coil2": {
+      "cutaway": [
+        1530,
+        926,
+        176,
+        132
+      ],
+      "roof": [
+        1708,
+        926,
+        176,
+        132
+      ]
+    },
+    "cosmoteer.factory_mine": {
+      "cutaway": [
+        2,
+        1104,
+        176,
+        132
+      ],
+      "roof": [
+        180,
+        1104,
+        176,
+        132
+      ]
+    },
+    "cosmoteer.storage_4x3": {
+      "cutaway": [
+        358,
+        1104,
+        176,
+        132
+      ],
+      "roof": [
+        536,
+        1104,
+        176,
+        132
+      ]
+    },
+    "cosmoteer.cannon_large": {
+      "cutaway": [
+        714,
+        1104,
+        132,
+        132
+      ],
+      "roof": [
+        848,
+        1104,
+        132,
+        132
+      ],
+      "turret": [
+        982,
+        1104,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.control_room_med": {
+      "cutaway": [
+        1116,
+        1104,
+        132,
+        132
+      ],
+      "roof": [
+        1250,
+        1104,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.engine_room": {
+      "cutaway": [
+        1384,
+        1104,
+        132,
+        132
+      ],
+      "roof": [
+        1518,
+        1104,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.factory_coil": {
+      "cutaway": [
+        1652,
+        1104,
+        132,
+        132
+      ],
+      "roof": [
+        1786,
+        1104,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.factory_he": {
+      "cutaway": [
+        2,
+        1238,
+        132,
+        132
+      ],
+      "roof": [
+        136,
+        1238,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.factory_processor": {
+      "cutaway": [
+        270,
+        1238,
+        132,
+        132
+      ],
+      "roof": [
+        404,
+        1238,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.factory_thermal": {
+      "cutaway": [
+        538,
+        1238,
+        132,
+        132
+      ],
+      "roof": [
+        672,
+        1238,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.hyperdrive_med": {
+      "cutaway": [
+        806,
+        1238,
+        132,
+        132
+      ],
+      "roof": [
+        940,
+        1238,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.reactor_med": {
+      "cutaway": [
+        1074,
+        1238,
+        132,
+        132
+      ],
+      "roof": [
+        1208,
+        1238,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.sensor_array": {
+      "cutaway": [
+        1342,
+        1238,
+        132,
+        132
+      ],
+      "roof": [
+        1476,
+        1238,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.storage_3x3": {
+      "cutaway": [
+        1610,
+        1238,
+        132,
+        132
+      ],
+      "roof": [
+        1744,
+        1238,
+        132,
+        132
+      ]
+    },
+    "cosmoteer.factory_diamond": {
+      "cutaway": [
+        1878,
+        1238,
+        88,
+        132
+      ],
+      "roof": [
+        2,
+        1372,
+        88,
+        132
+      ]
+    },
+    "cosmoteer.mining_laser_small": {
+      "cutaway": [
+        92,
+        1372,
+        88,
+        132
+      ],
+      "roof": [
+        182,
+        1372,
+        88,
+        132
+      ],
+      "turret": [
+        272,
+        1372,
+        88,
+        132
+      ]
+    },
+    "cosmoteer.railgun_accelerator": {
+      "cutaway": [
+        362,
+        1372,
+        88,
+        132
+      ],
+      "roof": [
+        452,
+        1372,
+        88,
+        132
+      ]
+    },
+    "cosmoteer.railgun_loader": {
+      "cutaway": [
+        542,
+        1372,
+        88,
+        132
+      ],
+      "roof": [
+        632,
+        1372,
+        88,
+        132
+      ]
+    },
+    "cosmoteer.shield_gen_small": {
+      "cutaway": [
+        722,
+        1372,
+        88,
+        132
+      ],
+      "roof": [
+        812,
+        1372,
+        88,
+        132
+      ]
+    },
+    "cosmoteer.thruster_large": {
+      "cutaway": [
+        902,
+        1372,
+        88,
+        132
+      ],
+      "roof": [
+        992,
+        1372,
+        88,
+        132
+      ]
+    },
+    "cosmoteer.armor_1x3_wedge": {
+      "cutaway": [
+        1082,
+        1372,
+        44,
+        132
+      ],
+      "roof": [
+        1128,
+        1372,
+        44,
+        132
+      ]
+    },
+    "cosmoteer.armor_structure_hybrid_1x3": {
+      "cutaway": [
+        1174,
+        1372,
+        44,
+        132
+      ]
+    },
+    "cosmoteer.laser_blaster_small": {
+      "cutaway": [
+        1220,
+        1372,
+        44,
+        132
+      ],
+      "roof": [
+        1266,
+        1372,
+        44,
+        132
+      ],
+      "turret": [
+        1312,
+        1372,
+        44,
+        132
+      ]
+    },
+    "cosmoteer.structure_1x3_wedge": {
+      "cutaway": [
+        1358,
+        1372,
+        44,
+        132
+      ],
+      "roof": [
+        1404,
+        1372,
+        44,
+        132
+      ]
+    },
+    "cosmoteer.thermal_amplification_pump": {
+      "cutaway": [
+        1450,
+        1372,
+        44,
+        132
+      ],
+      "roof": [
+        1496,
+        1372,
+        44,
+        132
+      ]
+    },
+    "cosmoteer.thruster_med": {
+      "cutaway": [
+        1542,
+        1372,
+        44,
+        132
+      ],
+      "roof": [
+        1588,
+        1372,
+        44,
+        132
+      ]
+    },
+    "cosmoteer.storage_3x2": {
+      "cutaway": [
+        1472,
+        1636,
+        132,
+        88
+      ],
+      "roof": [
+        1606,
+        1636,
+        132,
+        88
+      ]
+    },
+    "cosmoteer.thruster_rocket_extender": {
+      "cutaway": [
+        1740,
+        1636,
+        132,
+        88
+      ],
+      "roof": [
+        1874,
+        1636,
+        132,
+        88
+      ]
+    },
+    "cosmoteer.thruster_small_3way": {
+      "cutaway": [
+        2,
+        1734,
+        132,
+        88
+      ],
+      "roof": [
+        136,
+        1734,
+        132,
+        88
+      ]
+    },
+    "cosmoteer.cannon_med": {
+      "cutaway": [
+        270,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        360,
+        1734,
+        88,
+        88
+      ],
+      "turret": [
+        450,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.control_room_small": {
+      "cutaway": [
+        540,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        630,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.crew_quarters_med": {
+      "cutaway": [
+        720,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        810,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.factory_ammo": {
+      "cutaway": [
+        900,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        990,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.hyperdrive_small": {
+      "cutaway": [
+        1080,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        1170,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.ion_beam_prism": {
+      "cutaway": [
+        1260,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        1350,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.manipulator_beam_emitter": {
+      "cutaway": [
+        1440,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        1530,
+        1734,
+        88,
+        88
+      ],
+      "turret": [
+        1620,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.power_storage": {
+      "cutaway": [
+        1710,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        1800,
+        1734,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.reactor_small": {
+      "cutaway": [
+        1890,
+        1734,
+        88,
+        88
+      ],
+      "roof": [
+        2,
+        1824,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.storage_2x2": {
+      "cutaway": [
+        92,
+        1824,
+        88,
+        88
+      ],
+      "roof": [
+        182,
+        1824,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.thermal_battery": {
+      "cutaway": [
+        272,
+        1824,
+        88,
+        88
+      ],
+      "roof": [
+        362,
+        1824,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.thermal_dilation_pump": {
+      "cutaway": [
+        452,
+        1824,
+        88,
+        88
+      ],
+      "roof": [
+        542,
+        1824,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.thruster_small_2way": {
+      "cutaway": [
+        632,
+        1824,
+        88,
+        88
+      ],
+      "roof": [
+        722,
+        1824,
+        88,
+        88
+      ]
+    },
+    "cosmoteer.armor_1x2_wedge": {
+      "cutaway": [
+        812,
+        1824,
+        44,
+        88
+      ],
+      "roof": [
+        858,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.armor_structure_hybrid_1x2": {
+      "cutaway": [
+        904,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.chaingun_magazine": {
+      "cutaway": [
+        950,
+        1824,
+        44,
+        88
+      ],
+      "roof": [
+        996,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.crew_quarters_small": {
+      "cutaway": [
+        1042,
+        1824,
+        44,
+        88
+      ],
+      "roof": [
+        1088,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.point_defense": {
+      "cutaway": [
+        1134,
+        1824,
+        44,
+        88
+      ],
+      "roof": [
+        1180,
+        1824,
+        44,
+        88
+      ],
+      "turret": [
+        1226,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.structure_1x2_wedge": {
+      "cutaway": [
+        1272,
+        1824,
+        44,
+        88
+      ],
+      "roof": [
+        1318,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.thruster_rocket_battery": {
+      "cutaway": [
+        1364,
+        1824,
+        44,
+        88
+      ],
+      "roof": [
+        1410,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.thruster_small": {
+      "cutaway": [
+        1456,
+        1824,
+        44,
+        88
+      ],
+      "roof": [
+        1502,
+        1824,
+        44,
+        88
+      ]
+    },
+    "cosmoteer.armor_2x1": {
+      "cutaway": [
+        1628,
+        1914,
+        88,
+        44
+      ],
+      "roof": [
+        1718,
+        1914,
+        88,
+        44
+      ]
+    },
+    "cosmoteer.airlock": {
+      "cutaway": [
+        1808,
+        1914,
+        44,
+        44
+      ],
+      "roof": [
+        1854,
+        1914,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.armor_structure_hybrid_1x1": {
+      "cutaway": [
+        1900,
+        1914,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.armor_structure_hybrid_tri": {
+      "cutaway": [
+        1946,
+        1914,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.armor_tri": {
+      "cutaway": [
+        1992,
+        1914,
+        44,
+        44
+      ],
+      "roof": [
+        2,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.armor_wedge": {
+      "cutaway": [
+        48,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        94,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.armor": {
+      "cutaway": [
+        140,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        186,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.conveyor": {
+      "cutaway": [
+        232,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.corridor": {
+      "cutaway": [
+        278,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        324,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.explosive_charge": {
+      "cutaway": [
+        370,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        416,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.fire_extinguisher": {
+      "cutaway": [
+        462,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        508,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.heat_exchanger": {
+      "cutaway": [
+        554,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        600,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.heat_pipe_adaptive_structure": {
+      "cutaway": [
+        646,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.heat_pipe_adaptive": {
+      "cutaway": [
+        692,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        738,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.heat_pipe_crossing": {
+      "cutaway": [
+        784,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        830,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.roof_headlight": {
+      "cutaway": [
+        876,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        922,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.roof_light": {
+      "cutaway": [
+        968,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        1014,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.structure_tri": {
+      "cutaway": [
+        1060,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        1106,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.structure_wedge": {
+      "cutaway": [
+        1152,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        1198,
+        1980,
+        44,
+        44
+      ]
+    },
+    "cosmoteer.structure": {
+      "cutaway": [
+        1244,
+        1980,
+        44,
+        44
+      ],
+      "roof": [
+        1290,
+        1980,
+        44,
+        44
+      ]
+    }
+  },
+  "sprites": {
+    "cloud_1": [
+      1074,
+      2,
+      256,
+      256
+    ],
+    "cloud_2": [
+      1332,
+      2,
+      256,
+      256
+    ],
+    "cloud_3": [
+      1590,
+      2,
+      256,
+      256
+    ],
+    "cloud_4": [
+      2,
+      268,
+      256,
+      256
+    ],
+    "exp_big": [
+      1634,
+      1372,
+      128,
+      128
+    ],
+    "exp_big_0": [
+      1764,
+      1372,
+      128,
+      128
+    ],
+    "exp_big_1": [
+      1894,
+      1372,
+      128,
+      128
+    ],
+    "exp_big_2": [
+      2,
+      1506,
+      128,
+      128
+    ],
+    "exp_big_3": [
+      132,
+      1506,
+      128,
+      128
+    ],
+    "planet_alien": [
+      262,
+      1506,
+      128,
+      128
+    ],
+    "planet_gas": [
+      392,
+      1506,
+      128,
+      128
+    ],
+    "planet_gas_ringed": [
+      522,
+      1506,
+      128,
+      128
+    ],
+    "planet_lava": [
+      652,
+      1506,
+      128,
+      128
+    ],
+    "planet_mini_sun": [
+      782,
+      1506,
+      128,
+      128
+    ],
+    "planet_rocky": [
+      912,
+      1506,
+      128,
+      128
+    ],
+    "planet_sand": [
+      1042,
+      1506,
+      128,
+      128
+    ],
+    "planet_sun": [
+      1172,
+      1506,
+      128,
+      128
+    ],
+    "planet_terra": [
+      1302,
+      1506,
+      128,
+      128
+    ],
+    "planet_water": [
+      1432,
+      1506,
+      128,
+      128
+    ],
+    "reactor_shockwave": [
+      1562,
+      1506,
+      128,
+      128
+    ],
+    "exp_med": [
+      1692,
+      1506,
+      112,
+      112
+    ],
+    "ast_carbon": [
+      1806,
+      1506,
+      96,
+      96
+    ],
+    "ast_copper": [
+      1904,
+      1506,
+      96,
+      96
+    ],
+    "ast_diamond": [
+      2,
+      1636,
+      96,
+      96
+    ],
+    "ast_gold": [
+      100,
+      1636,
+      96,
+      96
+    ],
+    "ast_hyperium": [
+      198,
+      1636,
+      96,
+      96
+    ],
+    "ast_iron": [
+      296,
+      1636,
+      96,
+      96
+    ],
+    "ast_plain": [
+      394,
+      1636,
+      96,
+      96
+    ],
+    "ast_tristeel": [
+      492,
+      1636,
+      96,
+      96
+    ],
+    "ast_uranium": [
+      590,
+      1636,
+      96,
+      96
+    ],
+    "damage_cracks": [
+      688,
+      1636,
+      96,
+      96
+    ],
+    "exp_med_0": [
+      786,
+      1636,
+      96,
+      96
+    ],
+    "exp_med_1": [
+      884,
+      1636,
+      96,
+      96
+    ],
+    "exp_med_2": [
+      982,
+      1636,
+      96,
+      96
+    ],
+    "exp_med_3": [
+      1080,
+      1636,
+      96,
+      96
+    ],
+    "exp_small": [
+      1178,
+      1636,
+      96,
+      96
+    ],
+    "shield_energy": [
+      1276,
+      1636,
+      96,
+      96
+    ],
+    "shockwave": [
+      1374,
+      1636,
+      96,
+      96
+    ],
+    "shot_railgun": [
+      1548,
+      1824,
+      72,
+      72
+    ],
+    "shot_railgun_1": [
+      1622,
+      1824,
+      72,
+      72
+    ],
+    "fire_0": [
+      1696,
+      1824,
+      64,
+      64
+    ],
+    "fire_1": [
+      1762,
+      1824,
+      64,
+      64
+    ],
+    "fire_2": [
+      1828,
+      1824,
+      64,
+      64
+    ],
+    "fire_3": [
+      1894,
+      1824,
+      64,
+      64
+    ],
+    "shot_bullet_large": [
+      1960,
+      1824,
+      64,
+      64
+    ],
+    "shot_bullet_large_1": [
+      2,
+      1914,
+      64,
+      64
+    ],
+    "shot_laser_small": [
+      68,
+      1914,
+      64,
+      64
+    ],
+    "shot_laser_small_1": [
+      134,
+      1914,
+      64,
+      64
+    ],
+    "smoke": [
+      200,
+      1914,
+      64,
+      64
+    ],
+    "thruster_plume": [
+      266,
+      1914,
+      64,
+      64
+    ],
+    "shot_laser_large": [
+      332,
+      1914,
+      84,
+      56
+    ],
+    "shot_laser_large_1": [
+      418,
+      1914,
+      84,
+      56
+    ],
+    "exp_spark": [
+      504,
+      1914,
+      56,
+      56
+    ],
+    "shot_disruptor": [
+      562,
+      1914,
+      56,
+      56
+    ],
+    "spark": [
+      620,
+      1914,
+      56,
+      56
+    ],
+    "crew_carry": [
+      678,
+      1914,
+      48,
+      48
+    ],
+    "crew_carry_0": [
+      728,
+      1914,
+      48,
+      48
+    ],
+    "crew_carry_1": [
+      778,
+      1914,
+      48,
+      48
+    ],
+    "crew_carry_2": [
+      828,
+      1914,
+      48,
+      48
+    ],
+    "crew_idle": [
+      878,
+      1914,
+      48,
+      48
+    ],
+    "crew_operate": [
+      928,
+      1914,
+      48,
+      48
+    ],
+    "crew_operate_0": [
+      978,
+      1914,
+      48,
+      48
+    ],
+    "crew_operate_1": [
+      1028,
+      1914,
+      48,
+      48
+    ],
+    "crew_walk": [
+      1078,
+      1914,
+      48,
+      48
+    ],
+    "crew_walk_0": [
+      1128,
+      1914,
+      48,
+      48
+    ],
+    "crew_walk_1": [
+      1178,
+      1914,
+      48,
+      48
+    ],
+    "crew_walk_2": [
+      1228,
+      1914,
+      48,
+      48
+    ],
+    "debris": [
+      1278,
+      1914,
+      48,
+      48
+    ],
+    "debris_0": [
+      1328,
+      1914,
+      48,
+      48
+    ],
+    "debris_1": [
+      1378,
+      1914,
+      48,
+      48
+    ],
+    "debris_2": [
+      1428,
+      1914,
+      48,
+      48
+    ],
+    "debris_3": [
+      1478,
+      1914,
+      48,
+      48
+    ],
+    "shot_bullet_med": [
+      1528,
+      1914,
+      48,
+      48
+    ],
+    "shot_mine": [
+      1578,
+      1914,
+      48,
+      48
+    ],
+    "ion_hit": [
+      1336,
+      1980,
+      64,
+      43
+    ],
+    "shot_missile_nuke": [
+      1402,
+      1980,
+      78,
+      40
+    ],
+    "shot_missile_emp": [
+      1482,
+      1980,
+      72,
+      37
+    ],
+    "battery": [
+      1556,
+      1980,
+      36,
+      36
+    ],
+    "res_battery": [
+      1594,
+      1980,
+      36,
+      36
+    ],
+    "res_bullet": [
+      1632,
+      1980,
+      36,
+      36
+    ],
+    "res_carbon": [
+      1670,
+      1980,
+      36,
+      36
+    ],
+    "res_coil": [
+      1708,
+      1980,
+      36,
+      36
+    ],
+    "res_coil2": [
+      1746,
+      1980,
+      36,
+      36
+    ],
+    "res_copper": [
+      1784,
+      1980,
+      36,
+      36
+    ],
+    "res_diamond": [
+      1822,
+      1980,
+      36,
+      36
+    ],
+    "res_enriched_uranium": [
+      1860,
+      1980,
+      36,
+      36
+    ],
+    "res_gold": [
+      1898,
+      1980,
+      36,
+      36
+    ],
+    "res_hyperium": [
+      1936,
+      1980,
+      36,
+      36
+    ],
+    "res_iron": [
+      1974,
+      1980,
+      36,
+      36
+    ],
+    "res_mine_part": [
+      2,
+      2026,
+      36,
+      36
+    ],
+    "res_missile_part_emp": [
+      40,
+      2026,
+      36,
+      36
+    ],
+    "res_missile_part_he": [
+      78,
+      2026,
+      36,
+      36
+    ],
+    "res_missile_part_nuke": [
+      116,
+      2026,
+      36,
+      36
+    ],
+    "res_missile_part_thermal": [
+      154,
+      2026,
+      36,
+      36
+    ],
+    "res_processor": [
+      192,
+      2026,
+      36,
+      36
+    ],
+    "res_steel": [
+      230,
+      2026,
+      36,
+      36
+    ],
+    "res_sulfur": [
+      268,
+      2026,
+      36,
+      36
+    ],
+    "res_tristeel": [
+      306,
+      2026,
+      36,
+      36
+    ],
+    "res_tritanium": [
+      344,
+      2026,
+      36,
+      36
+    ],
+    "res_uranium": [
+      382,
+      2026,
+      36,
+      36
+    ],
+    "shot_chaingun": [
+      420,
+      2026,
+      64,
+      32
+    ],
+    "shot_missile_he": [
+      486,
+      2026,
+      64,
+      32
+    ],
+    "shot_missile_thermal": [
+      552,
+      2026,
+      64,
+      32
+    ],
+    "flame": [
+      618,
+      2026,
+      32,
+      32
+    ],
+    "star": [
+      652,
+      2026,
+      32,
+      32
+    ],
+    "shot_pd": [
+      686,
+      2026,
+      64,
+      4
+    ]
+  },
+  "format": "webp",
+  "webp_quality": 90,
+  "webp_bytes": 1252066,
+  "webp_sha256": "61a7afa4a43823fbfaaf698bea38192500c78ea9f3149f1d2859cbeaad580600",
+  "chunks": [
+    "web_atlas_00.txt",
+    "web_atlas_01.txt",
+    "web_atlas_02.txt"
+  ]
+}

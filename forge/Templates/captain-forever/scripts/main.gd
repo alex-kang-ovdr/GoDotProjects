@@ -17,6 +17,9 @@ const ShipDestructionEffectScript = preload("res://scripts/ship_destruction_effe
 const TrackingOrderScript = preload("res://scripts/target_tracking_order.gd")
 const TrackingVisual = preload("res://scripts/target_tracking_visual.gd")
 const CombatFxScript = preload("res://scripts/combat_fx.gd")
+const SonarPulseScript = preload("res://scripts/sonar_pulse.gd")
+const SonarResultPopupScript = preload("res://scripts/sonar_result_popup.gd")
+const ModeSwitcherScript = preload("res://scripts/mode_switcher.gd")
 
 var player: ShipBody
 var camera: Camera2D
@@ -41,8 +44,9 @@ var target_marker := Vector2.ZERO
 var selected_target: EnemyShip
 var navigation_target := Vector2.ZERO
 var navigation_active := false
+var nav_fail_banner_timer := 0.0
 var tracking_order = TrackingOrderScript.new()
-var message := "WASD: 추력/회전 · Q/E: 횡추진 · SPACE: 주무기 · F: 미사일 · C: 빠른장착 · B: 부스트 · 적 드래그: 궤도추적"
+var message := "WASD: 추력/회전 · Q/E: 횡추진 · SPACE: 주무기 · F: 미사일 · G: 그래플 · V: 감기 · X: 소나 · B: 부스트 · 상단 바: 빌드 모드"
 var message_time := 8.0
 var world_layer: Node2D
 var combat_fx: CombatFxLayer
@@ -62,6 +66,12 @@ var upgrades := {"hull":0, "weapon":0, "cooling":0, "missile_guidance":0, "missi
 var tutorial_stage := "inactive"
 var narrative_events := {}
 var grapple
+var grapple_reel_toggle := false
+var active_sonar: SonarPulse
+var sonar_popup: SonarResultPopup
+var mode_switcher: ModeSwitcher
+var cosmo_sfx: CosmoteerSfx
+var sonar_cooldown := 0.0
 var developer_mode_active := false
 var developer_overlay
 var player_destroyed := false
@@ -97,9 +107,9 @@ func _ready() -> void:
 	player = ShipBodyScript.new()
 	player.name = "PlayerShip"
 	player.position = Vector2.ZERO
-	player.rotation = -PI * 0.5
 	world_layer.add_child(player)
 	player.initialize_player()
+	player.rotation = -PI * 0.5 - player.forward_angle_offset()
 	combat_fx = CombatFxScript.new()
 	combat_fx.name = "CombatFx"
 	combat_fx.z_index = 20
@@ -116,20 +126,20 @@ func _ready() -> void:
 	canvas_layer.add_child(dialogue)
 	dialogue.choice_selected.connect(handle_dialogue_choice)
 	dialogue.dialogue_closed.connect(func(_id: String): sync_pause_state())
+	sonar_popup = SonarResultPopupScript.new()
+	add_child(sonar_popup)
+	cosmo_sfx = CosmoteerSfx.new()
+	add_child(cosmo_sfx)
+	mode_switcher = ModeSwitcherScript.new()
+	mode_switcher.setup("main")
+	add_child(mode_switcher)
 	hud.announce(message)
 	camera = Camera2D.new()
 	camera.ignore_rotation = false
 	camera.position_smoothing_enabled = true
 	camera.position_smoothing_speed = 8.0
-	camera.zoom = Vector2(1.0, 1.0)
+	camera.zoom = Vector2.ONE * clampf(290.0 / maxf(player.hull_bound_radius, 140.0), 0.34, 1.0)
 	world_layer.add_child(camera)
-	spawn_salvage("beam3", Vector2(240, -110))
-	spawn_salvage("wedge", Vector2(180, 145))
-	spawn_salvage("missile_launcher", Vector2(295, 165))
-	spawn_salvage("ammo_bay", Vector2(-220, 95))
-	spawn_salvage("shield_generator", Vector2(-260, -150))
-	spawn_salvage("railgun", Vector2(780, -240))
-	spawn_salvage("bullet_bay", Vector2(820, -180))
 	spawn_asteroid_field()
 	spawn_stations()
 	narrative_events["first_hostile"] = true
@@ -163,10 +173,24 @@ func _exit_tree() -> void:
 	get_tree().paused = false
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and tracking_order.dragging:
-		cancel_target_tracking()
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		_pinch_touches.clear()
+		_pinch_active = false
+		_pinch_prev_dist = 0.0
+		touch_index = -1
+		if tracking_order.dragging:
+			cancel_target_tracking()
 
 func _input(event: InputEvent) -> void:
+	# 터치 릴리스/취소는 UI나 추적이 소비하더라도 핀치·터치 상태를 항상 정리한다.
+	if event is InputEventScreenTouch and (not event.pressed or event.canceled):
+		_pinch_touches.erase(event.index)
+		if _pinch_touches.size() < 2:
+			_pinch_prev_dist = 0.0
+		if _pinch_touches.is_empty():
+			_pinch_active = false
+		if event.index == touch_index and not tracking_order.dragging:
+			touch_index = -1
 	# GUI가 릴리스를 소비해도 월드에서 시작한 제스처는 항상 종료한다.
 	if tracking_order.dragging:
 		if event is InputEventMouse and event.device == -1: return
@@ -183,7 +207,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		var mouse_release: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed
-		var touch_release: bool = event is InputEventScreenTouch and event.index == touch_index and not event.pressed
+		var touch_release: bool = event is InputEventScreenTouch and event.index == touch_index and (not event.pressed or event.canceled)
 		if mouse_release or touch_release:
 			if left_dragged: update_tracking_drag(viewport_to_world(event.position))
 			finish_tracking_drag()
@@ -209,6 +233,12 @@ func _input(event: InputEvent) -> void:
 		elif event.keycode == KEY_H:
 			handle_utility("help")
 			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_X:
+			handle_utility("sonar")
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_T:
+			handle_utility("repair")
+			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_Q and held_part != null:
 			held_part.quarter_turn = posmod(held_part.quarter_turn + 1, 4)
 			get_viewport().set_input_as_handled()
@@ -231,8 +261,36 @@ func handle_utility(action: String) -> void:
 			queue_dialogue({"id":"controls", "speaker":"PILOT MANUAL", "icon":"KEYS", "title":"코스모티어 6-DOF 조종 · 전술 · 물리", "body":"W/S 전후진 · A/D 회전 · Q/E 횡추진(스트레이프) · 손을 떼면 자동 역추진 제동. 방어막 생성기는 바라보는 방향으로 136° 아크만 방호하므로 적의 후방 엔진부를 우회 타격할 수 있습니다. 추진기 배기구 앞이나 노즐이 선체에 막히는 방향은 배기 간섭으로 설치가 불가하며, 레일건은 경장갑을 관통하고 탄약고·배터리 파괴 시 내부 유폭이 발생합니다. 적 드래그로 궤도·사선 고정 추적(함선 고스트 미리보기). 부품 회수 중 Q 회전 / 정거장 인접 시 E 도킹 수리.", "choices":[]})
 		"station":
 			if not gameplay_blocked() and not player_destroyed: use_station()
+		"repair":
+			if not gameplay_blocked() and not player_destroyed:
+				player.repair_all()
+				if camera != null and player.hull_bound_radius > 190.0:
+					set_zoom_level(clampf(290.0 / player.hull_bound_radius, 0.34, 1.0), false)
+				announce("REPAIR COMPLETE · 빌드모드 도안으로 함선 복구 완료 (%d파트)" % player.model.parts.size())
+		"power_grid":
+			if player != null:
+				player.show_power_overlay = not player.show_power_overlay
+				player.queue_redraw()
+				if player.interior != null:
+					announce("ONI 전력망 %s · 발전 %.0fW / 소비 %.0fW · 배터리 %.0fJ" % [
+						"표시 ON" if player.show_power_overlay else "표시 OFF",
+						player.interior.power_produced_w, player.interior.power_consumed_w, player.interior.total_battery_j
+					])
+		"interior_mode":
+			get_tree().paused = false
+			get_tree().change_scene_to_file("res://scenes/interior_command_mode.tscn")
+		"ftl_subtarget":
+			if player != null and player.interior != null:
+				var order := ["core", "weapons", "shields", "flight"]
+				var labels := {"core": "코어 (중추)", "weapons": "무장 구획", "shields": "방어막 구획", "flight": "추진 구획"}
+				var cur_i := order.find(player.interior.enemy_target_subsystem)
+				var nxt_sub: String = order[(cur_i + 1) % order.size()]
+				player.interior.enemy_target_subsystem = nxt_sub
+				announce("FTL 정밀 조준 전환 · 적함 [%s] 집중 타격" % str(labels.get(nxt_sub, nxt_sub)))
 		"quick_attach":
 			if not gameplay_blocked() and not player_destroyed: quick_attach_module()
+		"sonar":
+			if not gameplay_blocked() and not player_destroyed: trigger_sonar_pulse()
 		"rotate_part":
 			if held_part != null and not gameplay_blocked(): held_part.quarter_turn = posmod(held_part.quarter_turn + 1, 4)
 		"cancel_part":
@@ -303,12 +361,9 @@ func _on_developer_mode_selected(mode: String) -> void:
 		developer_overlay = null
 	sync_pause_state()
 
-func spawn_salvage(kind: String, at: Vector2, narrative_tag: String = "") -> void:
-	var salvage = NeutralPartScript.new()
-	salvage.name = "Salvage_%s" % kind
-	salvage.position = at
-	world_layer.add_child(salvage)
-	salvage.setup(player.model.make_part(kind, Vector2i.ZERO), Vector2.ZERO, 0.0, narrative_tag)
+func spawn_salvage(_kind: String, _at: Vector2, _narrative_tag: String = "") -> void:
+	# 전투 중 떠다니는 아이템(잔해) 생성 비활성화
+	return
 
 func spawn_enemy(level: int, boss_name: String = "", forced_archetype: String = "") -> void:
 	var enemy = EnemyShipScript.new()
@@ -433,8 +488,12 @@ func _physics_process(delta: float) -> void:
 		streak_timer = maxf(0.0, streak_timer - delta)
 		if streak_timer <= 0.0:
 			kill_streak = 0
+	if nav_fail_banner_timer > 0.0:
+		nav_fail_banner_timer = maxf(0.0, nav_fail_banner_timer - delta)
 	if overdrive_timer > 0.0:
 		overdrive_timer = maxf(0.0, overdrive_timer - delta)
+	if sonar_cooldown > 0.0:
+		sonar_cooldown = maxf(0.0, sonar_cooldown - delta)
 		overdrive_charge = maxf(0.0, overdrive_charge - delta * 22.0)
 		if overdrive_timer <= 0.0 or overdrive_charge <= 0.5:
 			overdrive_timer = 0.0
@@ -463,7 +522,7 @@ func _physics_process(delta: float) -> void:
 	elif tracking_order.active:
 		apply_target_tracking()
 	elif navigation_active:
-		apply_auto_navigation()
+		apply_auto_navigation(delta)
 	else:
 		player.apply_player_thrusters(0.0, 0.0, 0.0, 0.0)
 	if Input.is_action_pressed("fire_primary") or hud.primary_held:
@@ -551,17 +610,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMagnifyGesture:
 		set_zoom_level(camera.zoom.x * float(event.factor), false)
 	elif event is InputEventScreenTouch:
-		if event.pressed:
+		if event.pressed and not event.canceled:
 			_pinch_touches[event.index] = event.position
 			if _pinch_touches.size() >= 2:
 				_pinch_active = true
 				touch_index = -1
 				left_dragged = false
+				if tracking_order.dragging:
+					cancel_target_tracking()
 				var pts := _pinch_touches.values()
 				_pinch_prev_dist = (pts[0] as Vector2).distance_to(pts[1] as Vector2)
 				return
-			if touch_index != -1 and touch_index != event.index:
-				return
+			_pinch_active = false
+			if touch_index != -1 and not _pinch_touches.has(touch_index):
+				touch_index = -1
 			var world_point := viewport_to_world(event.position)
 			pointer_world = world_point
 			touch_index = event.index
@@ -605,93 +667,18 @@ func viewport_to_world(viewport_point: Vector2) -> Vector2:
 	return get_viewport().get_canvas_transform().affine_inverse() * viewport_point
 
 func begin_left_action(world_point: Vector2) -> void:
-	if held_part != null:
-		return
-	if Input.is_key_pressed(KEY_SHIFT):
-		var part := player.model.part_at(player.local_cell_at(world_point))
-		if part != null and part.kind != "core":
-			held_original_cell = part.cell
-			held_original_turn = part.quarter_turn
-			held_from_ship = true
-			held_part = player.model.remove(part.uid)
-			for detached in player.model.detach_disconnected():
-				spawn_salvage_data(detached, player.to_global(Vector2(detached.cell) * BalanceData.CELL), "", player.linear_velocity, 0.0, PhysicsData.DEBRIS_COLLISION_GRACE_SECONDS, player.rotation)
-			refresh_player_assembly()
-			announce("장착 부품 이동: 빈 연결 소켓에 놓으세요.")
-		return
-	var enemy := nearest_enemy_at(world_point, 0.0)
+	# 전투 중 빌드·아이템 회수 비활성화: 적 드래그 각도/거리 유지 또는 빈 공간 터치 이동만 수행
+	var pick_pad := 34.0 if touch_index != -1 else 12.0
+	var enemy := nearest_enemy_at(world_point, pick_pad)
 	if enemy != null:
 		select_target(enemy)
 		navigation_active = false
 		tracking_order.begin(enemy, player.global_position, player.hull_bound_radius + PhysicsData.TRACKING_CLEARANCE)
 		return
-	var closest: NeutralPart = null
-	var closest_distance_squared := float(BalanceData.PLAYER.pickup_click_radius) * float(BalanceData.PLAYER.pickup_click_radius)
-	for node in world_layer.get_children():
-		if node is NeutralPart and not node.is_queued_for_deletion():
-			var distance_squared: float = node.global_position.distance_squared_to(world_point)
-			if distance_squared < closest_distance_squared:
-				closest = node
-				closest_distance_squared = distance_squared
-	if closest != null:
-		var reach := float(BalanceData.PLAYER.salvage_range) + player.hull_bound_radius
-		if closest.global_position.distance_squared_to(player.global_position) > reach * reach:
-			announce("OUT OF REACH · 회수 범위 안으로 접근하세요.")
-			return
-		if closest.part.kind == "scrap":
-			closest.queue_free()
-			salvage_count += 1
-			announce("SCRAP RECOVERED · 장착 불가 잔해를 회수했습니다.")
-			return
-		held_part = closest.part
-		held_tag = closest.narrative_tag
-		held_from_ship = false
-		closest.queue_free()
-		announce("회수 완료: 다음 클릭 또는 드래그 릴리스로 유효 소켓에 장착합니다.")
-		if tutorial_stage == "salvage" and closest.narrative_tag == "tutorial_salvage":
-			tutorial_stage = "place"
-			queue_dialogue(NarrativeScript.entry("tutorial_place"))
-		return
 	set_navigation_destination(world_point)
 
-func end_left_action(world_point: Vector2) -> void:
-	if held_part == null:
-		return
-	# 같은 종류의 중립 탄약고는 웹 버전처럼 더 튼튼한 결과를 계속 들고 있게 병합한다.
-	if held_part.spec().get("ammo_type", "") != "":
-		for node in world_layer.get_children():
-			if node is NeutralPart and not node.is_queued_for_deletion() and node.part.kind == held_part.kind and node.global_position.distance_squared_to(world_point) < (BalanceData.CELL * 0.9) * (BalanceData.CELL * 0.9) and node.global_position.distance_squared_to(player.global_position) <= pow(float(BalanceData.PLAYER.salvage_range) + player.hull_bound_radius, 2):
-				var merged := player.model.merge_bays(held_part, node.part)
-				if merged != null:
-					node.queue_free()
-					held_part = merged
-					announce("AMMO STORAGE MERGED · %d/%d · 계속 장착할 수 있습니다." % [merged.ammo, merged.capacity])
-					return
-	var cell := player.local_cell_at(world_point)
-	if player.model.attach(held_part, cell):
-		var attached_tutorial_part := held_tag == "tutorial_salvage"
-		var attached_quest_tag := held_tag
-		refresh_player_assembly()
-		announce("장착 완료: 질량 %.1f / 방어막 %d층" % [player.model.total_mass(), player.model.shield_capacity()])
-		salvage_count += 1 if not held_from_ship else 0
-		if tutorial_stage == "place" and attached_tutorial_part:
-			tutorial_stage = "complete"
-			queue_dialogue(NarrativeScript.entry("tutorial_complete"))
-		if attached_quest_tag.begins_with("npc_quest_"):
-			var quest_npc_id: int = int(narrative_events.get(attached_quest_tag, 0))
-			var quest_npc = instance_from_id(quest_npc_id)
-			narrative_events.erase(attached_quest_tag)
-			queue_dialogue(NarrativeScript.npc_quest_complete(quest_npc.enemy_name if quest_npc is EnemyShip and is_instance_valid(quest_npc) else "SALVAGE LINK"))
-			announce("NPC 회수 의뢰 완료 · 항로 신뢰도 갱신")
-		held_part = null
-		held_tag = ""
-		return
-	if player.model.would_block_exhaust(held_part, cell):
-		if combat_fx != null:
-			combat_fx.spawn_popup(world_point + Vector2(0, -18), "설치불가 · 배기간섭!", Color("ff6b57"))
-		announce("설치 불가 · 추진기 배기 간섭 구역입니다! Q 회전 또는 다른 소켓을 선택하세요.")
-		return
-	announce("장착 불가 · 계속 들고 있습니다. Q 회전 / ESC 취소")
+func end_left_action(_world_point: Vector2) -> void:
+	return
 
 func refresh_player_assembly() -> void:
 	player.refresh_mass()
@@ -735,26 +722,51 @@ func select_target(enemy: EnemyShip) -> void:
 
 func weapon_aim_point() -> Vector2:
 	var target := selected_enemy()
-	return target.global_position if target != null else get_global_mouse_position()
+	if target == null:
+		return get_global_mouse_position()
+	if player != null and player.interior != null:
+		var sub := player.interior.enemy_target_subsystem
+		for ep in target.model.parts:
+			if ep.hp <= 0.0:
+				continue
+			if sub == "weapons" and (BalanceData.WEAPONS.has(ep.kind) or ep.kind == "missile_launcher"):
+				return target.to_global(target.module_local_center(ep))
+			if sub == "shields" and "shield" in ep.kind:
+				return target.to_global(target.module_local_center(ep))
+			if sub == "flight" and not str(ep.spec().get("actuator", "")).is_empty():
+				return target.to_global(target.module_local_center(ep))
+	return target.global_position
 
 func fire_primary_at(target: Vector2) -> void:
-	for shot in player.fire_primary_weapons(target):
+	var fired_sfx := ""
+	var shots := player.fire_primary_weapons(target)
+	var fx_budget := 8
+	var fx_stride := maxi(1, int(ceili(float(shots.size()) / float(fx_budget))))
+	for s_idx in shots.size():
+		var shot: Dictionary = shots[s_idx]
 		shot.damage += player.weapon_damage_bonus
 		spawn_projectile(shot)
-		if combat_fx != null:
+		if fired_sfx.is_empty():
+			fired_sfx = CosmoteerSfx.sfx_for_weapon_kind(str(shot.get("kind", "laser")))
+		if combat_fx != null and (s_idx % fx_stride == 0):
 			combat_fx.spawn_muzzle(shot.position, (shot.velocity as Vector2) - player.linear_velocity, shot.color, 1.0)
+	if not fired_sfx.is_empty() and cosmo_sfx != null:
+		cosmo_sfx.play(fired_sfx)
 
 func fire_missile_at(target: Vector2) -> void:
 	target_marker = target
+	var mspec := BalanceData.weapon_spec("missile")
 	var shot := player.fire_missile(target)
 	if shot.is_empty():
-		announce("MISSILE · 발사대 / 탄약 %d발 / 재사용 시간을 확인하세요." % int(BalanceData.WEAPONS.missile.ammo_cost))
+		announce("MISSILE · 발사대 / 탄약 %d발 / 재사용 시간을 확인하세요." % int(mspec.get("ammo_cost", 2)))
 		return
 	shot.target_ship = selected_enemy()
 	shot.damage += player.weapon_damage_bonus
 	shot.turn_speed = 2.5 + player.missile_guidance_bonus
 	shot.life *= player.missile_range_multiplier
 	spawn_projectile(shot)
+	if cosmo_sfx != null:
+		cosmo_sfx.play("shot_missile")
 	if combat_fx != null:
 		combat_fx.spawn_muzzle(shot.position, (shot.velocity as Vector2) - player.linear_velocity, shot.color, 1.45)
 
@@ -764,10 +776,19 @@ func handle_hud_weapon(kind: String) -> void:
 		"primary": fire_primary_at(weapon_aim_point())
 		"missile": fire_missile_at(weapon_aim_point())
 		"grapple": toggle_grapple()
+		"reel":
+			if grapple != null and is_instance_valid(grapple) and grapple.connected:
+				grapple_reel_toggle = not grapple_reel_toggle
+				grapple.set_reeling(grapple_reel_toggle)
+				announce("GRAPPLE REEL · %s" % ("감기 ON" if grapple_reel_toggle else "감기 OFF"))
+			else:
+				grapple_reel_toggle = false
+		"sonar": trigger_sonar_pulse()
 		"overdrive": activate_overdrive()
 
 func handle_right_action(world_point: Vector2) -> void:
-	var enemy := nearest_enemy_at(world_point, 0.0)
+	var pick_pad := 34.0 if touch_index != -1 else 12.0
+	var enemy := nearest_enemy_at(world_point, pick_pad)
 	if enemy != null:
 		select_target(enemy)
 		fire_missile_at(enemy.global_position)
@@ -777,8 +798,16 @@ func handle_right_action(world_point: Vector2) -> void:
 func set_navigation_destination(world_point: Vector2) -> void:
 	cancel_target_tracking()
 	navigation_target = world_point
-	navigation_active = true
 	target_marker = world_point
+	nav_fail_banner_timer = 0.0
+	if player != null and player.touches_navigation_point(world_point):
+		navigation_active = false
+		player.apply_player_thrusters(0.0, 0.0, 0.0, 0.0)
+		announce("AUTO NAV · 이미 목표 지점에 닿아 있습니다.")
+		return
+	navigation_active = true
+	if player != null:
+		player.reset_auto_nav_monitor(world_point)
 	announce("AUTO NAV · 지정 지점으로 회전·추력 항법을 시작합니다.")
 
 func update_tracking_drag(world_point: Vector2) -> void:
@@ -820,30 +849,15 @@ func apply_target_tracking() -> void:
 	var velocity: Vector2 = target.linear_velocity + (destination - player.global_position) * PhysicsData.TRACKING_POSITION_GAIN
 	player.apply_tracking_thrusters(velocity.limit_length(player.max_linear_speed()), target.global_position - player.global_position)
 
-func apply_auto_navigation() -> void:
-	var offset := navigation_target - player.global_position
-	var distance_squared := offset.length_squared()
-	var arrival_radius := float(BalanceData.NAVIGATION.arrival_radius)
-	if distance_squared <= arrival_radius * arrival_radius:
+func apply_auto_navigation(delta: float = 1.0 / 60.0) -> void:
+	var state := player.step_auto_navigation(navigation_target, delta)
+	if state == "arrived":
 		navigation_active = false
-		player.apply_player_thrusters(0.0, 0.0, 0.0)
-		announce("AUTO NAV · 목적지 도착")
-		return
-	var desired_direction := offset.normalized()
-	var facing := Vector2.RIGHT.rotated(player.global_rotation)
-	var signed_turn := facing.angle_to(desired_direction)
-	var turn := clampf(signed_turn * float(BalanceData.NAVIGATION.turn_gain) - player.angular_velocity * PhysicsData.NAVIGATION_ANGULAR_DAMP_GAIN, -1.0, 1.0)
-	var slow_radius := float(BalanceData.NAVIGATION.slow_radius)
-	var forward := float(BalanceData.NAVIGATION.cruise_throttle) if distance_squared > slow_radius * slow_radius else float(BalanceData.NAVIGATION.approach_throttle)
-	# 목적지 반대 방향 가속을 막고, 접근 중에는 제동 거리만큼 미리 감속한다.
-	if absf(signed_turn) > PhysicsData.NAVIGATION_THRUST_ALIGNMENT_RADIANS:
-		forward = 0.0
-	var closing_speed := maxf(0.0, player.linear_velocity.dot(desired_direction))
-	var brake_accel := maxf(1.0, player.actuator_force("reverse") / player.mass + closing_speed * -log(PhysicsData.PLAYER_LINEAR_RETAIN_PER_SECOND))
-	var stopping_distance := closing_speed * closing_speed / (2.0 * brake_accel)
-	if distance_squared < pow(arrival_radius + stopping_distance, 2):
-		forward = 0.0
-	player.apply_player_thrusters(forward, 0.0, turn)
+		announce("AUTO NAV · 목표 지점 도착")
+	elif state == "failed":
+		navigation_active = false
+		nav_fail_banner_timer = 3.0
+		announce("이동 실패 · 교착 상태 감지로 이동을 멈춥니다.")
 
 func update_weapon_hud() -> void:
 	if hud == null or player == null:
@@ -851,7 +865,12 @@ func update_weapon_hud() -> void:
 	hud.holding_part = held_part != null
 	var target := selected_enemy()
 	hud.target_label = "TARGET · %s" % target.enemy_name if target != null else "TARGET · NONE"
-	hud.navigation_label = "AUTO NAV · %dm" % roundi(player.global_position.distance_to(navigation_target)) if navigation_active else "MANUAL FLIGHT"
+	if navigation_active:
+		hud.navigation_label = "AUTO NAV · %dm" % roundi(player.hull_distance_to_world_point(navigation_target))
+	elif nav_fail_banner_timer > 0.0:
+		hud.navigation_label = "이동 실패 · 정지"
+	else:
+		hud.navigation_label = "MANUAL FLIGHT"
 	if tracking_order.active and tracking_order.valid():
 		hud.navigation_label = "TRACK · %.0fpx / %+.0f°" % [tracking_order.geometry().radius, rad_to_deg(tracking_order.angle)]
 	hud.laser_ready = player.laser_cooldown <= 0.0 and player.heat <= 100.0
@@ -860,13 +879,38 @@ func update_weapon_hud() -> void:
 	hud.missile_status = "AMMO %d / -2" % hud.missile_ammo if player.has_part("missile_launcher") else "NO RACK"
 	if player.missile_cooldown > 0.0: hud.missile_status = "CD %.1fs" % player.missile_cooldown
 	if grapple != null and is_instance_valid(grapple):
-		grapple.set_reeling(grapple.connected and Input.is_key_pressed(KEY_V))
+		grapple.set_reeling(grapple.connected and (grapple_reel_toggle or Input.is_key_pressed(KEY_V)))
 		if grapple.reeling_in:
 			hud.grapple_label = "REEL %d%%" % roundi(grapple.hp / maxf(grapple.max_hp, 1.0) * 100.0)
 		else:
 			hud.grapple_label = "LINK %d%%" % roundi(grapple.hp / maxf(grapple.max_hp, 1.0) * 100.0)
 	else:
+		grapple_reel_toggle = false
 		hud.grapple_label = "READY"
+
+func trigger_sonar_pulse() -> void:
+	if sonar_cooldown > 0.0:
+		announce("SONAR · 재충전 중 (%.1fs)" % sonar_cooldown)
+		return
+	sonar_cooldown = float(BalanceData.SONAR.cooldown)
+	if active_sonar != null and is_instance_valid(active_sonar):
+		active_sonar.queue_free()
+	var salvage_nodes: Array = []
+	for child in world_layer.get_children():
+		if child is NeutralPart and is_instance_valid(child):
+			salvage_nodes.append(child)
+	active_sonar = SonarPulseScript.new()
+	world_layer.add_child(active_sonar)
+	active_sonar.ship_detected.connect(func(ship: EnemyShip, entered_attack: bool) -> void:
+		if entered_attack:
+			announce("SONAR ALERT · %s 적대 함선 공격모드 전환!" % ship.enemy_name)
+		_refresh_radar_blips())
+	active_sonar.scan_completed.connect(func(report: Dictionary) -> void:
+		if sonar_popup != null and is_instance_valid(sonar_popup):
+			sonar_popup.show_report(report)
+		_refresh_radar_blips())
+	active_sonar.launch(player, enemies, stations, salvage_nodes)
+	announce("SONAR PULSE · 원형 소나 파동 발신 (반경 %.0fm)" % float(BalanceData.SONAR.max_range))
 
 func toggle_grapple() -> void:
 	if grapple != null and is_instance_valid(grapple):
@@ -961,13 +1005,16 @@ func resolve_projectile_hits(delta: float = 0.0) -> void:
 			continue
 		var impact_world: Vector2 = node.previous_position.lerp(node.global_position, clampf(nearest_hit, 0.0, 1.0))
 		var impulse_mag: float = float(PhysicsData.PROJECTILE_IMPACT_IMPULSE.get(node.kind, clampf(node.damage * 2.8, 12.0, 150.0)))
-		var detached: Array[PartData] = target.damage_part(part, node.damage, node.velocity, impact_world, false, impulse_mag)
+		var eff_dmg: float = node.damage * (node.shield_mult if target.shield_layers > 0 else 1.0)
+		var detached: Array[PartData] = target.damage_part(part, eff_dmg, node.velocity, impact_world, false, impulse_mag)
 		var shield_blocked: bool = target.last_hit_shield_absorbed
+		if cosmo_sfx != null and shield_blocked:
+			cosmo_sfx.play("shield_hit")
 		if combat_fx != null:
-			combat_fx.spawn_hit(impact_world, node.velocity, node.tint, shield_blocked, node.damage)
+			combat_fx.spawn_hit(impact_world, node.velocity, node.tint, shield_blocked, eff_dmg)
 
-		# Cosmoteer 레일건 장갑 관통(Over-Penetration): 잔여 운동에너지로 내부 모듈 연속 타격
-		if node.kind == "railgun" and not shield_blocked and target.last_damage_leftover >= 2.0:
+		# Cosmoteer 레일건/고돌파 탄종 장갑 관통(Over-Penetration): 잔여 운동에너지로 내부 모듈 연속 타격
+		if (node.kind == "railgun" or node.penetration > 7.0) and not shield_blocked and target.last_damage_leftover >= 2.0:
 			var step_vec: Vector2 = node.velocity.normalized() * (BalanceData.CELL * 0.88)
 			var pen_damage: float = target.last_damage_leftover
 			var prev_pt: Vector2 = impact_world
@@ -1220,13 +1267,9 @@ func debris_velocity_from_ship(ship: ShipBody, part_position: Vector2, impact_ve
 		relative_velocity += impact_velocity.normalized() * PhysicsData.DEBRIS_IMPACT_TRANSFER_SPEED
 	return ship.linear_velocity + tangent_velocity + relative_velocity.limit_length(PhysicsData.DEBRIS_MAX_RELATIVE_SPEED)
 
-func spawn_salvage_data(data: PartData, at: Vector2, narrative_tag: String = "", initial_velocity: Vector2 = Vector2.ZERO, initial_angular_velocity: float = 0.0, collision_grace_seconds: float = 0.0, source_rotation: float = 0.0) -> void:
-	var salvage = NeutralPartScript.new()
-	salvage.name = "Salvage_%s" % data.kind
-	salvage.position = at
-	salvage.rotation = source_rotation
-	world_layer.add_child(salvage)
-	salvage.setup(data, initial_velocity, initial_angular_velocity, narrative_tag, collision_grace_seconds)
+func spawn_salvage_data(_data: PartData, _at: Vector2, _narrative_tag: String = "", _initial_velocity: Vector2 = Vector2.ZERO, _initial_angular_velocity: float = 0.0, _collision_grace_seconds: float = 0.0, _source_rotation: float = 0.0) -> void:
+	# 전투 중 떠다니는 아이템(잔해) 생성 비활성화
+	return
 
 func set_zoom_level(next_zoom: float, show_toast: bool = true) -> void:
 	if camera == null:
@@ -1485,84 +1528,12 @@ func activate_overdrive() -> void:
 
 
 func quick_attach_module() -> void:
-	if player == null or player_destroyed:
-		return
-	var candidate: PartData = held_part
-	var source_node: NeutralPart = null
-	if candidate == null:
-		var reach := float(BalanceData.PLAYER.salvage_range) + player.hull_bound_radius
-		var best_dist_sq := reach * reach
-		for node in world_layer.get_children():
-			if node is NeutralPart and not node.is_queued_for_deletion() and node.part != null and node.part.kind != "scrap":
-				var d2: float = (node as NeutralPart).global_position.distance_squared_to(player.global_position)
-				if d2 <= best_dist_sq:
-					best_dist_sq = d2
-					source_node = node
-		if source_node == null:
-			announce("QUICK ATTACH · 회수 범위 내에 장착 가능한 중립 부품이 없습니다.")
-			return
-		candidate = source_node.part
-
-	var best_anchor := Vector2i.ZERO
-	var found := false
-	var best_score := INF
-	for turn in 4:
-		var probe := candidate.duplicate_part()
-		probe.quarter_turn = posmod(candidate.quarter_turn + turn, 4)
-		var anchors := player.model.attachment_candidates(probe)
-		for anchor in anchors:
-			var score := Vector2(anchor).length_squared()
-			if score < best_score:
-				best_score = score
-				best_anchor = anchor
-				candidate.quarter_turn = probe.quarter_turn
-				found = true
-		if found:
-			break
-
-	if not found or not player.model.attach(candidate, best_anchor):
-		announce("QUICK ATTACH · 장착할 수 있는 빈 소켓이 없습니다.")
-		return
-
-	if source_node != null:
-		source_node.queue_free()
-		salvage_count += 1
-	elif not held_from_ship:
-		salvage_count += 1
-	held_part = null
-	held_tag = ""
-	overdrive_charge = minf(100.0, overdrive_charge + 18.0)
-	refresh_player_assembly()
-	var attach_world := player.to_global(Vector2(best_anchor) * BalanceData.CELL)
-	if combat_fx != null:
-		combat_fx.spawn_popup(attach_world, "+%s 장착" % VisualData.module_debug_label(candidate.kind), Color("62ffd2"))
-		combat_fx.spawn_hit(attach_world, Vector2.UP, Color("62ffd2"), false, 0.0)
-	announce("QUICK ATTACH · %s 자동 장착 완료 (총 %d파트)" % [VisualData.module_debug_label(candidate.kind), player.model.parts.size()])
+	# 전투 중 빌드 비활성화 (상단 빌드 모드에서만 조립)
+	announce("전투 중 빌드는 비활성화되었습니다 · 상단 [빌드 모드]에서 조립하세요.")
 
 
-func _update_salvage_tractor(delta: float) -> void:
+func _update_salvage_tractor(_delta: float) -> void:
 	tractor_links.clear()
-	if player == null or player_destroyed:
-		return
-	var pull_radius := 220.0 + player.hull_bound_radius
-	var scrap_absorb_radius := 95.0 + player.hull_bound_radius
-	for node in world_layer.get_children():
-		if not node is NeutralPart or node.is_queued_for_deletion() or node.part == null or node.collision_grace_left > 0.0:
-			continue
-		var d2: float = node.global_position.distance_squared_to(player.global_position)
-		if node.part.kind == "scrap" and d2 <= scrap_absorb_radius * scrap_absorb_radius:
-			var pos: Vector2 = node.global_position
-			node.queue_free()
-			salvage_count += 1
-			overdrive_charge = minf(100.0, overdrive_charge + 10.0)
-			if combat_fx != null:
-				combat_fx.spawn_popup(pos, "+SCRAP", Color("9ee6ff"))
-			continue
-		if d2 <= pull_radius * pull_radius and d2 > (player.hull_bound_radius + 36.0) * (player.hull_bound_radius + 36.0):
-			var dir: Vector2 = (player.global_position - node.global_position).normalized()
-			node.linear_velocity = node.linear_velocity.move_toward(dir * 165.0, 260.0 * delta)
-			if tractor_links.size() < 4:
-				tractor_links.append(node.global_position)
 
 
 func _refresh_radar_blips() -> void:

@@ -6,6 +6,7 @@ const BalanceData = preload("res://scripts/balance.gd")
 const VisualData = preload("res://scripts/visual_tuning.gd")
 const PhysicsData = preload("res://scripts/physics_tuning.gd")
 const VoxelShipRendererScript = preload("res://scripts/voxel_ship_renderer.gd")
+const CosmoteerAssetsScript = preload("res://scripts/cosmoteer_assets.gd")
 
 static var _cached_flame_texture: Texture2D
 static var _cached_smoke_texture: Texture2D
@@ -17,6 +18,8 @@ class StaticHullLayer extends Node2D:
 			owner_ship._draw_static_cosmoteer_hull(self)
 
 var model: ShipModel = ShipModelScript.new()
+var interior: ShipInteriorSim = null
+var show_power_overlay := false
 var shield_layers := 0
 var shield_recharge_left := 0.0
 var break_shake := 0.0
@@ -43,6 +46,7 @@ var cell_colliders: Array[CollisionShape2D] = []
 var voxel_texture: Texture2D
 var voxel_renderer: Node2D
 var overdrive_active := false
+var initial_blueprint: Array[Dictionary] = []
 
 # Cosmoteer 물리·시각 피드백 상태
 var weapon_recoil: Dictionary = {}
@@ -51,7 +55,14 @@ var last_hit_shield_absorbed := false
 var last_damage_leftover := 0.0
 var last_volatile_blasts: Array[Dictionary] = []
 
-# 성능 최적화용 구조/드로우 캐시 (조립·파손 시에만 갱신)
+# 성능 최적화용 구조/드로우/버킷 캐시 (조립·파손 시에만 갱신)
+const MAX_EXHAUST_PARTICLE_EMITTERS := 12
+const DYNAMIC_DETAIL_KINDS := [
+	"core", "battery", "laser", "machine_gun", "railgun",
+	"missile_launcher", "mini_missile_launcher", "ammo_bay", "bullet_bay",
+	"thruster", "reverse_thruster", "rcs_thruster",
+	"cosmo_thruster_small", "cosmo_thruster_med", "cosmo_thruster_large", "cosmo_thruster_boost",
+]
 var _static_hull_layer: StaticHullLayer
 var _cached_occupied: Dictionary = {}
 var _cached_cell_parts: Dictionary = {}
@@ -59,8 +70,21 @@ var _cached_exhaust_blocked: Dictionary = {}
 var _cached_battery_count := 0.0
 var _cached_power_efficiency := 1.0
 var _cached_conduit_segments := PackedVector2Array()
+var _cached_linear_thrusters: Array[PartData] = []
+var _cached_rcs_thrusters: Array[PartData] = []
+var _cached_dynamic_draw_parts: Array[PartData] = []
+var _cached_shield_parts: Array[PartData] = []
+var _cached_perimeter_hull_cells: Array[Vector2i] = []
+var _merged_collider_count := 0
 var _cached_display_mode := true
 var _draw_accum := 0.0
+
+# 자동 항법(Auto-Nav) 접촉 도착 및 교착(Deadlock) 감지 상태
+const NAV_HULL_TOUCH_RADIUS := 24.0
+var _nav_elapsed := 0.0
+var _nav_best_hull_dist := INF
+var _nav_no_progress_time := 0.0
+var _nav_blocked_time := 0.0
 
 func _ready() -> void:
 	gravity_scale = 0.0
@@ -83,7 +107,16 @@ func _ready() -> void:
 
 func initialize_player() -> void:
 	model.initialize_player()
+	initial_blueprint = model.export_blueprint()
 	shield_layers = model.shield_capacity()
+	if interior == null:
+		interior = ShipInteriorSim.new()
+	interior.attach_model(model, true)
+	interior.on_structure_changed = func() -> void:
+		refresh_mass()
+		rebuild_exhaust_particles()
+		rebuild_voxel_renderer()
+		queue_redraw()
 	refresh_mass()
 	rebuild_exhaust_particles()
 	rebuild_voxel_renderer()
@@ -117,20 +150,42 @@ func _rebuild_model_caches() -> void:
 	_cached_occupied.clear()
 	_cached_cell_parts.clear()
 	_cached_exhaust_blocked.clear()
+	_cached_linear_thrusters.clear()
+	_cached_rcs_thrusters.clear()
+	_cached_dynamic_draw_parts.clear()
+	_cached_shield_parts.clear()
+	_cached_perimeter_hull_cells.clear()
 	_cached_battery_count = 0.0
 	for part in model.parts:
 		if part.kind == "battery":
 			_cached_battery_count += 1.0
+		if part.kind == "shield_generator":
+			_cached_shield_parts.append(part)
+		if part.kind in DYNAMIC_DETAIL_KINDS:
+			_cached_dynamic_draw_parts.append(part)
+		var act := str(part.spec().get("actuator", ""))
+		if act == "forward" or act == "reverse":
+			_cached_linear_thrusters.append(part)
+		elif act == "turn":
+			_cached_rcs_thrusters.append(part)
 		for cell in part.cells():
 			_cached_occupied[cell] = part.uid
 			_cached_cell_parts[cell] = part
 	_cached_power_efficiency = model.power_efficiency()
-	for part in model.parts:
-		if part.spec().get("actuator", "") != "":
-			_cached_exhaust_blocked[part.uid] = model.is_exhaust_blocked(part, _cached_occupied)
+	for part in _cached_linear_thrusters:
+		_cached_exhaust_blocked[part.uid] = model.is_exhaust_blocked(part, _cached_occupied)
+	for part in _cached_rcs_thrusters:
+		_cached_exhaust_blocked[part.uid] = model.is_exhaust_blocked(part, _cached_occupied)
 	var segs := PackedVector2Array()
 	for cell_var in _cached_occupied.keys():
 		var cell: Vector2i = cell_var
+		var is_perim := false
+		for p_axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+			if not _cached_occupied.has(cell + p_axis):
+				is_perim = true
+				break
+		if is_perim:
+			_cached_perimeter_hull_cells.append(cell)
 		var p_here: PartData = _cached_cell_parts.get(cell, null)
 		if p_here != null and _is_wedge_part(p_here):
 			continue
@@ -150,21 +205,77 @@ func mark_hull_visual_dirty() -> void:
 		_static_hull_layer.queue_redraw()
 	queue_redraw()
 
+## 그리디 2D 직사각형 병합: 360개 개별 셀 충돌체를 ~18~30개 무손실 직사각형으로 통합하여 물리 솔버 부하 90%+ 절감
+func _compute_merged_cell_boxes() -> Array[Rect2i]:
+	var boxes: Array[Rect2i] = []
+	if _cached_occupied.is_empty():
+		return boxes
+	var rows: Dictionary = {}
+	var y_list: Array[int] = []
+	for cell_var in _cached_occupied.keys():
+		var c: Vector2i = cell_var
+		if not rows.has(c.y):
+			rows[c.y] = [] as Array[int]
+			y_list.append(c.y)
+		(rows[c.y] as Array[int]).append(c.x)
+	y_list.sort()
+
+	var active: Dictionary = {}
+	var prev_y := -999999
+	for y in y_list:
+		if y != prev_y + 1 and not active.is_empty():
+			for r_val in active.values():
+				boxes.append(r_val as Rect2i)
+			active.clear()
+		prev_y = y
+		var xs: Array[int] = rows[y]
+		xs.sort()
+		var next_active: Dictionary = {}
+		var i := 0
+		while i < xs.size():
+			var x0 := xs[i]
+			var x1 := x0
+			while i + 1 < xs.size() and xs[i + 1] == x1 + 1:
+				i += 1
+				x1 = xs[i]
+			i += 1
+			var span_w := x1 - x0 + 1
+			var key := "%d:%d" % [x0, span_w]
+			if active.has(key):
+				var prev_box: Rect2i = active[key]
+				next_active[key] = Rect2i(prev_box.position.x, prev_box.position.y, span_w, prev_box.size.y + 1)
+				active.erase(key)
+			else:
+				next_active[key] = Rect2i(x0, y, span_w, 1)
+		for rem_val in active.values():
+			boxes.append(rem_val as Rect2i)
+		active = next_active
+	for last_val in active.values():
+		boxes.append(last_val as Rect2i)
+	return boxes
+
+func active_collider_count() -> int:
+	return _merged_collider_count
+
 func refresh_collision_box() -> void:
 	if hull_collider == null:
 		return
-	var cells: Array = model.occupied().keys()
-	while cell_colliders.size() < cells.size():
+	var merged_boxes := _compute_merged_cell_boxes()
+	_merged_collider_count = merged_boxes.size()
+	while cell_colliders.size() < merged_boxes.size():
 		var collider := CollisionShape2D.new()
 		collider.shape = RectangleShape2D.new()
 		add_child(collider)
 		cell_colliders.append(collider)
 	for index in cell_colliders.size():
 		var collider := cell_colliders[index]
-		collider.disabled = index >= cells.size()
-		if index < cells.size():
-			(collider.shape as RectangleShape2D).size = Vector2.ONE * BalanceData.CELL
-			collider.position = Vector2(cells[index]) * BalanceData.CELL
+		collider.disabled = index >= merged_boxes.size()
+		if index < merged_boxes.size():
+			var b: Rect2i = merged_boxes[index]
+			(collider.shape as RectangleShape2D).size = Vector2(float(b.size.x), float(b.size.y)) * BalanceData.CELL
+			var cx := float(b.position.x) + float(b.size.x - 1) * 0.5
+			var cy := float(b.position.y) + float(b.size.y - 1) * 0.5
+			collider.position = Vector2(cx, cy) * BalanceData.CELL
 
 func collision_box_rect() -> Rect2:
 	return model.collision_box_rect()
@@ -174,15 +285,43 @@ func projectile_hit(from_world: Vector2, to_world: Vector2) -> Dictionary:
 	var to := to_local(to_world)
 	if segment_box_fraction(from, to, collision_box_rect().grow(4.0)) == INF:
 		return {}
+	if _cached_cell_parts.is_empty():
+		_rebuild_model_caches()
+	var cs := BalanceData.CELL
+	var pad := cs * 0.5 + 3.5
+	var min_gx := floori((minf(from.x, to.x) - pad) / cs)
+	var max_gx := ceili((maxf(from.x, to.x) + pad) / cs)
+	var min_gy := floori((minf(from.y, to.y) - pad) / cs)
+	var max_gy := ceili((maxf(from.y, to.y) + pad) / cs)
+	var span_cells := (max_gx - min_gx + 1) * (max_gy - min_gy + 1)
+
 	var best := INF
-	var hit_part: PartData
-	for part in model.parts:
-		for cell in part.cells():
-			var rect := Rect2(Vector2(cell) * BalanceData.CELL - Vector2.ONE * (BalanceData.CELL * 0.5 + 3.0), Vector2.ONE * (BalanceData.CELL + 6.0))
+	var hit_part: PartData = null
+	var half_padded := Vector2.ONE * (cs * 0.5 + 3.0)
+	var box_size := Vector2.ONE * (cs + 6.0)
+
+	if span_cells > 0 and span_cells <= _cached_cell_parts.size():
+		for gy in range(min_gy, max_gy + 1):
+			for gx in range(min_gx, max_gx + 1):
+				var c := Vector2i(gx, gy)
+				var part: PartData = _cached_cell_parts.get(c, null)
+				if part == null:
+					continue
+				var rect := Rect2(Vector2(c) * cs - half_padded, box_size)
+				var fraction := segment_box_fraction(from, to, rect)
+				if fraction < best:
+					best = fraction
+					hit_part = part
+	else:
+		for cell_var in _cached_cell_parts.keys():
+			var c: Vector2i = cell_var
+			if c.x < min_gx or c.x > max_gx or c.y < min_gy or c.y > max_gy:
+				continue
+			var rect := Rect2(Vector2(c) * cs - half_padded, box_size)
 			var fraction := segment_box_fraction(from, to, rect)
 			if fraction < best:
 				best = fraction
-				hit_part = part
+				hit_part = _cached_cell_parts[c]
 	return {"part": hit_part, "fraction": best} if hit_part != null else {}
 
 static func segment_box_fraction(from: Vector2, to: Vector2, rect: Rect2) -> float:
@@ -212,6 +351,89 @@ func distance_squared_to_collision_box(world_point: Vector2) -> float:
 	)
 	return local_point.distance_squared_to(nearest)
 
+func hull_distance_to_world_point(world_point: Vector2) -> float:
+	var local_pt := to_local(world_point)
+	if _cached_occupied.is_empty():
+		return local_pt.length()
+	var snap_c := Vector2i(roundi(local_pt.x / BalanceData.CELL), roundi(local_pt.y / BalanceData.CELL))
+	if _cached_occupied.has(snap_c):
+		return 0.0
+	var half := BalanceData.CELL * 0.5
+	var best_sq := INF
+	for c in _cached_perimeter_hull_cells:
+		var cx := float(c.x) * BalanceData.CELL
+		var cy := float(c.y) * BalanceData.CELL
+		var dx := maxf(absf(local_pt.x - cx) - half, 0.0)
+		var dy := maxf(absf(local_pt.y - cy) - half, 0.0)
+		var d_sq := dx * dx + dy * dy
+		if d_sq < best_sq:
+			best_sq = d_sq
+			if best_sq <= 0.0001:
+				return 0.0
+	return sqrt(best_sq)
+
+func touches_navigation_point(world_point: Vector2, touch_radius: float = NAV_HULL_TOUCH_RADIUS) -> bool:
+	var arr := float(BalanceData.NAVIGATION.arrival_radius)
+	if global_position.distance_squared_to(world_point) <= arr * arr:
+		return true
+	return hull_distance_to_world_point(world_point) <= maxf(touch_radius, 0.0)
+
+func reset_auto_nav_monitor(target: Vector2) -> void:
+	_nav_elapsed = 0.0
+	_nav_best_hull_dist = hull_distance_to_world_point(target)
+	_nav_no_progress_time = 0.0
+	_nav_blocked_time = 0.0
+
+func stop_motion_immediately() -> void:
+	linear_velocity *= 0.12
+	angular_velocity *= 0.12
+	active_command_thrust = 0.0
+	active_exhausts.clear()
+	apply_player_thrusters(0.0, 0.0, 0.0, 0.0)
+
+## 자동 항법 1스텝 실행: "arrived" (도착), "failed" (교착 실패·정지), "moving" (항진 중) 반환
+func step_auto_navigation(target: Vector2, delta: float) -> String:
+	_nav_elapsed += delta
+	var hull_dist := hull_distance_to_world_point(target)
+	if touches_navigation_point(target):
+		apply_player_thrusters(0.0, 0.0, 0.0, 0.0)
+		return "arrived"
+
+	var offset := target - global_position
+	var desired_direction := offset.normalized() if offset.length_squared() > 0.0001 else Vector2.RIGHT.rotated(global_rotation)
+	var facing := Vector2.RIGHT.rotated(global_rotation + forward_angle_offset())
+	var signed_turn := facing.angle_to(desired_direction)
+	var turn := clampf(signed_turn * float(BalanceData.NAVIGATION.turn_gain) - angular_velocity * PhysicsData.NAVIGATION_ANGULAR_DAMP_GAIN, -1.0, 1.0)
+	var slow_radius := float(BalanceData.NAVIGATION.slow_radius)
+	var forward := float(BalanceData.NAVIGATION.cruise_throttle) if hull_dist > slow_radius else float(BalanceData.NAVIGATION.approach_throttle)
+	if hull_dist < 85.0:
+		forward = minf(forward, 0.36)
+	if absf(signed_turn) > 1.15:
+		forward = 0.0
+	elif absf(signed_turn) > PhysicsData.NAVIGATION_THRUST_ALIGNMENT_RADIANS:
+		forward *= clampf(cos(signed_turn), 0.28, 1.0)
+
+	# 진행도 및 교착(충돌 걸림·제자리 맴돌기) 감지
+	if hull_dist < _nav_best_hull_dist - 8.0:
+		_nav_best_hull_dist = hull_dist
+		_nav_no_progress_time = 0.0
+	elif _nav_elapsed > 1.0 or absf(signed_turn) < 0.75:
+		_nav_no_progress_time += delta
+
+	var closing_speed := linear_velocity.dot(desired_direction)
+	var contacting := get_contact_count() > 0
+	if _nav_elapsed > 0.45 and forward > 0.15 and closing_speed < (26.0 if contacting else 14.0):
+		_nav_blocked_time += delta * (1.85 if contacting else 1.0)
+	else:
+		_nav_blocked_time = maxf(0.0, _nav_blocked_time - delta * 2.0)
+
+	if _nav_blocked_time >= 0.90 or _nav_no_progress_time >= 2.0:
+		stop_motion_immediately()
+		return "failed"
+
+	apply_player_thrusters(forward, 0.0, turn, 0.0)
+	return "moving"
+
 func refresh_part_tuning() -> void:
 	for part in model.parts:
 		var updated_hp := float(part.spec().get("hp", part.max_hp))
@@ -240,9 +462,13 @@ func is_within_surface_range(other: ShipBody, surface_range: float) -> bool:
 	return global_position.distance_squared_to(other.global_position) <= expanded_range * expanded_range
 
 func _physics_process(delta: float) -> void:
+	if interior != null and not freeze:
+		interior.step(delta)
+	var cd_manning := interior.weapon_cooldown_mult if interior != null else 1.0
+	var sh_manning := interior.shield_recharge_mult if interior != null else 1.0
 	var pwr_eff: float = _cached_power_efficiency
-	laser_cooldown = maxf(0.0, laser_cooldown - delta * pwr_eff)
-	missile_cooldown = maxf(0.0, missile_cooldown - delta * pwr_eff)
+	laser_cooldown = maxf(0.0, laser_cooldown - (delta * pwr_eff) / maxf(0.5, cd_manning))
+	missile_cooldown = maxf(0.0, missile_cooldown - (delta * pwr_eff) / maxf(0.5, cd_manning))
 	mini_missile_cooldown = maxf(0.0, mini_missile_cooldown - delta * pwr_eff)
 	heat = maxf(0.0, heat - delta * pwr_eff * (18.0 + (22.0 if overdrive_active else 0.0) + cooling_bonus + _cached_battery_count * 9.0))
 	break_shake_time = maxf(0.0, break_shake_time - delta)
@@ -251,7 +477,7 @@ func _physics_process(delta: float) -> void:
 		if is_instance_valid(_static_hull_layer) and _static_hull_layer.position != Vector2.ZERO:
 			_static_hull_layer.position = Vector2.ZERO
 	if shield_layers < shield_max_layers():
-		shield_recharge_left -= delta * pwr_eff
+		shield_recharge_left -= delta * pwr_eff * sh_manning
 		if shield_recharge_left <= 0.0:
 			shield_layers += 1
 			shield_recharge_left = maxf(float(BalanceData.SHIELD.min_recharge), float(BalanceData.SHIELD.base_recharge) - shield_recharge_reduction)
@@ -291,16 +517,23 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	state.angular_velocity = clampf(state.angular_velocity, -PhysicsData.MAX_ANGULAR_SPEED, PhysicsData.MAX_ANGULAR_SPEED)
 
 func effective_module_thrust(part: PartData) -> float:
-	var base := maxf(float(part.spec().get("force", 0.0)), 0.0)
+	var base := part.nominal_force
+	if interior != null:
+		if not interior.is_part_powered(part.uid):
+			base *= 0.35
+		else:
+			base *= interior.thrust_manning_mult
 	if bool(_cached_exhaust_blocked.get(part.uid, false)):
 		return base * PhysicsData.EXHAUST_BLOCKED_MULTIPLIER
 	return base
 
+func forward_angle_offset() -> float:
+	return -PI * 0.25 if (model != null and model.diagonal_45) else 0.0
+
 func module_push_vector(part: PartData) -> Vector2:
-	var actuator := str(part.spec().get("actuator", ""))
-	if actuator == "forward":
+	if part.actuator_kind == "forward":
 		return module_thrust_axis(part)
-	if actuator == "reverse":
+	if part.actuator_kind == "reverse":
 		return -module_thrust_axis(part)
 	return Vector2.ZERO
 
@@ -319,32 +552,41 @@ func apply_player_thrusters(forward: float, reverse: float, turn: float, strafe:
 	if absf(turn) < 0.01:
 		apply_neutral_angular_braking()
 	var boost := 1.45 if overdrive_active else 1.0
+	var fwd_off := forward_angle_offset()
 
-	# 1. 전후진 주/역추진기 (실제 장착 방향 기준 + 배기 간섭 반영 + CoM 토크 밸런싱)
+	# 1. 전후진 주/역추진기 (실제 장착 방향 + 45° 대각선 전방 지원 + 배기 간섭 + CoM 토크 밸런싱)
 	var fwd_drives: Array = []
 	var rev_drives: Array = []
 	var side_drives: Array = []
-	for part in model.parts:
+	for part in _cached_linear_thrusters:
 		if part.hp <= 0.0:
 			continue
 		var push := module_push_vector(part)
 		if push.length_squared() < 0.01:
 			continue
-		if push.x > 0.5:
+		var pf := push.rotated(-fwd_off)
+		if pf.x > 0.35:
 			fwd_drives.append(part)
-		elif push.x < -0.5:
+		elif pf.x < -0.35:
 			rev_drives.append(part)
-		elif absf(push.y) > 0.5:
+		if absf(pf.y) > 0.35:
 			side_drives.append(part)
 
-	if forward > 0.01 and not fwd_drives.is_empty():
-		var forward_multipliers := balanced_linear_multipliers(fwd_drives)
-		for part in fwd_drives:
-			apply_module_force(part, module_push_vector(part) * effective_module_thrust(part) * forward * boost * float(forward_multipliers.get(part.uid, 1.0)))
-	if reverse > 0.01 and not rev_drives.is_empty():
-		var reverse_multipliers := balanced_linear_multipliers(rev_drives)
-		for part in rev_drives:
-			apply_module_force(part, module_push_vector(part) * effective_module_thrust(part) * reverse * boost * float(reverse_multipliers.get(part.uid, 1.0)))
+	if forward > 0.01:
+		if not fwd_drives.is_empty():
+			var forward_multipliers := balanced_linear_multipliers(fwd_drives)
+			for part in fwd_drives:
+				apply_module_force(part, module_push_vector(part) * effective_module_thrust(part) * forward * boost * float(forward_multipliers.get(part.uid, 1.0)))
+		elif model.core_part() != null:
+			# 주 추진기가 없거나 모두 파괴된 경우에도 코어 비상 보조 추력으로 최소 기동을 보장한다.
+			apply_central_force(Vector2.RIGHT.rotated(rotation + fwd_off) * mass * 240.0 * forward * boost)
+	if reverse > 0.01:
+		if not rev_drives.is_empty():
+			var reverse_multipliers := balanced_linear_multipliers(rev_drives)
+			for part in rev_drives:
+				apply_module_force(part, module_push_vector(part) * effective_module_thrust(part) * reverse * boost * float(reverse_multipliers.get(part.uid, 1.0)))
+		elif model.core_part() != null:
+			apply_central_force(-Vector2.RIGHT.rotated(rotation + fwd_off) * mass * 160.0 * reverse * boost)
 
 	# 2. Q/E 수동 횡추진 (측면 장착 추진기 + 반대편 3노즐 RCS 협업 분사)
 	if absf(strafe) > 0.01:
@@ -352,26 +594,50 @@ func apply_player_thrusters(forward: float, reverse: float, turn: float, strafe:
 		var mag := absf(strafe) * boost
 		for part in side_drives:
 			var push := module_push_vector(part)
-			if push.y * want_sign > 0.25:
+			if push.rotated(-fwd_off).y * want_sign > 0.25:
 				apply_module_force(part, push * effective_module_thrust(part) * mag)
 		for part in parts_with_actuator("turn"):
 			var rcs_nom := effective_module_thrust(part)
 			var best_dir := Vector2.ZERO
 			var best_align := 0.15
 			for jet_force in rcs_thrust_directions(part):
-				var align: float = jet_force.y * want_sign
+				var align: float = jet_force.rotated(-fwd_off).y * want_sign
 				if align > best_align:
 					best_align = align
 					best_dir = jet_force
 			if best_dir.length_squared() > 0.01:
 				apply_module_force_additive(part, best_dir * rcs_nom * mag)
 
-	# 3. A/D 회전 RCS
+	# 3. A/D 회전: RCS + 차동 추력(좌/우 추진기) + 코어 자이로 리액션 휠 보정
 	if absf(turn) > 0.01:
+		var applied_turn_torque := 0.0
 		for part in parts_with_actuator("turn"):
 			var rcs_force := rcs_force_direction(part)
 			if rcs_force.length() > 0.01:
-				apply_module_force_additive(part, rcs_force * effective_module_thrust(part) * turn)
+				var f_vec := rcs_force * effective_module_thrust(part) * turn
+				apply_module_force_additive(part, f_vec)
+				var lever := module_local_center(part) - center_of_mass
+				applied_turn_torque += absf(lever.cross(f_vec))
+		# RCS가 없거나 부족한 커스텀 함선도 좌/우 주·역추진기 차동 분사로 자연스럽게 선회한다.
+		var target_turn_torque := maxf(inertia * 5.4, 32000.0) * absf(turn)
+		if applied_turn_torque < target_turn_torque:
+			for part in _cached_linear_thrusters:
+				if part.hp <= 0.0:
+					continue
+				var push := module_push_vector(part)
+				if push.length_squared() < 0.01:
+					continue
+				var lever := module_local_center(part) - center_of_mass
+				var unit_tau := lever.cross(push)
+				if unit_tau * turn > 8.0:
+					var diff_scale := clampf(absf(turn) * (0.78 if forward < 0.05 and reverse < 0.05 else 0.35), 0.15, 0.85)
+					var f_vec := push * effective_module_thrust(part) * diff_scale
+					apply_module_force_additive(part, f_vec)
+					applied_turn_torque += absf(lever.cross(f_vec))
+		# 코어/조종실 내장 자이로(리액션 휠): RCS가 파괴되거나 장착되지 않아도 회전 불능을 방지한다.
+		if applied_turn_torque < target_turn_torque and model.core_part() != null:
+			var gyro_deficit := target_turn_torque - applied_turn_torque
+			apply_torque(signf(turn) * gyro_deficit)
 
 	sync_exhaust_particles()
 
@@ -386,13 +652,16 @@ func apply_tracking_thrusters(desired_world_velocity: Vector2, facing_direction:
 	desired_force = desired_force.rotated(-rotation)
 	var facing_error := 0.0
 	if facing_direction.length_squared() > 0.0001:
-		facing_error = wrapf(facing_direction.angle() - rotation, -PI, PI)
+		facing_error = wrapf(facing_direction.angle() - (rotation + forward_angle_offset()), -PI, PI)
 	var desired_torque := inertia * (facing_error * PhysicsData.TRACKING_FACING_GAIN - angular_velocity * PhysicsData.TRACKING_ANGULAR_DAMP_GAIN)
 	var torque_scale := PhysicsData.TRACKING_TORQUE_WEIGHT / maxf(hull_bound_radius, BalanceData.CELL)
 	var residual := Vector3(desired_force.x, desired_force.y, desired_torque * torque_scale)
 	var actuators: Array[Dictionary] = []
 	var module_throttles := {}
-	for part in model.parts:
+	var actuator_parts: Array[PartData] = []
+	actuator_parts.append_array(_cached_linear_thrusters)
+	actuator_parts.append_array(_cached_rcs_thrusters)
+	for part in actuator_parts:
 		if part.hp <= 0.0:
 			continue
 		var actuator := str(part.spec().get("actuator", ""))
@@ -434,7 +703,7 @@ func apply_tracking_thrusters(desired_world_velocity: Vector2, facing_direction:
 			module_jets[uid] = []
 		if float(actuator.throttle) > 0.00001:
 			module_jets[uid].append({"direction": -Vector2(actuator.force).normalized(), "intensity": float(actuator.throttle)})
-	for part in model.parts:
+	for part in actuator_parts:
 		if not module_forces.has(part.uid):
 			continue
 		apply_module_force(part, module_forces[part.uid])
@@ -443,17 +712,24 @@ func apply_tracking_thrusters(desired_world_velocity: Vector2, facing_direction:
 	sync_exhaust_particles()
 
 func apply_neutral_braking() -> void:
-	var local_velocity := linear_velocity.rotated(-rotation)
+	var fwd_off := forward_angle_offset()
+	var local_velocity := linear_velocity.rotated(-(rotation + fwd_off))
 	var brake_speed := float(PhysicsData.NEUTRAL_BRAKE_SPEED)
 	if local_velocity.x > 0.01:
 		var reverse_input := clampf(local_velocity.x / brake_speed, 0.0, 1.0)
-		var drives: Array = model.parts.filter(func(p): return p.hp > 0.0 and module_push_vector(p).x < -0.5)
+		var drives: Array = []
+		for p in _cached_linear_thrusters:
+			if p.hp > 0.0 and module_push_vector(p).rotated(-fwd_off).x < -0.35:
+				drives.append(p)
 		var multipliers := balanced_linear_multipliers(drives)
 		for part in drives:
 			apply_module_force(part, module_push_vector(part) * effective_module_thrust(part) * reverse_input * float(multipliers.get(part.uid, 1.0)))
 	elif local_velocity.x < -0.01:
 		var forward_input := clampf(-local_velocity.x / brake_speed, 0.0, 1.0)
-		var drives: Array = model.parts.filter(func(p): return p.hp > 0.0 and module_push_vector(p).x > 0.5)
+		var drives: Array = []
+		for p in _cached_linear_thrusters:
+			if p.hp > 0.0 and module_push_vector(p).rotated(-fwd_off).x > 0.35:
+				drives.append(p)
 		var multipliers := balanced_linear_multipliers(drives)
 		for part in drives:
 			apply_module_force(part, module_push_vector(part) * effective_module_thrust(part) * forward_input * float(multipliers.get(part.uid, 1.0)))
@@ -463,7 +739,7 @@ func apply_neutral_braking() -> void:
 		var oppose_sign := -signf(local_velocity.y)
 		for part in parts_with_actuator("turn"):
 			for jet_force in rcs_thrust_directions(part):
-				if jet_force.y * oppose_sign > 0.25:
+				if jet_force.rotated(-fwd_off).y * oppose_sign > 0.25:
 					apply_module_force_additive(part, jet_force * effective_module_thrust(part) * lat_brake * 0.65)
 					break
 	apply_neutral_angular_braking()
@@ -481,25 +757,38 @@ func apply_neutral_angular_braking() -> void:
 		var force := rcs_force_direction(part) * effective_module_thrust(part)
 		var torque := (module_local_center(part) - center_of_mass).cross(force)
 		apply_module_force_additive(part, force * turn_input * signf(torque))
+	# RCS가 부족하거나 없는 함선도 코어 자이로로 회전 관성을 안정적으로 감속한다.
+	if torque_capacity < absf(desired_torque) and model.core_part() != null:
+		var remaining := absf(desired_torque) - torque_capacity
+		apply_torque(signf(desired_torque) * remaining)
 
 func parts_with_actuator(actuator: String) -> Array:
-	return model.parts.filter(func(part): return part.hp > 0.0 and part.spec().get("actuator", "") == actuator)
+	var out: Array = []
+	if actuator == "turn":
+		for p in _cached_rcs_thrusters:
+			if p.hp > 0.0:
+				out.append(p)
+		return out
+	if actuator == "forward" or actuator == "reverse":
+		for p in _cached_linear_thrusters:
+			if p.hp > 0.0 and str(p.spec().get("actuator", "")) == actuator:
+				out.append(p)
+		return out
+	return out
 
 func module_local_center(part: PartData) -> Vector2:
-	var sum := Vector2.ZERO
-	var cells := part.cells()
-	for cell in cells:
-		sum += Vector2(cell) * BalanceData.CELL
-	return sum / maxf(float(cells.size()), 1.0)
+	return part.local_center_px()
 
 func module_thrust_axis(part: PartData) -> Vector2:
 	return Vector2.RIGHT.rotated(float(part.quarter_turn) * PI * 0.5)
 
 func rcs_force_direction(part: PartData) -> Vector2:
-	var center := module_local_center(part)
-	if center.length_squared() <= 0.0001:
+	var lever := module_local_center(part) - center_of_mass
+	if lever.length_squared() <= 0.0001:
+		lever = module_local_center(part)
+	if lever.length_squared() <= 0.0001:
 		return Vector2.ZERO
-	return Vector2(-center.y, center.x).normalized()
+	return Vector2(-lever.y, lever.x).normalized()
 
 func rcs_thrust_directions(part: PartData) -> Array[Vector2]:
 	var tangent := rcs_force_direction(part)
@@ -540,15 +829,16 @@ func balanced_linear_multipliers(drives: Array) -> Dictionary:
 	return result
 
 func apply_module_force(part: PartData, local_force: Vector2, emit_effect: bool = true) -> void:
-	if local_force.length() <= 0.01:
+	if local_force.length_squared() <= 0.0001:
 		return
 	var world_force := local_force.rotated(rotation)
-	apply_force(world_force, module_force_offset(part).rotated(rotation))
+	apply_force(world_force, part.local_center_px().rotated(rotation))
 	if not emit_effect:
 		return
-	var nominal_force := maxf(float(part.spec().get("force", 1.0)), 0.001)
-	var intensity := clampf(local_force.length() / nominal_force, 0.0, 1.0)
-	var exhaust_dir := -local_force.normalized()
+	var nominal_force := maxf(part.nominal_force, 0.001)
+	var f_len := local_force.length()
+	var intensity := clampf(f_len / nominal_force, 0.0, 1.0)
+	var exhaust_dir := -local_force / f_len
 	active_exhausts[part.uid] = {
 		"direction": exhaust_dir,
 		"intensity": intensity,
@@ -556,22 +846,26 @@ func apply_module_force(part: PartData, local_force: Vector2, emit_effect: bool 
 	}
 
 func apply_module_force_additive(part: PartData, local_force: Vector2) -> void:
-	if local_force.length() <= 0.01:
+	if local_force.length_squared() <= 0.0001:
 		return
 	var world_force := local_force.rotated(rotation)
-	apply_force(world_force, module_force_offset(part).rotated(rotation))
-	var nominal_force := maxf(float(part.spec().get("force", 1.0)), 0.001)
-	var jet_intensity := clampf(local_force.length() / nominal_force, 0.0, 1.0)
-	var exhaust_dir := -local_force.normalized()
-	var existing: Dictionary = active_exhausts.get(part.uid, {})
-	var jets: Array = existing.get("jets", []).duplicate()
-	jets.append({"direction": exhaust_dir, "intensity": jet_intensity})
-	var best_intensity := maxf(float(existing.get("intensity", 0.0)), jet_intensity)
-	active_exhausts[part.uid] = {
-		"direction": exhaust_dir,
-		"intensity": best_intensity,
-		"jets": jets,
-	}
+	apply_force(world_force, part.local_center_px().rotated(rotation))
+	var nominal_force := maxf(part.nominal_force, 0.001)
+	var f_len := local_force.length()
+	var jet_intensity := clampf(f_len / nominal_force, 0.0, 1.0)
+	var exhaust_dir := -local_force / f_len
+	if active_exhausts.has(part.uid):
+		var existing: Dictionary = active_exhausts[part.uid]
+		(existing["jets"] as Array).append({"direction": exhaust_dir, "intensity": jet_intensity})
+		if jet_intensity > float(existing["intensity"]):
+			existing["intensity"] = jet_intensity
+			existing["direction"] = exhaust_dir
+	else:
+		active_exhausts[part.uid] = {
+			"direction": exhaust_dir,
+			"intensity": jet_intensity,
+			"jets": [{"direction": exhaust_dir, "intensity": jet_intensity}],
+		}
 
 func rebuild_exhaust_particles() -> void:
 	for entry in exhaust_particles.values():
@@ -584,10 +878,16 @@ func rebuild_exhaust_particles() -> void:
 	# 적 함선은 벡터 마하 플룸(_draw_mach_plume)을 직접 그리므로 CPUParticles2D 오버헤드를 생략한다.
 	if not is_player:
 		return
-	for part in model.parts:
-		var actuator := str(part.spec().get("actuator", ""))
-		if actuator == "":
-			continue
+	var candidates: Array[PartData] = []
+	candidates.append_array(_cached_linear_thrusters)
+	candidates.append_array(_cached_rcs_thrusters)
+	candidates.sort_custom(func(a: PartData, b: PartData) -> bool:
+		return float(a.spec().get("force", 0.0)) > float(b.spec().get("force", 0.0)))
+	var spawned := 0
+	for part in candidates:
+		if spawned >= MAX_EXHAUST_PARTICLE_EMITTERS:
+			break
+		spawned += 1
 		var nozzles: Array[Dictionary] = []
 		var fire := make_exhaust_particles(false)
 		fire.position = module_local_center(part)
@@ -709,8 +1009,9 @@ func module_force_offset(part: PartData) -> Vector2:
 
 func actuator_force(kind: String) -> float:
 	var force := 0.0
-	for part in model.parts:
-		if part.spec().get("actuator", "") == kind:
+	var bucket: Array[PartData] = _cached_rcs_thrusters if kind == "turn" else _cached_linear_thrusters
+	for part in bucket:
+		if part.hp > 0.0 and str(part.spec().get("actuator", "")) == kind:
 			force += effective_module_thrust(part)
 	return force
 
@@ -730,35 +1031,84 @@ func fire_primary_weapons(target: Vector2) -> Array[Dictionary]:
 		return result
 	var lasers: Array = []
 	var ballistics: Array = []
+	var cosmo_weapons: Array = []
 	for part in model.parts:
+		if interior != null and not interior.is_part_powered(part.uid):
+			continue
 		if part.kind == "laser":
 			lasers.append(part)
 		elif part.kind == "machine_gun" or part.kind == "railgun":
 			ballistics.append(part)
-	if lasers.is_empty() and ballistics.is_empty():
+		elif part.kind.begins_with("cosmo_") and BalanceData.WEAPONS.has(part.kind):
+			cosmo_weapons.append(part)
+	if lasers.is_empty() and ballistics.is_empty() and cosmo_weapons.is_empty():
 		return result
-	laser_cooldown = float(BalanceData.WEAPONS.laser.cooldown) * (0.58 if overdrive_active else 1.0)
-	heat += (float(BalanceData.WEAPONS.laser.heat) + float(lasers.size()) * 3.0) * (0.65 if overdrive_active else 1.0)
+	var laser_spec := BalanceData.weapon_spec("laser")
+	laser_cooldown = float(laser_spec.get("cooldown", 0.28)) * (0.58 if overdrive_active else 1.0)
+	heat += (float(laser_spec.get("heat", 11.0)) + float(lasers.size() + cosmo_weapons.size()) * 2.5) * (0.65 if overdrive_active else 1.0)
 	turret_target = target
 	for part in lasers:
 		var source := to_global(module_local_center(part))
 		var shot_dir := source.direction_to(target) if source.distance_squared_to(target) > 1.0 else Vector2.RIGHT.rotated(rotation)
 		_apply_weapon_recoil(part, shot_dir, "laser")
-		result.append({"position": source, "velocity": linear_velocity + shot_dir * float(BalanceData.WEAPONS.laser.speed), "damage": float(BalanceData.WEAPONS.laser.damage), "color": Color("ff92e8"), "team": "player" if is_player else "enemy", "kind": "laser", "life": float(BalanceData.WEAPONS.laser.life)})
+		result.append({
+			"position": source,
+			"velocity": linear_velocity + shot_dir * float(laser_spec.get("speed", 720.0)),
+			"damage": float(laser_spec.get("damage", 7.0)),
+			"color": Color("ff92e8"),
+			"team": "player" if is_player else "enemy",
+			"kind": "laser",
+			"life": float(laser_spec.get("life", 2.25)),
+			"shield_mult": float(laser_spec.get("shield_mult", 1.0)),
+			"penetration": float(laser_spec.get("penetration", 0.0)),
+			"shot_sprite": str(laser_spec.get("shot_sprite", "")),
+		})
 	for part in ballistics:
-		var tuning: Dictionary = BalanceData.WEAPONS[part.kind]
-		if not model.consume_ammo("bullet", int(tuning.ammo_cost)):
+		var tuning: Dictionary = BalanceData.weapon_spec(part.kind)
+		var bcost := int(tuning.get("ammo_cost", 1))
+		if interior != null and not interior.consume_weapon_mag(part.uid, bcost):
+			continue
+		if interior == null and not model.consume_ammo("bullet", bcost):
 			continue
 		var source := to_global(module_local_center(part))
 		var shot_dir := source.direction_to(target) if source.distance_squared_to(target) > 1.0 else Vector2.RIGHT.rotated(rotation)
 		_apply_weapon_recoil(part, shot_dir, part.kind)
-		result.append({"position": source, "velocity": linear_velocity + shot_dir * float(tuning.speed), "damage": float(tuning.damage), "color": Color("d6b3ff") if part.kind == "railgun" else Color("b9d8ff"), "team": "player" if is_player else "enemy", "kind": part.kind, "life": float(tuning.life)})
+		result.append({
+			"position": source,
+			"velocity": linear_velocity + shot_dir * float(tuning.get("speed", 760.0)),
+			"damage": float(tuning.get("damage", 4.0)),
+			"color": Color("d6b3ff") if part.kind == "railgun" else Color("b9d8ff"),
+			"team": "player" if is_player else "enemy",
+			"kind": part.kind,
+			"life": float(tuning.get("life", 1.8)),
+			"shield_mult": float(tuning.get("shield_mult", 1.0)),
+			"penetration": float(tuning.get("penetration", 15.0 if part.kind == "railgun" else 0.0)),
+			"shot_sprite": str(tuning.get("shot_sprite", "")),
+		})
+	for part in cosmo_weapons:
+		var cw: Dictionary = BalanceData.weapon_spec(part.kind)
+		var source := to_global(module_local_center(part))
+		var shot_dir := source.direction_to(target) if source.distance_squared_to(target) > 1.0 else Vector2.RIGHT.rotated(rotation)
+		_apply_weapon_recoil(part, shot_dir, "laser")
+		result.append({
+			"position": source,
+			"velocity": linear_velocity + shot_dir * float(cw.get("speed", 760.0)),
+			"damage": float(cw.get("damage", 16.0)),
+			"color": Color(str(cw.get("color", "ff92e8"))),
+			"team": "player" if is_player else "enemy",
+			"kind": part.kind,
+			"life": float(cw.get("life", 2.2)),
+			"shield_mult": float(cw.get("shield_mult", 1.0)),
+			"penetration": float(cw.get("penetration", 0.0)),
+			"shot_sprite": str(cw.get("shot_sprite", "")),
+		})
 	return result
 
 func fire_missile(target: Vector2) -> Dictionary:
-	if missile_cooldown > 0.0 or not has_part("missile_launcher") or not model.consume_ammo("missile", int(BalanceData.WEAPONS.missile.ammo_cost)):
+	var mspec := BalanceData.weapon_spec("missile")
+	if missile_cooldown > 0.0 or not has_part("missile_launcher") or not model.consume_ammo("missile", int(mspec.get("ammo_cost", 2))):
 		return {}
-	missile_cooldown = float(BalanceData.WEAPONS.missile.cooldown)
+	missile_cooldown = float(mspec.get("cooldown", 0.72))
 	var launcher_part: PartData = null
 	for p in model.parts:
 		if p.kind == "missile_launcher":
@@ -768,7 +1118,20 @@ func fire_missile(target: Vector2) -> Dictionary:
 	var shot_dir := source.direction_to(target) if source.distance_squared_to(target) > 1.0 else Vector2.RIGHT.rotated(rotation)
 	if launcher_part != null:
 		_apply_weapon_recoil(launcher_part, shot_dir, "missile")
-	return {"position": source, "velocity": linear_velocity + shot_dir * float(BalanceData.WEAPONS.missile.speed), "damage": float(BalanceData.WEAPONS.missile.damage), "color": Color("ffbd78"), "guided": true, "target": target, "team": "player" if is_player else "enemy", "kind": "missile", "life": float(BalanceData.WEAPONS.missile.life)}
+	return {
+		"position": source,
+		"velocity": linear_velocity + shot_dir * float(mspec.get("speed", 460.0)),
+		"damage": float(mspec.get("damage", 30.0)),
+		"color": Color("ffbd78"),
+		"guided": true,
+		"target": target,
+		"team": "player" if is_player else "enemy",
+		"kind": "missile",
+		"life": float(mspec.get("life", 3.2)),
+		"shield_mult": float(mspec.get("shield_mult", 1.0)),
+		"penetration": float(mspec.get("penetration", 0.0)),
+		"shot_sprite": str(mspec.get("shot_sprite", "")),
+	}
 
 func fire_auto_mini_missiles(target: Vector2) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
@@ -796,8 +1159,22 @@ func shield_max_layers() -> int:
 	return mini(int(BalanceData.SHIELD.max_layers), base + shield_layer_bonus) if base > 0 else 0
 
 func repair_all() -> void:
+	if is_player:
+		var bp: Array[Dictionary] = ShipModel.saved_player_blueprint if not ShipModel.saved_player_blueprint.is_empty() else initial_blueprint
+		if not bp.is_empty():
+			var prev_core := model.core_part()
+			var preserve_max := prev_core.max_hp if prev_core != null else float(BalanceData.PLAYER.core_hp)
+			model.diagonal_45 = ShipModel.saved_diagonal_45
+			model.restore_from_blueprint(bp, preserve_max)
+			refresh_mass()
+			rebuild_exhaust_particles()
+			rebuild_voxel_renderer()
+			queue_redraw()
 	for part in model.parts:
 		part.hp = part.max_hp
+		part.ammo = part.capacity
+	if interior != null:
+		interior.attach_model(model, true)
 	shield_layers = shield_max_layers()
 	shield_recharge_left = 0.0
 
@@ -805,7 +1182,7 @@ func is_angle_shielded(local_angle: float) -> bool:
 	if shield_layers <= 0:
 		return false
 	for part in model.parts:
-		if part.kind != "shield_generator" or part.hp <= 0.0:
+		if int(part.spec().get("shield", 0)) <= 0 or part.hp <= 0.0:
 			continue
 		var gen_angle: float = float(part.quarter_turn) * PI * 0.5
 		if absf(wrapf(local_angle - gen_angle, -PI, PI)) <= PhysicsData.SHIELD_ARC_HALF_ANGLE:
@@ -822,7 +1199,7 @@ func try_absorb_directional_shield(impact_world: Vector2, hit_velocity: Vector2 
 	elif hit_velocity.length_squared() > 0.01:
 		hit_angle = (-hit_velocity.rotated(-rotation)).angle()
 	for part in model.parts:
-		if part.kind != "shield_generator" or part.hp <= 0.0:
+		if int(part.spec().get("shield", 0)) <= 0 or part.hp <= 0.0:
 			continue
 		var gen_angle: float = float(part.quarter_turn) * PI * 0.5
 		if absf(wrapf(hit_angle - gen_angle, -PI, PI)) <= PhysicsData.SHIELD_ARC_HALF_ANGLE:
@@ -857,6 +1234,11 @@ func damage_part(part: PartData, damage: float, hit_velocity: Vector2 = Vector2.
 
 	var pre_hp: float = part.hp
 	part.hp -= damage
+	if interior != null and damage > 0.0:
+		var hit_cell := local_cell_at(world_pt)
+		if not (hit_cell in part.cells()):
+			hit_cell = part.cell
+		interior.damage_energy_pipe_at(hit_cell, damage * 1.85, 0.85 if damage >= 24.0 else 0.0)
 	if part.hp > 0.0:
 		queue_redraw()
 		return []
@@ -877,29 +1259,42 @@ func damage_part(part: PartData, damage: float, hit_velocity: Vector2 = Vector2.
 	break_shake = VisualData.WEAPON_BREAK_SHAKE if removed.kind in ["laser", "missile_launcher", "mini_missile_launcher", "machine_gun", "railgun"] else VisualData.STRUCTURE_BREAK_SHAKE
 	break_shake_time = 0.18
 	var all_detached: Array[PartData] = model.detach_disconnected()
+	if interior != null:
+		for rc in removed.cells():
+			interior.damage_energy_pipe_at(rc, 999.0)
+		for dp in all_detached:
+			for dc in dp.cells():
+				interior.damage_energy_pipe_at(dc, 999.0)
 
-	# Cosmoteer 스타일 휘발성 모듈(탄약고·배터리) 내부 유폭 연쇄 피해
+	# Cosmoteer 스타일 휘발성 모듈 & 원자로 대폭발 (주변 반경 광역 피해 + 격벽/방화벽 감쇠)
 	if _chain_depth < 2 and PhysicsData.VOLATILE_EXPLOSION_DAMAGE.has(removed.kind):
 		var base_blast: float = float(PhysicsData.VOLATILE_EXPLOSION_DAMAGE[removed.kind])
 		var fill_scale := 1.0
 		if removed.capacity > 0:
 			fill_scale = 0.5 + 0.5 * clampf(float(removed.ammo) / maxf(float(removed.capacity), 1.0), 0.0, 1.0)
 		var blast_dmg: float = base_blast * fill_scale
+		var blast_rad_cells: float = float(PhysicsData.REACTOR_EXPLOSION_RADIUS_CELLS.get(removed.kind, 1.35))
 		last_volatile_blasts.append({
 			"world_pos": to_global(module_local_center(removed)),
 			"kind": removed.kind,
 			"damage": blast_dmg,
+			"radius_cells": blast_rad_cells,
 		})
 		var neighbor_uids := {}
-		for r_cell in removed.cells():
-			for axis in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
-				var adj := model.part_at(r_cell + axis)
-				if adj != null and adj.uid != removed.uid:
-					neighbor_uids[adj.uid] = adj
+		var r_center := Vector2(removed.cell)
+		for cand in model.parts:
+			if cand.uid == removed.uid or cand.hp <= 0.0:
+				continue
+			var d_cells := r_center.distance_to(Vector2(cand.cell))
+			if d_cells <= blast_rad_cells:
+				neighbor_uids[cand.uid] = d_cells
 		for n_uid in neighbor_uids.keys():
 			var n_part: PartData = model.part_by_uid(int(n_uid))
 			if n_part != null:
-				var extra_detached := damage_part(n_part, blast_dmg, Vector2.ZERO, to_global(module_local_center(n_part)), true, 0.0, _chain_depth + 1)
+				var d_cells := float(neighbor_uids[n_uid])
+				var falloff := clampf(1.0 - (d_cells / maxf(1.2, blast_rad_cells)) * 0.65, 0.25, 1.0)
+				var wall_mult := interior.edge_blast_mult(removed.cell, n_part.cell) if interior != null else 1.0
+				var extra_detached := damage_part(n_part, blast_dmg * falloff * wall_mult, Vector2.ZERO, to_global(module_local_center(n_part)), true, 0.0, _chain_depth + 1)
 				for item in extra_detached:
 					all_detached.append(item)
 
@@ -1028,6 +1423,34 @@ func _draw_static_cosmoteer_hull(canvas: CanvasItem) -> void:
 	if not _cached_conduit_segments.is_empty():
 		canvas.draw_multiline(_cached_conduit_segments, Color(0.04, 0.08, 0.13, 0.65), 4.0)
 
+	# Pass 4: Cosmoteer 무기 에셋 스프라이트 오버레이 (cutaway + turret)
+	for part in model.parts:
+		var tex := CosmoteerAssetsScript.get_part_texture(part.kind, "cutaway")
+		if tex == null:
+			continue
+		var cells := part.cells()
+		if cells.is_empty():
+			continue
+		var min_v := Vector2(INF, INF)
+		var max_v := Vector2(-INF, -INF)
+		for c in cells:
+			min_v.x = minf(min_v.x, float(c.x))
+			min_v.y = minf(min_v.y, float(c.y))
+			max_v.x = maxf(max_v.x, float(c.x))
+			max_v.y = maxf(max_v.y, float(c.y))
+		var center_local := ((min_v + max_v) * 0.5) * BalanceData.CELL
+		var span_cells := Vector2(max_v.x - min_v.x + 1.0, max_v.y - min_v.y + 1.0)
+		var draw_size := span_cells * BalanceData.CELL * 0.96
+		var sprite_rot := float(part.quarter_turn) * PI * 0.5 + PI * 0.5
+		if part.quarter_turn % 2 == 0:
+			draw_size = Vector2(span_cells.y, span_cells.x) * BalanceData.CELL * 0.96
+		canvas.draw_set_transform(center_local, sprite_rot)
+		canvas.draw_texture_rect(tex, Rect2(-draw_size * 0.5, draw_size), false)
+		var turret_tex := CosmoteerAssetsScript.get_turret_texture(part.kind)
+		if turret_tex != null:
+			canvas.draw_texture_rect(turret_tex, Rect2(-draw_size * 0.5, draw_size), false)
+		canvas.draw_set_transform(Vector2.ZERO, 0.0)
+
 	# Pass 3: 외곽 노출면에만 두꺼운 이중 베벨 건메탈 장갑 외벽(Hull Armor Rim)
 	var armor_outer := Color("0a111a")
 	var armor_bevel := Color("7fa6c9") if is_player else Color("c97b88")
@@ -1149,9 +1572,9 @@ func _draw_cosmoteer_ship(shake: Vector2, hull_cells: Dictionary) -> void:
 			draw_multiline(_cached_conduit_segments, Color(bus_col.r, bus_col.g, bus_col.b, bus_alpha), 1.5)
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
-	# Pass 4 Dynamic: 애니메이션·회전 포탑·추진 플룸만 매 프레임 갱신
+	# Pass 4 Dynamic: 애니메이션·회전 포탑·추진 플룸 버킷만 매 프레임 갱신 (정적 장갑/복도 200+ 파트 스킵)
 	var has_missile_ammo := model.ammo_total("missile") > 0
-	for part in model.parts:
+	for part in _cached_dynamic_draw_parts:
 		_draw_cosmoteer_module_detail(part, shake, hull_cells, now_ms, has_missile_ammo)
 
 	# Pass 5: 국소 전투 손상 균열(Fracture Cracks) · 용융 균열광 · 손상 HP 바
@@ -1172,6 +1595,10 @@ func _draw_cosmoteer_ship(shake: Vector2, hull_cells: Dictionary) -> void:
 		var bar_width := 28.0
 		draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 14.0), Vector2(bar_width, 3.4)), Color(0.02, 0.04, 0.09, 0.88), true)
 		draw_rect(Rect2(center + Vector2(-bar_width * 0.5, 14.0), Vector2(bar_width * hp_ratio, 3.4)), Color("6ee7a4") if hp_ratio > 0.5 else Color("ff7866"), true)
+
+	# Pass 6: ONI 내부 전력망 · 건설/수리 고스트 · FTL 원본 승조원 & 백병전 오버레이
+	if interior != null:
+		interior.draw_interior_overlays(self, shake, show_power_overlay, 26.0)
 
 func _draw_hazard_strip(rect: Rect2) -> void:
 	_draw_hazard_strip_on(self, rect)
@@ -1270,18 +1697,19 @@ func _draw_cosmoteer_module_detail(part: PartData, shake: Vector2, _hull_cells: 
 				var cy := -8.5 + float(floori(float(c_idx) / 3.0)) * 9.5
 				var c_col := Color("a8f0c0") if c_idx < lit else Color("223033")
 				draw_rect(Rect2(center + Vector2(cx, cy), Vector2(6.0, 7.0)), c_col, true)
-		"thruster", "reverse_thruster":
+		"thruster", "reverse_thruster", "cosmo_thruster_small", "cosmo_thruster_med", "cosmo_thruster_large", "cosmo_thruster_boost":
 			var exhaust_entry: Variant = active_exhausts.get(part.uid, null)
 			var intensity := float(exhaust_entry.get("intensity", 0.0)) if exhaust_entry is Dictionary else 0.0
 			if intensity <= 0.04:
 				return
 			var center := module_local_center(part) + shake
 			var rot_rad := float(part.quarter_turn) * PI * 0.5
-			var exhaust_dir := Vector2.LEFT.rotated(rot_rad) if part.kind == "thruster" else Vector2.RIGHT.rotated(rot_rad)
+			var is_rev := (part.kind == "reverse_thruster")
+			var exhaust_dir := Vector2.RIGHT.rotated(rot_rad) if is_rev else Vector2.LEFT.rotated(rot_rad)
 			var plume_dir: Vector2 = exhaust_entry.get("direction", exhaust_dir) if exhaust_entry is Dictionary else exhaust_dir
 			if plume_dir.length_squared() > 0.01:
 				var blocked := bool(_cached_exhaust_blocked.get(part.uid, false))
-				_draw_mach_plume(center + plume_dir * 24.5, plume_dir, intensity, part.kind == "reverse_thruster", blocked, now_ms + float(part.uid) * 19.0)
+				_draw_mach_plume(center + plume_dir * 24.5, plume_dir, intensity, is_rev, blocked, now_ms + float(part.uid) * 19.0)
 		"rcs_thruster":
 			var exhaust_entry: Variant = active_exhausts.get(part.uid, null)
 			if not (exhaust_entry is Dictionary):
@@ -1351,8 +1779,8 @@ func _draw_directional_shields(shake: Vector2) -> void:
 	var base_alpha: float = VisualData.SHIELD_LAYER_OPACITY[clampi(shield_layers, 0, VisualData.SHIELD_LAYER_OPACITY.size() - 1)]
 	var r: float = hull_bound_radius + PhysicsData.SHIELD_ARC_RADIUS_OFFSET
 	var half_arc: float = PhysicsData.SHIELD_ARC_HALF_ANGLE
-	for part in model.parts:
-		if part.kind != "shield_generator" or part.hp <= 0.0:
+	for part in _cached_shield_parts:
+		if part.hp <= 0.0:
 			continue
 		var flash: float = float(shield_arc_flash.get(part.uid, 0.0))
 		var alpha: float = clampf(base_alpha + flash * 0.42, 0.0, 0.98)

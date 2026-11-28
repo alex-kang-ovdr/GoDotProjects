@@ -66,7 +66,21 @@ const EXHAUST_BLOCKED_MULTIPLIER := 0.25
 const SHIELD_ARC_HALF_ANGLE := deg_to_rad(68.0) # 136도 전방/방향성 방어막 호
 const SHIELD_ARC_RADIUS_OFFSET := 18.0
 const RAILGUN_MAX_PENETRATIONS := 3
-const VOLATILE_EXPLOSION_DAMAGE := {"ammo_bay": 18.0, "bullet_bay": 14.0, "battery": 16.0}
+const VOLATILE_EXPLOSION_DAMAGE := {
+	"ammo_bay": 18.0,
+	"bullet_bay": 14.0,
+	"battery": 16.0,
+	"cosmo_power_storage": 28.0,
+	"cosmo_storage": 32.0,
+	"cosmo_reactor_small": 95.0,
+	"cosmo_reactor_med": 160.0,
+	"cosmo_reactor_large": 260.0,
+}
+const REACTOR_EXPLOSION_RADIUS_CELLS := {
+	"cosmo_reactor_small": 2.8,
+	"cosmo_reactor_med": 3.8,
+	"cosmo_reactor_large": 5.2,
+}
 const RAM_MIN_SPEED := 115.0
 const RAM_DAMAGE_PER_SPEED := 0.055
 const WEDGE_SELF_DAMAGE_MULT := 0.35

@@ -29,6 +29,9 @@ var ai_tick_elapsed := 0.0
 var desired_forward := 0.0
 var desired_reverse := 0.0
 var desired_turn := 0.0
+var hostile_on_sonar := false
+var sonar_detected_timer := 0.0
+var sonar_detected_peers: Array[ShipBody] = []
 
 func setup(next_level: int, boss_name: String = "", next_archetype: String = "roamer") -> void:
 	level = next_level
@@ -44,7 +47,7 @@ func setup(next_level: int, boss_name: String = "", next_archetype: String = "ro
 	pick_roam_target()
 	model.parts.clear()
 	var core := model.add("core", Vector2i.ZERO)
-	core.hp = (160.0 + level * 38.0) if boss else (70.0 + level * 24.0)
+	core.hp = ((160.0 + level * 38.0) if boss else (70.0 + level * 24.0)) * BalanceData.DURABILITY_MULTIPLIER
 	core.max_hp = core.hp
 
 	if boss:
@@ -129,6 +132,7 @@ func _physics_process(delta: float) -> void:
 		desired_turn = 0.0
 		return
 	ai_fire_timer -= delta
+	sonar_detected_timer = maxf(0.0, sonar_detected_timer - delta)
 	ai_tick_elapsed += delta
 	if ai_tick_elapsed >= float(BalanceData.NPC_AI.state_tick_seconds):
 		update_ai_state(ai_tick_elapsed)
@@ -152,9 +156,11 @@ func _draw() -> void:
 	var bar_rect := Rect2(Vector2(-bar_w * 0.5, offset_y + 6.0), Vector2(bar_w, 5.0 if boss else 4.0))
 	draw_rect(bar_rect.grow(1.5), Color(0.03, 0.05, 0.10, 0.85), true)
 	draw_rect(Rect2(bar_rect.position, Vector2(bar_w * ratio, bar_rect.size.y)), Color("ffd36e") if boss else (Color("ff6b7a") if is_attacking_player() else Color("7bc8ff")), true)
-	if boss or is_attacking_player() or ratio < 0.99:
+	if boss or is_attacking_player() or ratio < 0.99 or sonar_detected_timer > 0.0:
 		var tag := "%s · %s" % [enemy_name, ship_class_label]
-		draw_string(ThemeDB.fallback_font, Vector2(-100.0, offset_y + 1.0), tag, HORIZONTAL_ALIGNMENT_CENTER, 200.0, 12 if boss else 11, Color("ffe394") if boss else Color("ffb8c2"))
+		if is_attacking_player() and sonar_detected_timer > 0.0:
+			tag += " [공격모드!]"
+		draw_string(ThemeDB.fallback_font, Vector2(-120.0, offset_y + 1.0), tag, HORIZONTAL_ALIGNMENT_CENTER, 240.0, 12 if boss else 11, Color("ffe394") if boss else (Color("ff7a8a") if is_attacking_player() else Color("8cefff")))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 func update_ai_state(tick_delta: float) -> void:
@@ -215,6 +221,21 @@ func steer_to(destination: Vector2, min_distance: float, max_distance: float, fo
 func begin_attack() -> void:
 	ai_state = STATE_ATTACK
 	contact_type = ""
+
+func is_hostile_archetype() -> bool:
+	return boss or archetype == "aggressive" or archetype == "contact_warning" or hostile_on_sonar or ai_state == STATE_ATTACK or ai_state == STATE_EXCLUSION
+
+func on_sonar_detected(emitter: ShipBody, peers: Array[ShipBody]) -> bool:
+	sonar_detected_timer = float(BalanceData.SONAR.reveal_duration)
+	sonar_detected_peers = peers.duplicate()
+	if is_hostile_archetype():
+		if emitter != null and is_instance_valid(emitter):
+			target_ship = emitter
+		begin_attack()
+		queue_redraw()
+		return true
+	queue_redraw()
+	return false
 
 func notify_attacked_by_player() -> void:
 	if alive():

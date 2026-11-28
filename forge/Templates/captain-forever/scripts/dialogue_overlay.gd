@@ -1,12 +1,18 @@
 class_name DialogueOverlay
 extends Node2D
 
+const UiTheme = preload("res://scripts/ui_scale_theme.gd")
+
 signal choice_selected(action: String)
 signal dialogue_closed(entry_id: String)
 
 var dialogue_queue: Array[Dictionary] = []
 var current: Dictionary = {}
 var choice_rects: Array[Rect2] = []
+
+func _ready() -> void:
+	if get_viewport() != null:
+		get_viewport().size_changed.connect(queue_redraw)
 
 func enqueue(entry: Dictionary) -> void:
 	if entry.is_empty():
@@ -81,20 +87,22 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 				return
 		if panel_rect().has_point(event.position): dismiss()
-	# 대화 바깥 클릭도 월드로 흘려보내지 않는다.
 	get_viewport().set_input_as_handled()
 
 func panel_rect() -> Rect2:
-	var viewport_size := get_viewport_rect().size
-	var width := minf(830.0, viewport_size.x - 48.0)
-	return Rect2((viewport_size.x - width) * 0.5, viewport_size.y - 230.0, width, 190.0)
+	var vp := get_viewport_rect().size
+	var width := minf(980.0, vp.x - 24.0)
+	var height := minf(268.0, maxf(212.0, vp.y - 310.0))
+	var bottom_clearance := 276.0 if vp.x < 960.0 else 118.0
+	var py := clampf(vp.y - bottom_clearance - height, 12.0, maxf(12.0, vp.y - height - 12.0))
+	return Rect2((vp.x - width) * 0.5, py, width, height)
 
-func wrap_lines(text: String, width: float, font_size: int) -> PackedStringArray:
+func wrap_lines(text: String, width: float, font_size: int, font: Font) -> PackedStringArray:
 	var lines := PackedStringArray()
 	var line := ""
 	for word in text.split(" "):
 		var next := word if line.is_empty() else "%s %s" % [line, word]
-		if not line.is_empty() and ThemeDB.fallback_font.get_string_size(next, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > width:
+		if not line.is_empty() and font.get_string_size(next, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > width:
 			lines.append(line)
 			line = word
 		else:
@@ -106,29 +114,32 @@ func wrap_lines(text: String, width: float, font_size: int) -> PackedStringArray
 func _draw() -> void:
 	if current.is_empty():
 		return
+	var font := UiTheme.load_ui_font()
+	if font == null:
+		return
 	var panel := panel_rect()
 	var choices: Array = current.get("choices", [])
-	draw_rect(panel.grow(3.0), Color("5ddaff", 0.35), true)
-	draw_rect(panel, Color(0.02, 0.05, 0.12, 0.94), true)
-	draw_rect(panel, Color("87e8ff", 0.86), false, 1.5)
-	var icon_rect := Rect2(panel.position + Vector2(18, 20), Vector2(76, 76))
+	draw_rect(panel.grow(4.0), Color("5ddaff", 0.35), true)
+	draw_rect(panel, Color(0.02, 0.05, 0.12, 0.96), true)
+	draw_rect(panel, Color("87e8ff", 0.90), false, 2.2)
+	var icon_rect := Rect2(panel.position + Vector2(18, 22), Vector2(88, 88))
 	draw_rect(icon_rect, Color("133856"), true)
-	draw_rect(icon_rect, Color("72d9ff"), false, 2.0)
-	draw_string(ThemeDB.fallback_font, icon_rect.position + Vector2(8, 46), str(current.get("icon", "INFO")), HORIZONTAL_ALIGNMENT_CENTER, 60, 16, Color("b8f4ff"))
-	var text_origin := panel.position + Vector2(112, 30)
-	draw_string(ThemeDB.fallback_font, text_origin, str(current.get("speaker", "SYSTEM")), HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("70ddff"))
-	draw_string(ThemeDB.fallback_font, text_origin + Vector2(0, 24), str(current.get("title", "")), HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("f4fbff"))
-	var body_lines := wrap_lines(str(current.get("body", "")), panel.size.x - 136.0, 14)
-	for index in body_lines.size():
-		draw_string(ThemeDB.fallback_font, text_origin + Vector2(0, 50 + index * 18), body_lines[index], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("d0e4f5"))
+	draw_rect(icon_rect, Color("72d9ff"), false, 2.2)
+	draw_string(font, icon_rect.position + Vector2(6, 54), str(current.get("icon", "INFO")), HORIZONTAL_ALIGNMENT_CENTER, 76, 24, Color("b8f4ff"))
+	var text_origin := panel.position + Vector2(124, 38)
+	draw_string(font, text_origin, str(current.get("speaker", "SYSTEM")), HORIZONTAL_ALIGNMENT_LEFT, panel.size.x - 144.0, 20, Color("70ddff"))
+	draw_string(font, text_origin + Vector2(0, 34), str(current.get("title", "")), HORIZONTAL_ALIGNMENT_LEFT, panel.size.x - 144.0, 28, Color("f4fbff"))
+	var body_lines := wrap_lines(str(current.get("body", "")), panel.size.x - 148.0, 21, font)
+	for index in mini(body_lines.size(), 3):
+		draw_string(font, text_origin + Vector2(0, 68 + index * 27), body_lines[index], HORIZONTAL_ALIGNMENT_LEFT, -1, 21, Color("d0e4f5"))
 	choice_rects.clear()
 	if choices.is_empty():
-		draw_string(ThemeDB.fallback_font, panel.end - Vector2(142, 14), "ENTER / 클릭 · 계속", HORIZONTAL_ALIGNMENT_RIGHT, 132, 12, Color("8ab4ca"))
+		draw_string(font, panel.end - Vector2(246, 18), "ENTER / 터치 · 계속", HORIZONTAL_ALIGNMENT_RIGHT, 232, 20, Color("8ab4ca"))
 		return
-	var choice_width := (panel.size.x - 50.0) / choices.size()
+	var choice_width := (panel.size.x - 42.0) / choices.size()
 	for index in choices.size():
-		var rect := Rect2(panel.position + Vector2(18 + index * choice_width, 140), Vector2(choice_width - 14, 35))
+		var rect := Rect2(panel.position + Vector2(18 + index * choice_width, panel.size.y - 68.0), Vector2(choice_width - 12, 52))
 		choice_rects.append(rect)
 		draw_rect(rect, Color("123a55"), true)
-		draw_rect(rect, Color("65d8ff"), false, 1.0)
-		draw_string(ThemeDB.fallback_font, rect.position + Vector2(10, 23), "%d · %s" % [index + 1, str(choices[index].get("label", "선택"))], HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 20, 14, Color("e8fbff"))
+		draw_rect(rect, Color("65d8ff"), false, 1.8)
+		draw_string(font, rect.position + Vector2(12, 34), "%d · %s" % [index + 1, str(choices[index].get("label", "선택"))], HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 24, 21, Color("e8fbff"))

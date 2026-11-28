@@ -17,6 +17,9 @@ var turn_speed := 2.5
 var age := 0.0
 var distance_travelled := 0.0
 var max_range := INF
+var shield_mult := 1.0
+var penetration := 0.0
+var shot_sprite := ""
 var trail: Array[Vector2] = []
 
 func setup(info: Dictionary) -> void:
@@ -33,6 +36,12 @@ func setup(info: Dictionary) -> void:
 	target_ship = info.get("target_ship", null)
 	turn_speed = float(info.get("turn_speed", 2.5))
 	max_range = float(info.get("max_range", INF))
+	shield_mult = float(info.get("shield_mult", 1.0))
+	penetration = float(info.get("penetration", 0.0))
+	shot_sprite = str(info.get("shot_sprite", ""))
+	if shot_sprite.is_empty():
+		var w := Balance.weapon_spec(kind)
+		shot_sprite = str(w.get("shot_sprite", ""))
 	trail.clear()
 	trail.append(global_position)
 	queue_redraw()
@@ -71,6 +80,15 @@ func _draw() -> void:
 
 	var dir := velocity.normalized() if velocity.length_squared() > 1.0 else Vector2.RIGHT
 	var perp := Vector2(-dir.y, dir.x)
+
+	if not shot_sprite.is_empty():
+		var stex: Texture2D = CosmoteerAssets.get_sprite_texture(shot_sprite)
+		if stex != null:
+			var psize := Vector2(28, 10) if shot_sprite == "shot_laser_large" else (Vector2(34, 9) if shot_sprite == "shot_railgun" else (Vector2(22, 10) if guided else Vector2(20, 8)))
+			draw_set_transform(Vector2.ZERO, dir.angle(), Vector2.ONE)
+			draw_texture_rect(stex, Rect2(-psize * 0.5, psize), false, Color.WHITE)
+			draw_set_transform(Vector2.ZERO)
+			return
 
 	if guided:
 		# Missile / Torpedo body + thruster flare

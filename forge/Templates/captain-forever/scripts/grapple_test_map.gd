@@ -2,16 +2,25 @@ class_name GrappleTestMap
 extends Node2D
 
 const BalanceData = preload("res://scripts/balance.gd")
+const PhysicsData = preload("res://scripts/physics_tuning.gd")
 const BackgroundScript = preload("res://scripts/background.gd")
 const ShipBodyScript = preload("res://scripts/ship_body.gd")
 const EnemyShipScript = preload("res://scripts/enemy_ship.gd")
 const GrappleTetherScript = preload("res://scripts/grapple_tether.gd")
 const CombatFxScript = preload("res://scripts/combat_fx.gd")
 const ProjectileScript = preload("res://scripts/projectile.gd")
+const SonarPulseScript = preload("res://scripts/sonar_pulse.gd")
+const SonarResultPopupScript = preload("res://scripts/sonar_result_popup.gd")
+const TrackingOrderScript = preload("res://scripts/target_tracking_order.gd")
+const TrackingVisual = preload("res://scripts/target_tracking_visual.gd")
+const ModeSwitcherScript = preload("res://scripts/mode_switcher.gd")
+const FlickScrollScript = preload("res://scripts/flick_scroll_container.gd")
+const UiTheme = preload("res://scripts/ui_scale_theme.gd")
 
 const SLIDER_SPECS := [
 	{"key": "reel_force", "label": "끌어당기기 힘 (Pull Force)", "min": 1000.0, "max": 80000.0, "step": 1000.0, "fmt": "%.0f"},
 	{"key": "reel_speed", "label": "끌어당기기 최대 속도 (px/s)", "min": 40.0, "max": 1000.0, "step": 20.0, "fmt": "%.0f"},
+	{"key": "sonar_range", "label": "소나 탐지 반경 (px)", "min": 400.0, "max": 4000.0, "step": 100.0, "fmt": "%.0f"},
 	{"key": "hp", "label": "체인 내구도 (HP)", "min": 32.0, "max": 600.0, "step": 8.0, "fmt": "%.0f"},
 	{"key": "max_stretch_ratio", "label": "체인 최대 신장 배율", "min": 1.0, "max": 2.0, "step": 0.05, "fmt": "%.2fx"},
 	{"key": "max_stretch_hp_drain_per_sec", "label": "최대 신장 내구도 감소/s", "min": 0.0, "max": 150.0, "step": 2.0, "fmt": "%.0f"},
@@ -58,17 +67,39 @@ var targets: Array[EnemyShip] = []
 var target_roles: Dictionary = {}
 var selected_target: EnemyShip
 var grapple: GrappleTether
+var active_sonar: SonarPulse
+var sonar_popup: SonarResultPopup
+var mode_switcher: ModeSwitcher
 var grapple_config: Dictionary = {}
+
+var navigation_active := false
+var navigation_target := Vector2.ZERO
+var tracking_order = TrackingOrderScript.new()
+var _pointer_down_pos := Vector2.ZERO
+var _pointer_dragged := false
+var _active_touch_id := -1
+var _pinch_touches: Dictionary = {}
+var _pinch_active := false
+var _pinch_prev_dist := 0.0
+var _touch_forward := false
+var _touch_reverse := false
+var _touch_turn_left := false
+var _touch_turn_right := false
 
 var resist_enabled := true
 var fire_test_enabled := false
 var reel_toggle_active := false
 var _fire_test_timer := 0.0
-var _last_event_text := "G: 발사/해제 · V: 끌어당기기 · 클릭: 대상 · WASD/QE: 비행 · 휠: 줌"
+var _last_event_text := "빈곳 터치: 이동 · 적 드래그: 각도/거리 유지 · G: 그래플 · V: 감기 · X: 소나"
 var _panel_collapsed := false
 
 var _ui_layer: CanvasLayer
 var _panel: PanelContainer
+var _panel_scroll: ScrollContainer
+var _touch_bar: PanelContainer
+var _touch_grid: GridContainer
+var _touch_reel_btn: Button
+var _touch_cancel_btn: Button
 var _scroll: ScrollContainer
 var _telemetry_label: Label
 var _stress_bar: ProgressBar
@@ -84,6 +115,7 @@ var _ui_font: Font
 func _ready() -> void:
 	_install_ui_font()
 	grapple_config = BalanceData.GRAPPLE.duplicate(true)
+	grapple_config["sonar_range"] = 1600.0
 
 	world_layer = Node2D.new()
 	world_layer.name = "World"
@@ -114,17 +146,21 @@ func _ready() -> void:
 
 	_spawn_test_targets()
 	_build_ui()
+	_build_mobile_touch_bar()
+	sonar_popup = SonarResultPopupScript.new()
+	add_child(sonar_popup)
+	mode_switcher = ModeSwitcherScript.new()
+	mode_switcher.setup("grapple")
+	mode_switcher.orientation_changed.connect(func(_p: bool) -> void: _sync_grapple_layout())
+	add_child(mode_switcher)
+	if get_viewport() != null:
+		get_viewport().size_changed.connect(_sync_grapple_layout)
 	_sync_sliders_from_config()
+	_sync_grapple_layout()
 	_update_telemetry()
 
 func _install_ui_font() -> void:
-	if FileAccess.file_exists("res://assets/fonts/captain-ui.txt"):
-		var raw := FileAccess.get_file_as_string("res://assets/fonts/captain-ui.txt").strip_edges()
-		if not raw.is_empty():
-			var ff := FontFile.new()
-			ff.data = Marshalls.base64_to_raw(raw)
-			_ui_font = ff
-			ThemeDB.fallback_font = ff
+	_ui_font = UiTheme.load_ui_font()
 
 func _spawn_test_targets() -> void:
 	for t in targets:
@@ -135,10 +171,10 @@ func _spawn_test_targets() -> void:
 	selected_target = null
 
 	var specs := [
-		{"role": "light", "label": "경량 드론 (EASY TOW)", "pos": Vector2(360, -140), "level": 1},
-		{"role": "tug", "label": "동급 저항선 (TUG-OF-WAR)", "pos": Vector2(400, 140), "level": 2},
-		{"role": "heavy", "label": "중량 프리깃 (HEAVY)", "pos": Vector2(-380, 140), "level": 5},
-		{"role": "shooter", "label": "포격 더미 (CHAIN HIT)", "pos": Vector2(-340, -160), "level": 2},
+		{"role": "light", "label": "경량 드론 (중립)", "pos": Vector2(360, -140), "level": 1, "hostile": false},
+		{"role": "tug", "label": "동급 저항선 (적대)", "pos": Vector2(400, 140), "level": 2, "hostile": true},
+		{"role": "heavy", "label": "중량 프리깃 (중립)", "pos": Vector2(-380, 140), "level": 5, "hostile": false},
+		{"role": "shooter", "label": "포격 더미 (적대)", "pos": Vector2(-340, -160), "level": 2, "hostile": true},
 	]
 	for spec in specs:
 		var ship := EnemyShipScript.new()
@@ -146,6 +182,8 @@ func _spawn_test_targets() -> void:
 		ship.rotation = (player.position - Vector2(spec.pos)).angle()
 		world_layer.add_child(ship)
 		ship.setup(int(spec.level), "", "roamer")
+		ship.hostile_on_sonar = bool(spec.hostile)
+		ship.enemy_name = str(spec.label)
 		if spec.role == "light":
 			ship.model.parts.clear()
 			ship.model.add("core", Vector2i.ZERO)
@@ -184,133 +222,127 @@ func _build_ui() -> void:
 	add_child(_ui_layer)
 
 	_panel = PanelContainer.new()
-	_panel.position = Vector2(14, 14)
-	_panel.custom_minimum_size = Vector2(360, 0)
-	if _ui_font != null:
-		var ui_theme := Theme.new()
-		ui_theme.default_font = _ui_font
-		_panel.theme = ui_theme
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.04, 0.07, 0.13, 0.88)
-	style.border_color = Color(0.32, 0.72, 0.95, 0.75)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(12)
-	_panel.add_theme_stylebox_override("panel", style)
+	_panel.position = Vector2(10, 10)
+	_panel.custom_minimum_size = Vector2.ZERO
+	_panel.theme = UiTheme.build_theme(true)
+	_panel.add_theme_stylebox_override("panel", UiTheme.make_box(Color(0.04, 0.07, 0.13, 0.92), Color(0.32, 0.72, 0.95, 0.85), 12, 12, 10, 2))
 	_ui_layer.add_child(_panel)
 
 	var root_box := VBoxContainer.new()
+	root_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	root_box.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	root_box.add_theme_constant_override("separation", 8)
 	_panel.add_child(root_box)
 
 	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 8)
 	root_box.add_child(header)
 	var title := Label.new()
-	title.text = "GRAPPLE LAB · 그래플 실시간 실험실"
+	title.text = "GRAPPLE LAB · 그래플 실험실"
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.clip_text = true
+	title.add_theme_font_size_override("font_size", 24)
 	title.add_theme_color_override("font_color", Color("91eaff"))
 	header.add_child(title)
 
 	_collapse_btn = Button.new()
 	_collapse_btn.text = "접기"
+	_collapse_btn.custom_minimum_size = Vector2(92, 46)
+	_collapse_btn.add_theme_font_size_override("font_size", 20)
 	_collapse_btn.pressed.connect(_toggle_collapse)
 	header.add_child(_collapse_btn)
 
+	_panel_scroll = FlickScrollScript.new()
+	_panel_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_panel_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	root_box.add_child(_panel_scroll)
+
+	var body_box := VBoxContainer.new()
+	body_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body_box.add_theme_constant_override("separation", 8)
+	_panel_scroll.add_child(body_box)
+
 	_telemetry_label = Label.new()
 	_telemetry_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_telemetry_label.add_theme_font_size_override("font_size", 13)
+	_telemetry_label.add_theme_font_size_override("font_size", 19)
 	_telemetry_label.add_theme_color_override("font_color", Color("d8ecff"))
-	root_box.add_child(_telemetry_label)
+	body_box.add_child(_telemetry_label)
 
 	var stress_row := HBoxContainer.new()
-	root_box.add_child(stress_row)
+	stress_row.add_theme_constant_override("separation", 8)
+	body_box.add_child(stress_row)
 	var stress_lbl := Label.new()
 	stress_lbl.text = "공진 스트레스"
-	stress_lbl.custom_minimum_size = Vector2(96, 0)
-	stress_lbl.add_theme_font_size_override("font_size", 12)
+	stress_lbl.custom_minimum_size = Vector2(138, 0)
+	stress_lbl.add_theme_font_size_override("font_size", 19)
 	stress_row.add_child(stress_lbl)
 	_stress_bar = ProgressBar.new()
 	_stress_bar.min_value = 0.0
 	_stress_bar.max_value = 100.0
 	_stress_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_stress_bar.custom_minimum_size = Vector2(0, 16)
+	_stress_bar.custom_minimum_size = Vector2(0, 22)
 	stress_row.add_child(_stress_bar)
 
 	var btn_grid := GridContainer.new()
 	btn_grid.columns = 2
+	btn_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_grid.add_theme_constant_override("h_separation", 6)
 	btn_grid.add_theme_constant_override("v_separation", 6)
-	root_box.add_child(btn_grid)
+	body_box.add_child(btn_grid)
 
-	var fire_grapple_btn := Button.new()
-	fire_grapple_btn.text = "그래플 발사/해제 (G)"
-	fire_grapple_btn.pressed.connect(toggle_grapple)
-	btn_grid.add_child(fire_grapple_btn)
+	var make_gbtn := func(txt: String, cb: Callable) -> Button:
+		var b := Button.new()
+		b.text = txt
+		b.clip_text = true
+		b.custom_minimum_size = Vector2(0, 48)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.add_theme_font_size_override("font_size", 19)
+		b.pressed.connect(cb)
+		return b
 
-	_reel_btn = Button.new()
-	_reel_btn.text = "끌어당기기: 대기 (V)"
+	btn_grid.add_child(make_gbtn.call("그래플 발사 (G)", toggle_grapple))
+	_reel_btn = make_gbtn.call("감기: 대기 (V)", toggle_reel_in)
 	_reel_btn.disabled = true
-	_reel_btn.pressed.connect(toggle_reel_in)
 	btn_grid.add_child(_reel_btn)
-
-	var reset_btn := Button.new()
-	reset_btn.text = "함선 위치 초기화 (R)"
-	reset_btn.pressed.connect(reset_arena)
-	btn_grid.add_child(reset_btn)
-
-	var default_btn := Button.new()
-	default_btn.text = "3배 강화 기본값"
-	default_btn.pressed.connect(apply_default_preset)
-	btn_grid.add_child(default_btn)
-
-	var legacy_btn := Button.new()
-	legacy_btn.text = "구버전(약함) 설정"
-	legacy_btn.pressed.connect(apply_legacy_preset)
-	btn_grid.add_child(legacy_btn)
-
-	_resist_btn = Button.new()
-	_resist_btn.text = "적 저항 추력: ON"
-	_resist_btn.pressed.connect(_toggle_resist)
+	btn_grid.add_child(make_gbtn.call("위치 초기화 (R)", reset_arena))
+	btn_grid.add_child(make_gbtn.call("3배 강화 기본값", apply_default_preset))
+	btn_grid.add_child(make_gbtn.call("구버전(약함)", apply_legacy_preset))
+	_resist_btn = make_gbtn.call("적 저항: ON", _toggle_resist)
 	btn_grid.add_child(_resist_btn)
-
-	_fire_btn = Button.new()
-	_fire_btn.text = "적 사격 테스트: OFF"
-	_fire_btn.pressed.connect(_toggle_fire_test)
+	_fire_btn = make_gbtn.call("적 사격: OFF", _toggle_fire_test)
 	btn_grid.add_child(_fire_btn)
+	btn_grid.add_child(make_gbtn.call("소나 발신 (X)", trigger_sonar_pulse))
 
-	var back_btn := Button.new()
-	back_btn.text = "메인 게임으로 (F9)"
-	back_btn.pressed.connect(_return_to_main)
-	btn_grid.add_child(back_btn)
-
-	_scroll = ScrollContainer.new()
-	_scroll.custom_minimum_size = Vector2(336, 360)
-	root_box.add_child(_scroll)
+	_scroll = FlickScrollScript.new()
+	_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_scroll.custom_minimum_size = Vector2(0, 180)
+	body_box.add_child(_scroll)
 
 	var sliders_box := VBoxContainer.new()
 	sliders_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	sliders_box.add_theme_constant_override("separation", 6)
+	sliders_box.add_theme_constant_override("separation", 8)
 	_scroll.add_child(sliders_box)
 
 	for spec in SLIDER_SPECS:
 		var key: String = spec.key
 		var row := VBoxContainer.new()
-		row.add_theme_constant_override("separation", 2)
+		row.add_theme_constant_override("separation", 3)
 		sliders_box.add_child(row)
 
 		var top := HBoxContainer.new()
 		row.add_child(top)
 		var lbl := Label.new()
 		lbl.text = spec.label
+		lbl.clip_text = true
 		lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		lbl.add_theme_font_size_override("font_size", 12)
+		lbl.add_theme_font_size_override("font_size", 19)
 		lbl.add_theme_color_override("font_color", Color("b8d7f0"))
 		top.add_child(lbl)
 
 		var val_lbl := Label.new()
 		val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		val_lbl.custom_minimum_size = Vector2(68, 0)
-		val_lbl.add_theme_font_size_override("font_size", 12)
+		val_lbl.custom_minimum_size = Vector2(88, 0)
+		val_lbl.add_theme_font_size_override("font_size", 19)
 		val_lbl.add_theme_color_override("font_color", Color("ffcf72"))
 		top.add_child(val_lbl)
 		_value_labels[key] = val_lbl
@@ -326,6 +358,93 @@ func _build_ui() -> void:
 			set_param(key, v))
 		row.add_child(slider)
 		_sliders[key] = slider
+
+func _build_mobile_touch_bar() -> void:
+	_touch_bar = PanelContainer.new()
+	_touch_bar.theme = UiTheme.build_theme(true)
+	_touch_bar.add_theme_stylebox_override("panel", UiTheme.make_box(Color(0.03, 0.06, 0.12, 0.92), Color(0.28, 0.72, 0.95, 0.78), 10, 8, 6, 2))
+	_ui_layer.add_child(_touch_bar)
+
+	_touch_grid = GridContainer.new()
+	_touch_grid.columns = 10
+	_touch_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_touch_grid.add_theme_constant_override("h_separation", 6)
+	_touch_grid.add_theme_constant_override("v_separation", 6)
+	_touch_bar.add_child(_touch_grid)
+
+	var make_hold_btn := func(text: String, on_change: Callable) -> Button:
+		var b := Button.new()
+		b.text = text
+		b.clip_text = true
+		b.custom_minimum_size = Vector2(0, 50)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.focus_mode = Control.FOCUS_NONE
+		b.add_theme_font_size_override("font_size", 19)
+		b.button_down.connect(func() -> void: on_change.call(true))
+		b.button_up.connect(func() -> void: on_change.call(false))
+		b.mouse_exited.connect(func() -> void:
+			if not b.button_pressed:
+				on_change.call(false))
+		return b
+
+	_touch_grid.add_child(make_hold_btn.call("좌회전", func(v: bool) -> void: _touch_turn_left = v))
+	_touch_grid.add_child(make_hold_btn.call("전진 ▲", func(v: bool) -> void: _touch_forward = v))
+	_touch_grid.add_child(make_hold_btn.call("후진 ▼", func(v: bool) -> void: _touch_reverse = v))
+	_touch_grid.add_child(make_hold_btn.call("우회전", func(v: bool) -> void: _touch_turn_right = v))
+
+	var make_tap_btn := func(text: String, on_press: Callable) -> Button:
+		var b := Button.new()
+		b.text = text
+		b.clip_text = true
+		b.custom_minimum_size = Vector2(0, 50)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.focus_mode = Control.FOCUS_NONE
+		b.add_theme_font_size_override("font_size", 19)
+		b.pressed.connect(on_press)
+		return b
+
+	_touch_grid.add_child(make_tap_btn.call("축소 -", func() -> void: _set_zoom(camera.zoom.x / 1.18)))
+	_touch_grid.add_child(make_tap_btn.call("확대 +", func() -> void: _set_zoom(camera.zoom.x * 1.18)))
+
+	_touch_cancel_btn = make_tap_btn.call("이동정지", cancel_navigation_and_tracking)
+	_touch_cancel_btn.disabled = true
+	_touch_grid.add_child(_touch_cancel_btn)
+
+	_touch_grid.add_child(make_tap_btn.call("소나 (X)", trigger_sonar_pulse))
+	_touch_reel_btn = make_tap_btn.call("감기 (V)", toggle_reel_in)
+	_touch_reel_btn.disabled = true
+	_touch_grid.add_child(_touch_reel_btn)
+	_touch_grid.add_child(make_tap_btn.call("그래플", toggle_grapple))
+
+func _sync_grapple_layout() -> void:
+	if get_viewport() == null:
+		return
+	var vp := get_viewport().get_visible_rect().size
+	var narrow := vp.x < 960.0 or ModeSwitcherScript.is_portrait_mode
+	if _panel != null:
+		var pw := minf(480.0, vp.x - 20.0)
+		var max_h := maxf(180.0, vp.y - (250.0 if narrow else 104.0))
+		var ph := 68.0 if _panel_collapsed else minf(560.0, max_h)
+		_panel.anchor_left = 0.0
+		_panel.anchor_right = 0.0
+		_panel.anchor_top = 0.0
+		_panel.anchor_bottom = 0.0
+		_panel.offset_left = 10.0
+		_panel.offset_right = 10.0 + pw
+		_panel.offset_top = 10.0
+		_panel.offset_bottom = 10.0 + ph
+	if _touch_bar != null:
+		if _touch_grid != null:
+			_touch_grid.columns = 5 if narrow else 10
+		var bar_h := 122.0 if narrow else 68.0
+		_touch_bar.anchor_left = 0.0
+		_touch_bar.anchor_right = 1.0
+		_touch_bar.anchor_top = 1.0
+		_touch_bar.anchor_bottom = 1.0
+		_touch_bar.offset_left = 10.0
+		_touch_bar.offset_right = -10.0
+		_touch_bar.offset_top = -10.0 - bar_h
+		_touch_bar.offset_bottom = -10.0
 
 func set_param(key: String, value: float) -> void:
 	grapple_config[key] = value
@@ -384,15 +503,27 @@ func toggle_reel_in() -> void:
 	_last_event_text = "끌어당기기 %s (힘 %.0f)" % ["ON" if reel_toggle_active else "OFF", float(grapple_config.get("reel_force", BalanceData.GRAPPLE.reel_force))]
 
 func _sync_reel_button() -> void:
-	if _reel_btn == null:
-		return
 	var can_reel := grapple != null and is_instance_valid(grapple) and grapple.connected
-	_reel_btn.disabled = not can_reel
-	if not can_reel:
-		_reel_btn.text = "끌어당기기: 대기 (V)"
-	else:
-		var active := reel_toggle_active or Input.is_key_pressed(KEY_V)
-		_reel_btn.text = "끌어당기기: %s (V)" % ("ON" if active else "OFF")
+	var active := can_reel and (reel_toggle_active or Input.is_key_pressed(KEY_V))
+	if _reel_btn != null:
+		_reel_btn.disabled = not can_reel
+		_reel_btn.text = "감기: 대기 (V)" if not can_reel else ("감기: %s (V)" % ("ON" if active else "OFF"))
+	if _touch_reel_btn != null:
+		_touch_reel_btn.disabled = not can_reel
+		_touch_reel_btn.text = "감기 ON" if active else "감기 (V)"
+	if _touch_cancel_btn != null:
+		var auto_on: bool = navigation_active or bool(tracking_order.active)
+		_touch_cancel_btn.disabled = not auto_on
+		_touch_cancel_btn.text = "추적정지" if bool(tracking_order.active) else ("이동정지" if navigation_active else "자동정지")
+
+func cancel_navigation_and_tracking() -> void:
+	navigation_active = false
+	tracking_order.cancel()
+	_pointer_dragged = false
+	_active_touch_id = -1
+	_sync_reel_button()
+	_last_event_text = "자동 이동 / 표적 추적 해제"
+	queue_redraw()
 
 func _toggle_fire_test() -> void:
 	fire_test_enabled = not fire_test_enabled
@@ -400,8 +531,10 @@ func _toggle_fire_test() -> void:
 
 func _toggle_collapse() -> void:
 	_panel_collapsed = not _panel_collapsed
-	_scroll.visible = not _panel_collapsed
+	if _panel_scroll != null:
+		_panel_scroll.visible = not _panel_collapsed
 	_collapse_btn.text = "펼치기" if _panel_collapsed else "접기"
+	_sync_grapple_layout()
 
 func _return_to_main() -> void:
 	if get_tree() != null:
@@ -411,6 +544,12 @@ func reset_arena() -> void:
 	if grapple != null and is_instance_valid(grapple):
 		grapple.detach("ARENA RESET")
 		grapple = null
+	if active_sonar != null and is_instance_valid(active_sonar):
+		active_sonar.queue_free()
+		active_sonar = null
+	if sonar_popup != null and is_instance_valid(sonar_popup):
+		sonar_popup.hide_popup()
+	cancel_navigation_and_tracking()
 	player.global_position = Vector2.ZERO
 	player.rotation = -PI * 0.5
 	player.linear_velocity = Vector2.ZERO
@@ -419,13 +558,142 @@ func reset_arena() -> void:
 	_spawn_test_targets()
 	_last_event_text = "아레나 초기화 완료"
 
+func trigger_sonar_pulse() -> void:
+	if active_sonar != null and is_instance_valid(active_sonar):
+		active_sonar.queue_free()
+	var scan_range := float(grapple_config.get("sonar_range", 1600.0))
+	active_sonar = SonarPulseScript.new()
+	world_layer.add_child(active_sonar)
+	active_sonar.ship_detected.connect(func(ship: EnemyShip, entered_attack: bool) -> void:
+		if entered_attack:
+			_last_event_text = "소나 탐지! %s 공격모드 전환!" % ship.enemy_name)
+	active_sonar.scan_completed.connect(func(report: Dictionary) -> void:
+		if sonar_popup != null and is_instance_valid(sonar_popup):
+			sonar_popup.show_report(report)
+		_last_event_text = "소나 완료 · 함선 %d척 (공격모드 %d / 상호탐지 %d건)" % [
+			(report.get("ships", []) as Array).size(),
+			int(report.get("hostile_count", 0)),
+			(report.get("mutual_pairs", []) as Array).size()
+		])
+	active_sonar.launch(player, targets, [], [], scan_range)
+	_last_event_text = "소나 파동 발신 중... (반경 %.0fpx)" % scan_range
+
+func _is_point_on_ui(screen_pos: Vector2) -> bool:
+	if _panel != null and _panel.visible and _panel.get_global_rect().has_point(screen_pos):
+		return true
+	if _touch_bar != null and _touch_bar.visible and _touch_bar.get_global_rect().has_point(screen_pos):
+		return true
+	if mode_switcher != null and mode_switcher.is_point_inside(screen_pos):
+		return true
+	if sonar_popup != null and sonar_popup.is_showing() and sonar_popup._panel != null and sonar_popup._panel.get_global_rect().has_point(screen_pos):
+		return true
+	return false
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		_pinch_touches.clear()
+		_pinch_active = false
+		_pinch_prev_dist = 0.0
+		_active_touch_id = -1
+		_pointer_dragged = false
+		_touch_forward = false
+		_touch_reverse = false
+		_touch_turn_left = false
+		_touch_turn_right = false
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and (not event.pressed or event.canceled):
+		_pinch_touches.erase(event.index)
+		if _pinch_touches.size() < 2:
+			_pinch_prev_dist = 0.0
+		if _pinch_touches.is_empty():
+			_pinch_active = false
+		if event.index == _active_touch_id and not tracking_order.dragging:
+			_active_touch_id = -1
+			_pointer_dragged = false
+	if tracking_order.dragging:
+		if event is InputEventMouse and event.device == -1:
+			return
+		if event is InputEventMouseMotion:
+			if event.position.distance_squared_to(_pointer_down_pos) >= 36.0:
+				_pointer_dragged = true
+			if _pointer_dragged:
+				tracking_order.update_pointer(_viewport_to_world(event.position))
+				queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
+		if event is InputEventScreenDrag and event.index == _active_touch_id:
+			if event.position.distance_squared_to(_pointer_down_pos) >= 36.0:
+				_pointer_dragged = true
+			if _pointer_dragged:
+				tracking_order.update_pointer(_viewport_to_world(event.position))
+				queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
+		var mouse_rel: bool = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed
+		var touch_rel: bool = event is InputEventScreenTouch and event.index == _active_touch_id and (not event.pressed or event.canceled)
+		if mouse_rel or touch_rel:
+			if _pointer_dragged:
+				tracking_order.update_pointer(_viewport_to_world(event.position))
+				if tracking_order.commit():
+					navigation_active = false
+					_last_event_text = "표적 유지 · 거리 %.0fpx / 각도 %+.0f°" % [tracking_order.distance, rad_to_deg(tracking_order.angle)]
+				else:
+					tracking_order.cancel()
+			else:
+				tracking_order.cancel()
+			_pointer_dragged = false
+			_active_touch_id = -1
+			_sync_reel_button()
+			queue_redraw()
+			get_viewport().set_input_as_handled()
+			return
+
+func _begin_world_pointer(screen_pos: Vector2, is_touch: bool) -> void:
+	if _is_point_on_ui(screen_pos):
+		return
+	var world_pos := _viewport_to_world(screen_pos)
+	var pick_pad := 46.0 if is_touch else 28.0
+	var picked := _nearest_target_at(world_pos, pick_pad)
+	if picked != null:
+		selected_target = picked
+		navigation_active = false
+		tracking_order.begin(picked, player.global_position, player.hull_bound_radius + PhysicsData.TRACKING_CLEARANCE)
+		var info: Dictionary = target_roles.get(picked, {})
+		_last_event_text = "대상 선택: %s · 드래그로 각도/거리 유지" % str(info.get("label", picked.enemy_name))
+		_sync_reel_button()
+		queue_redraw()
+		return
+	tracking_order.cancel()
+	if player != null and player.touches_navigation_point(world_pos):
+		navigation_active = false
+		_last_event_text = "이미 목표 지점에 닿아 있습니다"
+		_sync_reel_button()
+		queue_redraw()
+		return
+	navigation_target = world_pos
+	navigation_active = true
+	if player != null:
+		player.reset_auto_nav_monitor(world_pos)
+	_last_event_text = "위치 지정 이동 · (%.0f, %.0f)" % [world_pos.x, world_pos.y]
+	_sync_reel_button()
+	queue_redraw()
+
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouse and event.device == -1:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F9:
 			_return_to_main()
 			return
+		if event.keycode == KEY_ESCAPE and (tracking_order.active or tracking_order.dragging or navigation_active):
+			cancel_navigation_and_tracking()
+			return
 		if event.is_action_pressed("fire_grapple") or event.keycode == KEY_G:
 			toggle_grapple()
+			return
+		if event.keycode == KEY_X:
+			trigger_sonar_pulse()
 			return
 		if event.is_action_pressed("restart") or event.keycode == KEY_R:
 			reset_arena()
@@ -436,6 +704,49 @@ func _unhandled_input(event: InputEvent) -> void:
 			_set_zoom(camera.zoom.x / 1.15)
 	elif event is InputEventMagnifyGesture:
 		_set_zoom(camera.zoom.x * float(event.factor))
+	elif event is InputEventScreenTouch:
+		if event.pressed and not event.canceled:
+			if _is_point_on_ui(event.position):
+				return
+			_pinch_touches[event.index] = event.position
+			if _pinch_touches.size() >= 2:
+				_pinch_active = true
+				_active_touch_id = -1
+				_pointer_dragged = false
+				if tracking_order.dragging:
+					tracking_order.cancel()
+				var pts := _pinch_touches.values()
+				_pinch_prev_dist = (pts[0] as Vector2).distance_to(pts[1] as Vector2)
+				return
+			_pinch_active = false
+			if _active_touch_id != -1 and not _pinch_touches.has(_active_touch_id):
+				_active_touch_id = -1
+			_active_touch_id = event.index
+			_pointer_down_pos = event.position
+			_pointer_dragged = false
+			_begin_world_pointer(event.position, true)
+		else:
+			_pinch_touches.erase(event.index)
+			if _pinch_touches.size() < 2:
+				_pinch_prev_dist = 0.0
+			if _pinch_active:
+				if _pinch_touches.is_empty():
+					_pinch_active = false
+				return
+			if event.index == _active_touch_id:
+				_active_touch_id = -1
+				_pointer_dragged = false
+	elif event is InputEventScreenDrag:
+		if _pinch_touches.has(event.index):
+			_pinch_touches[event.index] = event.position
+		if _pinch_touches.size() >= 2:
+			_pinch_active = true
+			var pts := _pinch_touches.values()
+			var dist := (pts[0] as Vector2).distance_to(pts[1] as Vector2)
+			if _pinch_prev_dist > 12.0 and dist > 12.0:
+				_set_zoom(camera.zoom.x * (dist / _pinch_prev_dist))
+			_pinch_prev_dist = dist
+			return
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_set_zoom(camera.zoom.x * 1.12)
@@ -444,12 +755,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_set_zoom(camera.zoom.x / 1.12)
 			return
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			var world_pos := _viewport_to_world(event.position)
-			var picked := _nearest_target_at(world_pos, 180.0)
-			if picked != null:
-				selected_target = picked
-				var info: Dictionary = target_roles.get(picked, {})
-				_last_event_text = "대상 선택: %s (질량 %.1f)" % [str(info.get("label", picked.enemy_name)), picked.mass]
+			_pointer_down_pos = event.position
+			_pointer_dragged = false
+			_begin_world_pointer(event.position, false)
 
 func _set_zoom(next_zoom: float) -> void:
 	var z := clampf(next_zoom, 1.0 / 4.5, 1.6)
@@ -506,7 +814,23 @@ func _physics_process(delta: float) -> void:
 	var fwd := Input.get_axis("thrust_reverse", "thrust_forward")
 	var turn := Input.get_axis("turn_left", "turn_right")
 	var strafe := Input.get_axis("strafe_left", "strafe_right")
-	player.apply_player_thrusters(maxf(fwd, 0.0), maxf(-fwd, 0.0), turn, strafe)
+	if _touch_forward: fwd = maxf(fwd, 1.0)
+	if _touch_reverse: fwd = minf(fwd, -1.0)
+	if _touch_turn_left: turn -= 1.0
+	if _touch_turn_right: turn += 1.0
+	turn = clampf(turn, -1.0, 1.0)
+	var manual_input := absf(fwd) > 0.01 or absf(turn) > 0.01 or absf(strafe) > 0.01
+	if manual_input:
+		if navigation_active or tracking_order.active:
+			navigation_active = false
+			tracking_order.cancel()
+		player.apply_player_thrusters(maxf(fwd, 0.0), maxf(-fwd, 0.0), turn, strafe)
+	elif tracking_order.active:
+		_apply_target_tracking()
+	elif navigation_active:
+		_apply_auto_navigation(delta)
+	else:
+		player.apply_player_thrusters(0.0, 0.0, 0.0, 0.0)
 
 	if grapple != null and is_instance_valid(grapple) and grapple.connected:
 		grapple.set_reeling(reel_toggle_active or Input.is_key_pressed(KEY_V))
@@ -518,7 +842,13 @@ func _physics_process(delta: float) -> void:
 		if not is_instance_valid(t):
 			continue
 		var role := str(target_roles.get(t, {}).get("role", ""))
-		if role == "tug" and resist_enabled and grapple != null and is_instance_valid(grapple) and grapple.target_ship == t and grapple.connected:
+		if t.is_attacking_player():
+			if t.can_fire_at_player() and t.ready_to_fire():
+				for shot in t.fire_primary_weapons(player.global_position):
+					var p := ProjectileScript.new()
+					p.setup(shot)
+					world_layer.add_child(p)
+		elif role == "tug" and resist_enabled and grapple != null and is_instance_valid(grapple) and grapple.target_ship == t and grapple.connected:
 			var away := (t.global_position - player.global_position).normalized()
 			t.rotation = lerp_angle(t.rotation, away.angle(), minf(delta * 4.0, 1.0))
 			t.apply_player_thrusters(0.9, 0.0, 0.0, 0.0)
@@ -557,6 +887,26 @@ func _physics_process(delta: float) -> void:
 	_update_telemetry()
 	queue_redraw()
 
+func _apply_target_tracking() -> void:
+	if not tracking_order.valid():
+		tracking_order.cancel()
+		player.apply_player_thrusters(0.0, 0.0, 0.0, 0.0)
+		return
+	tracking_order.minimum_range = player.hull_bound_radius + PhysicsData.TRACKING_CLEARANCE
+	var destination: Vector2 = tracking_order.destination()
+	var target: ShipBody = tracking_order.target
+	var velocity: Vector2 = target.linear_velocity + (destination - player.global_position) * PhysicsData.TRACKING_POSITION_GAIN
+	player.apply_tracking_thrusters(velocity.limit_length(player.max_linear_speed()), target.global_position - player.global_position)
+
+func _apply_auto_navigation(delta: float = 1.0 / 60.0) -> void:
+	var state := player.step_auto_navigation(navigation_target, delta)
+	if state == "arrived":
+		navigation_active = false
+		_last_event_text = "목표 지점 접촉 도착"
+	elif state == "failed":
+		navigation_active = false
+		_last_event_text = "이동 실패 · 교착 상태 감지로 정지"
+
 func _find_role_ship(role_name: String) -> EnemyShip:
 	for t in targets:
 		if is_instance_valid(t) and str(target_roles.get(t, {}).get("role", "")) == role_name:
@@ -592,16 +942,44 @@ func _update_telemetry() -> void:
 func _draw() -> void:
 	if player == null:
 		return
+	if navigation_active:
+		draw_dashed_line(player.global_position, navigation_target, Color("82e7c6", 0.55), 1.6, 10.0)
+		draw_circle(navigation_target, 9.0, Color("82e7c6", 0.24))
+		draw_arc(navigation_target, 18.0, 0.0, TAU, 24, Color("82e7c6"), 1.8, true)
+		draw_line(navigation_target + Vector2(-24, 0), navigation_target + Vector2(24, 0), Color("82e7c6"), 1.2)
+		draw_line(navigation_target + Vector2(0, -24), navigation_target + Vector2(0, 24), Color("82e7c6"), 1.2)
+	if (tracking_order.active or (tracking_order.dragging and _pointer_dragged)) and tracking_order.valid():
+		var geometry: Dictionary = tracking_order.geometry()
+		if not geometry.is_empty():
+			var center: Vector2 = geometry.center
+			var base_end: Vector2 = geometry.base_end
+			var desired_end: Vector2 = geometry.desired_end
+			var start_ang := (base_end - center).angle()
+			var angle: float = geometry.angle
+			var radius: float = geometry.radius
+			var polygon := PackedVector2Array([center])
+			for step in TrackingVisual.SECTOR_SEGMENTS + 1:
+				polygon.append(center + Vector2.from_angle(start_ang + angle * float(step) / float(TrackingVisual.SECTOR_SEGMENTS)) * radius)
+			if absf(angle) > 0.001:
+				draw_colored_polygon(polygon, TrackingVisual.SECTOR_COLOR)
+			draw_line(center, base_end, TrackingVisual.BASELINE_COLOR, TrackingVisual.LINE_WIDTH, true)
+			draw_line(center, desired_end, TrackingVisual.DESTINATION_COLOR, TrackingVisual.LINE_WIDTH, true)
+			for step in TrackingVisual.SECTOR_SEGMENTS:
+				draw_line(polygon[step + 1], polygon[step + 2], TrackingVisual.DESTINATION_COLOR, TrackingVisual.LINE_WIDTH, true)
+			draw_circle(desired_end, 10.0, Color("55f4ff", 0.35))
+			draw_arc(desired_end, 16.0, 0.0, TAU, 24, TrackingVisual.DESTINATION_COLOR, 2.0, true)
+			if ThemeDB.fallback_font != null:
+				draw_string(ThemeDB.fallback_font, desired_end + Vector2(-95, -26), "%.0fpx / %+.0f°" % [radius, rad_to_deg(angle)], HORIZONTAL_ALIGNMENT_CENTER, 190, 20, TrackingVisual.DESTINATION_COLOR)
 	if grapple != null and is_instance_valid(grapple) and grapple.connected:
 		draw_arc(player.global_position, grapple.break_range(), 0.0, TAU, 72, Color(0.35, 0.85, 1.0, 0.22), 1.5)
 	for t in targets:
 		if not is_instance_valid(t):
 			continue
 		var is_sel := (t == selected_target)
-		var col := Color("ffcf72") if is_sel else Color(0.65, 0.82, 0.95, 0.55)
+		var col := Color("ffcf72") if is_sel else Color(0.65, 0.82, 0.95, 0.72)
 		if is_sel:
-			draw_arc(t.global_position, t.hull_bound_radius + 16.0, 0.0, TAU, 36, col, 2.0)
+			draw_arc(t.global_position, t.hull_bound_radius + 16.0, 0.0, TAU, 36, col, 2.2)
 		var info: Dictionary = target_roles.get(t, {})
 		var label_text := "%s [M:%.1f]" % [str(info.get("label", t.enemy_name)), t.mass]
 		if ThemeDB.fallback_font != null:
-			draw_string(ThemeDB.fallback_font, t.global_position + Vector2(-72, -t.hull_bound_radius - 22), label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, col)
+			draw_string(ThemeDB.fallback_font, t.global_position + Vector2(-96, -t.hull_bound_radius - 24), label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 21, col)

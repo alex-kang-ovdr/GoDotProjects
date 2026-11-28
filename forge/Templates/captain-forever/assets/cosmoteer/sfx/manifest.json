@@ -1,0 +1,90 @@
+{
+  "count": 17,
+  "files": {
+    "destroyed": {
+      "file": "destroyed.txt",
+      "wav_bytes": 52964,
+      "sha256": "d9e98d4887a7c8f757393b57e5350509ec5dd47cecabd28bb1cdd309abaecb17"
+    },
+    "fire_ignite": {
+      "file": "fire_ignite.txt",
+      "wav_bytes": 52964,
+      "sha256": "5f20c4b2a3a07dec1b82cf2c37f64aa8854e8a9a7756b3cd4f7e56b8c0bced20"
+    },
+    "intercept": {
+      "file": "intercept.txt",
+      "wav_bytes": 27270,
+      "sha256": "537eb6e515ee35b69db3260b8c44f09685b7ecb620ff3d9a6f8e87122f8b08bb"
+    },
+    "reactor_meltdown": {
+      "file": "reactor_meltdown.txt",
+      "wav_bytes": 52964,
+      "sha256": "1f515e1d3f1c08d5ed34ba058729180655cb30849f257ebb1d81dd997021605c"
+    },
+    "shield_down": {
+      "file": "shield_down.txt",
+      "wav_bytes": 52964,
+      "sha256": "f9860c25a50a4246c20c888d076c882f53288770719f27d2541e9ad17a747eee"
+    },
+    "shield_hit": {
+      "file": "shield_hit.txt",
+      "wav_bytes": 52964,
+      "sha256": "f9860c25a50a4246c20c888d076c882f53288770719f27d2541e9ad17a747eee"
+    },
+    "shot_cannon": {
+      "file": "shot_cannon.txt",
+      "wav_bytes": 45398,
+      "sha256": "b50e59073a4aa4b5e2dda856ba919c6aee38a46842de85f1deafc6b10bdeeac4"
+    },
+    "shot_cannon_deck": {
+      "file": "shot_cannon_deck.txt",
+      "wav_bytes": 52964,
+      "sha256": "43e5a7968076776786ec797647758f257fb680631a7856fc9a2709af3ad3d52e"
+    },
+    "shot_cannon_large": {
+      "file": "shot_cannon_large.txt",
+      "wav_bytes": 44130,
+      "sha256": "8884f71c91638a61e77e943fa9e45004f75338ed19ae8fec47eceba5bc7c912c"
+    },
+    "shot_chaingun": {
+      "file": "shot_chaingun.txt",
+      "wav_bytes": 52964,
+      "sha256": "e108a04b37dd6e32cb911569f72f5e67afe64fe11abb19f6f65e058369a6dacd"
+    },
+    "shot_disruptor": {
+      "file": "shot_disruptor.txt",
+      "wav_bytes": 42674,
+      "sha256": "87b4347dccec5a0b91b61938cec5d228c8015f03b01625ad62ed6cdd31d9803a"
+    },
+    "shot_flak": {
+      "file": "shot_flak.txt",
+      "wav_bytes": 40508,
+      "sha256": "4f23606d0be0abf8c9a6a284e8f453765bcb575ac178d57ddd49f16d13147f5e"
+    },
+    "shot_heavy_laser": {
+      "file": "shot_heavy_laser.txt",
+      "wav_bytes": 52964,
+      "sha256": "40ad41195573efcf49a2bb72a20cf01af8a2957e9ca3e6763e95a65bd03a33eb"
+    },
+    "shot_ion": {
+      "file": "shot_ion.txt",
+      "wav_bytes": 52964,
+      "sha256": "0624b6655171524c11b8a9fc4702cfc180ac278b6a30b2457382f85cba6d8cf5"
+    },
+    "shot_laser": {
+      "file": "shot_laser.txt",
+      "wav_bytes": 31668,
+      "sha256": "01a1a34df2c9bd041222c34d690b17800ff515049cebfdf44dff8c577251e957"
+    },
+    "shot_missile": {
+      "file": "shot_missile.txt",
+      "wav_bytes": 52964,
+      "sha256": "5cd4d06fd041e0b6f0e41f3351211094ca0cbfc6da3a7f7bb194ea2648e095a3"
+    },
+    "shot_railgun": {
+      "file": "shot_railgun.txt",
+      "wav_bytes": 52964,
+      "sha256": "ecf71f6799675b86623d624a42b5b984c2b66a46f13971795e87e8456fa0a739"
+    }
+  }
+}
